@@ -1,0 +1,38 @@
+{
+  "name": "@flamelink/sdk-navigation",
+  "version": "0.0.1",
+  "description": "Navigation module for Flamelink JavaScript SDK",
+  "keywords": [
+    "flamelink",
+    "sdk",
+    "javascript"
+  ],
+  "author": "Flamelink <feedback@flamelink.io> (https://flamelink.io)",
+  "homepage": "https://flamelink.github.io/flamelink/",
+  "license": "MIT",
+  "main": "dist/index.node.cjs.js",
+  "module": "dist/index.esm.js",
+  "directories": {
+    "lib": "src",
+    "test": "__tests__"
+  },
+  "files": [
+    "dist"
+  ],
+  "dependencies": {
+    "@flamelink/sdk-app": "^0.0.1"
+  },
+  "devDependencies": {
+    "rimraf": "^2.6.3",
+    "rollup": "^1.1.2",
+    "rollup-plugin-terser": "^4.0.2",
+    "rollup-plugin-typescript2": "^0.19.2",
+    "typescript": "^3.2.4"
+  },
+  "scripts": {
+    "prebuild": "rimraf dist",
+    "build": "rollup -c",
+    "dev": "rollup -c -w",
+    "prepare": "npm run build"
+  }
+}

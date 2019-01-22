@@ -1,0 +1,16 @@
+{
+  "version": "0.0.0",
+  "npmClient": "yarn",
+  "packages": [
+    "packages/*"
+  ],
+  "command": {
+    "publish": {
+      "ignoreChanges": ["*.md"],
+      "message": "chore(release): Publish new release"
+    },
+    "bootstrap": {
+      "scope": ["flamelink", "@flamelink/sdk-*"]
+    }
+  }
+}
