@@ -1,0 +1,56 @@
+{
+  "name": "flamelink",
+  "version": "1.0.0-wip",
+  "description": "Javascript SDK for integrating with Flamelink CMS",
+  "author": "Flamelink <feedback@flamelink.io> (https://flamelink.io)",
+  "homepage": "https://flamelink.github.io/flamelink/",
+  "license": "MIT",
+  "keywords": [
+    "flamelink",
+    "firelink",
+    "firebase",
+    "firestore",
+    "headless",
+    "cms",
+    "javascript",
+    "sdk",
+    "web",
+    "node",
+    "caas",
+    "real-time"
+  ],
+  "files": [
+    "dist"
+  ],
+  "engines": {
+    "node": ">=6.0.0"
+  },
+  "main": "dist/index.js",
+  "browser": "dist/index.js",
+  "module": "dist/index.js",
+  "typings": "dist/index.d.ts",
+  "devDependencies": {
+    "husky": "^1.3.1",
+    "precise-commits": "^1.0.2",
+    "prettier": "1.16.0",
+    "rimraf": "^2.6.3",
+    "rollup": "^1.1.2",
+    "rollup-plugin-terser": "^4.0.2",
+    "rollup-plugin-typescript2": "^0.19.2",
+    "typescript": "^3.2.4"
+  },
+  "dependencies": {
+    "compose-then": "^1.0.1"
+  },
+  "husky": {
+    "hooks": {
+      "pre-commit": "precise-commits"
+    }
+  },
+  "scripts": {
+    "prebuild": "rimraf dist",
+    "build": "rollup -c",
+    "dev": "rollup -c -w",
+    "prepare": "npm run build"
+  }
+}

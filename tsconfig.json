@@ -1,0 +1,12 @@
+{
+  "compileOnSave": false,
+  "compilerOptions": {
+    "declaration": true,
+    "declarationDir": "./dist",
+    "module": "commonjs",
+    "noImplicitAny": false,
+    "sourceMap": true,
+    "target": "es5"
+  },
+  "include": ["src"]
+}
