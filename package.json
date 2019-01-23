@@ -22,6 +22,9 @@
   "engines": {
     "node": ">=8.0.0"
   },
+  "workspaces": [
+    "packages/*"
+  ],
   "devDependencies": {
     "husky": "^1.3.1",
     "lerna": "^3.10.6",
