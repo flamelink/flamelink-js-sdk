@@ -11,6 +11,7 @@
   "homepage": "https://flamelink.github.io/flamelink/",
   "license": "MIT",
   "main": "dist/index.node.cjs.js",
+  "browser": "dist/index.cjs.js",
   "module": "dist/index.esm.js",
   "directories": {
     "lib": "src",
@@ -19,13 +20,6 @@
   "files": [
     "dist"
   ],
-  "devDependencies": {
-    "rimraf": "^2.6.3",
-    "rollup": "^1.1.2",
-    "rollup-plugin-terser": "^4.0.2",
-    "rollup-plugin-typescript2": "^0.19.2",
-    "typescript": "^3.2.4"
-  },
   "scripts": {
     "prebuild": "rimraf dist",
     "build": "rollup -c",

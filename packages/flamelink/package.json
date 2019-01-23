@@ -29,22 +29,15 @@
   "browser": "dist/index.cjs.js",
   "module": "dist/index.esm.js",
   "typings": "dist/index.d.ts",
-    "dependencies": {
-      "@flamelink/sdk-app": "^0.0.1",
-      "@flamelink/sdk-schemas": "^0.0.1",
-      "@flamelink/sdk-content": "^0.0.1",
-      "@flamelink/sdk-settings": "^0.0.1",
-      "@flamelink/sdk-storage": "^0.0.1",
-      "@flamelink/sdk-navigation": "^0.0.1",
-      "@flamelink/sdk-users": "^0.0.1",
-      "compose-then": "^1.0.1"
-    },
-  "devDependencies": {
-    "rimraf": "^2.6.3",
-    "rollup": "^1.1.2",
-    "rollup-plugin-terser": "^4.0.2",
-    "rollup-plugin-typescript2": "^0.19.2",
-    "typescript": "^3.2.4"
+  "dependencies": {
+    "@flamelink/sdk-app": "^0.0.1",
+    "@flamelink/sdk-schemas": "^0.0.1",
+    "@flamelink/sdk-content": "^0.0.1",
+    "@flamelink/sdk-settings": "^0.0.1",
+    "@flamelink/sdk-storage": "^0.0.1",
+    "@flamelink/sdk-navigation": "^0.0.1",
+    "@flamelink/sdk-users": "^0.0.1",
+    "compose-then": "^1.0.1"
   },
   "scripts": {
     "prebuild": "rimraf dist",

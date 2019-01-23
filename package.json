@@ -27,13 +27,28 @@
   ],
   "devDependencies": {
     "husky": "^1.3.1",
-    "lerna": "^3.10.6",
+    "lerna": "^3.10.7",
     "precise-commits": "^1.0.2",
-    "prettier": "1.16.0"
+    "prettier": "1.16.0",
+    "rimraf": "^2.6.3",
+    "rollup": "^1.1.2",
+    "rollup-plugin-commonjs": "^9.2.0",
+    "rollup-plugin-node-resolve": "^4.0.0",
+    "rollup-plugin-terser": "^4.0.2",
+    "rollup-plugin-typescript2": "^0.19.2",
+    "typescript": "^3.2.4"
   },
   "husky": {
     "hooks": {
       "pre-commit": "precise-commits"
     }
+  },
+  "scripts": {
+    "bootstrap": "lerna bootstrap",
+    "create-package": "lerna create",
+    "dev": "lerna run dev",
+    "postinstall": "yarn run bootstrap",
+    "prepare": "lerna run prepare",
+    "publish": "lerna run prepare && lerna publish"
   }
 }
