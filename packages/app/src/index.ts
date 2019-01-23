@@ -1,5 +1,5 @@
 const getModule = (moduleName, context) => {
-  return context.modules.settings || context.proxySupported
+  return context.modules[moduleName] || context.proxySupported
     ? new Proxy(
         {},
         {
@@ -36,12 +36,12 @@ const createFlamelinkFactory = () => {
     return api;
   }
 
-  flamelink.registerModule = (name, setupModule) => {
-    if (context.modules[name]) {
+  flamelink.registerModule = (moduleName, setupModule) => {
+    if (context.modules[moduleName]) {
       throw new Error('Module already registered'); // Create error util with user friendly error message
     }
 
-    Object.defineProperty(context.modules, name, {
+    Object.defineProperty(context.modules, moduleName, {
       value: setupModule(context),
       writable: false
     });

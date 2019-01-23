@@ -1,10 +1,10 @@
-import flamelink from '@flamelink/sdk-app';
-import '@flamelink/sdk-settings';
-import '@flamelink/sdk-schemas';
-import '@flamelink/sdk-content';
-import '@flamelink/sdk-navigation';
-import '@flamelink/sdk-storage';
-import '@flamelink/sdk-users';
+import flamelink from './app';
+import './settings';
+import './schemas';
+import './content';
+import './navigation';
+import './storage';
+import './users';
 
 console.warn(`
 Warning! It is recommended to only import the modules required for your application.
