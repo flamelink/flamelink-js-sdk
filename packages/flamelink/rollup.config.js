@@ -1,9 +1,15 @@
 import { terser } from 'rollup-plugin-terser';
 import typescript from 'rollup-plugin-typescript2';
+import resolveModule from 'rollup-plugin-node-resolve';
+import commonjs from 'rollup-plugin-commonjs';
+import gzipPlugin from 'rollup-plugin-gzip';
+import { compress } from 'brotli';
 import pkg from './package.json';
 
 import appPkg from '../app/package.json';
 import settingsPkg from '../settings/package.json';
+
+const LIBRARY_NAME = 'flamelink';
 
 const modulePkgs = {
   app: appPkg,
@@ -13,8 +19,20 @@ const modulePkgs = {
 const external = Object.keys(pkg.dependencies || {});
 
 const plugins = [
+  resolveModule(),
   typescript({
     typescript: require('typescript')
+  }),
+  commonjs()
+];
+
+const umdPlugins = [
+  ...plugins,
+  terser(),
+  gzipPlugin(),
+  gzipPlugin({
+    customCompression: content => compress(Buffer.from(content)),
+    fileName: '.br'
   })
 ];
 
@@ -29,61 +47,90 @@ const moduleNames = [
 ];
 
 export default [
-  // Global UMD build
+  /**
+   * Global UMD build
+   */
   {
     input: 'src/index.ts',
     output: {
       file: 'dist/flamelink.js',
       format: 'umd',
-      name: pkg.name,
-      esModule: false
+      name: LIBRARY_NAME,
+      esModule: false,
+      sourcemap: true
     },
-    plugins: [...plugins, terser()]
+    plugins: umdPlugins
   },
-  // TODO: Split entry point out for NodeJS vs browser (if necessary)
+
+  /**
+   * Node.js Build
+   */
+  {
+    // input: 'src/index.node.ts',
+    input: 'src/index.ts',
+    output: [{ file: pkg.main, format: 'cjs' }],
+    plugins,
+    external
+  },
+
+  /**
+   * Browser Builds
+   */
   {
     input: 'src/index.ts',
     output: [
-      {
-        file: pkg.module,
-        format: 'esm'
-      },
-      {
-        file: pkg.main,
-        format: 'cjs'
-      },
-      {
-        file: pkg.browser,
-        format: 'cjs'
-      }
+      { file: pkg.browser, format: 'cjs' },
+      { file: pkg.module, format: 'esm' }
     ],
     plugins,
     external
   },
+
   ...moduleNames.map(moduleName => ({
-    input: `src/modules/${moduleName}.ts`,
+    input: `src/${moduleName}/index.ts`,
     output: {
       file: `dist/flamelink-${moduleName}.js`,
       format: 'umd',
-      // name: ? look at what Firebase does for this so we don't create another global for each
-      esModule: false
-    }
-  })),
-  ...moduleNames.map(moduleName => {
-    const modulePkg = modulePkgs[moduleName];
+      name: LIBRARY_NAME,
+      sourcemap: true,
+      extend: true,
+      esModule: false,
+      globals: {
+        '@flamelink/sdk-app': LIBRARY_NAME
+      },
+      /**
+       * use iife to avoid below error in the old Safari browser
+       * SyntaxError: Functions cannot be declared in a nested block in strict mode
+       * https://github.com/firebase/firebase-js-sdk/issues/1228
+       *
+       */
+      intro: `try {(function() {`,
+      outro: `}).apply(this, arguments); } catch(err) {
+        console.error(err);
+        throw new Error(
+          'Cannot instantiate flamelink-${moduleName} - be sure to load flamelink-app.js first.'
+        );
+      }`
+    },
+    external: ['@flamelink/sdk-app'],
+    plugins: umdPlugins
+  }))
 
-    return {
-      input: `src/modules/${moduleName}.ts`,
-      output: [
-        {
-          file: modulePkg.module,
-          format: 'esm'
-        },
-        {
-          file: modulePkg.main,
-          format: 'cjs'
-        }
-      ]
-    };
-  })
+  // ...moduleNames.map(moduleName => {
+  //   const modulePkg = modulePkgs[moduleName];
+
+  //   return {
+  //     input: `src/${moduleName}/index.ts`,
+  //     output: [
+  //       {
+  //         file: modulePkg.module,
+  //         format: 'esm'
+  //       },
+  //       {
+  //         file: modulePkg.main,
+  //         format: 'cjs'
+  //       }
+  //     ]
+  //   };
+  // })
 ];
