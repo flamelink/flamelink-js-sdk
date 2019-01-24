@@ -27,6 +27,6 @@
     "prebuild": "rimraf dist",
     "build": "rollup -c",
     "dev": "rollup -c -w",
-    "prepare": "npm run build"
+    "test": "jest"
   }
 }

@@ -72,6 +72,7 @@
     "create-package": "lerna create",
     "dev": "lerna run dev",
     "build": "lerna run build",
+    "test": "lerna exec yarn run test",
     "publish": "lerna run build && lerna publish",
     "lint": "tslint -p tsconfig.json -c tslint.json && prettier --write 'packages/**/*.ts'"
   }
