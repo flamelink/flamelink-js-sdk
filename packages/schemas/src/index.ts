@@ -1,4 +1,4 @@
-import flamelink from '@flamelink/sdk-app';
+import flamelink from '@flamelink/sdk-app'
 
 const schemas = context => {
   // If any bootstrapping is required, do it here
@@ -13,7 +13,7 @@ const schemas = context => {
     remove: () => {},
     transaction: () => {},
     ref: () => {}
-  };
-};
+  }
+}
 
-export default flamelink.registerModule('schemas', schemas);
+export default flamelink.registerModule('schemas', schemas)

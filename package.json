@@ -45,7 +45,10 @@
     "rollup-plugin-gzip": "^2.2.0",
     "rollup-plugin-node-resolve": "^4.0.0",
     "rollup-plugin-terser": "^4.0.2",
+    "rollup-plugin-tslint": "^0.2.2",
     "rollup-plugin-typescript2": "^0.19.2",
+    "tslint": "^5.12.1",
+    "tslint-config-prettier": "^1.17.0",
     "typescript": "^3.2.4"
   },
   "husky": {
@@ -66,8 +69,8 @@
     "changelog": "lerna-changelog",
     "create-package": "lerna create",
     "dev": "lerna run dev",
-    "postinstall": "yarn run bootstrap",
-    "prepare": "lerna run prepare",
-    "publish": "lerna run prepare && lerna publish"
+    "build": "lerna run build",
+    "publish": "lerna run build && lerna publish",
+    "lint": "tslint -p tsconfig.json -c tslint.json && prettier --write 'packages/**/*.ts'"
   }
 }

@@ -1,1 +1,1 @@
-import '@flamelink/sdk-navigation';
+import '@flamelink/sdk-navigation'

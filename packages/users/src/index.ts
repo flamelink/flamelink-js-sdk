@@ -1,11 +1,11 @@
-import flamelink from '@flamelink/sdk-app';
+import flamelink from '@flamelink/sdk-app'
 
 const users = context => {
   // If any bootstrapping is required, do it here
 
   return {
     get: () => {}
-  };
-};
+  }
+}
 
-export default flamelink.registerModule('users', users);
+export default flamelink.registerModule('users', users)

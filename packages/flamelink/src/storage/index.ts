@@ -1,1 +1,1 @@
-import '@flamelink/sdk-storage';
+import '@flamelink/sdk-storage'

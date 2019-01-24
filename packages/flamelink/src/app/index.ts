@@ -1,2 +1,2 @@
-import flamelink from '@flamelink/sdk-app';
-export default flamelink;
+import flamelink from '@flamelink/sdk-app'
+export default flamelink

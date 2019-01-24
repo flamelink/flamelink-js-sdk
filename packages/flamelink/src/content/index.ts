@@ -1,1 +1,1 @@
-import '@flamelink/sdk-content';
+import '@flamelink/sdk-content'
