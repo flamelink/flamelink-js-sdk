@@ -36,7 +36,7 @@ const createFlamelinkFactory = () => {
     return api
   }
 
-  flamelink.registerModule = (moduleName, setupModule) => {
+  flamelink._registerModule = (moduleName, setupModule) => {
     if (context.modules[moduleName]) {
       throw new Error('Module already registered') // Create error util with user friendly error message
     }

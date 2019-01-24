@@ -16,4 +16,4 @@ const storage = context => {
   }
 }
 
-export default flamelink.registerModule('storage', storage) // TODO: consider aliasing as "media" as well
+export default flamelink._registerModule('storage', storage) // TODO: consider aliasing as "media" as well

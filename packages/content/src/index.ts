@@ -16,4 +16,4 @@ const content = context => {
   }
 }
 
-export default flamelink.registerModule('content', content)
+export default flamelink._registerModule('content', content)

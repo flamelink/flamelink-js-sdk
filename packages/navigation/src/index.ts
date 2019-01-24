@@ -16,4 +16,4 @@ const navigation = context => {
   }
 }
 
-export default flamelink.registerModule('nav', navigation) // TODO: Check if module can be aliased to "navigation" as well
+export default flamelink._registerModule('nav', navigation) // TODO: Check if module can be aliased to "navigation" as well
