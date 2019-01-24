@@ -1,0 +1,5 @@
+{
+  "name": "flamelink/users",
+  "main": "dist/users/index.js",
+  "module": "dist/users/index.mjs"
+}

@@ -1,3 +1,4 @@
+import { resolve } from 'path';
 import { terser } from 'rollup-plugin-terser';
 import typescript from 'rollup-plugin-typescript2';
 import resolveModule from 'rollup-plugin-node-resolve';
@@ -6,14 +7,24 @@ import gzipPlugin from 'rollup-plugin-gzip';
 import { compress } from 'brotli';
 import pkg from './package.json';
 
-import appPkg from '../app/package.json';
-import settingsPkg from '../settings/package.json';
+import appPkg from './src/app/package.json';
+import contentPkg from './src/content/package.json';
+import navigationPkg from './src/navigation/package.json';
+import schemasPkg from './src/schemas/package.json';
+import settingsPkg from './src/settings/package.json';
+import storagePkg from './src/storage/package.json';
+import usersPkg from './src/users/package.json';
 
 const LIBRARY_NAME = 'flamelink';
 
 const modulePkgs = {
   app: appPkg,
-  settings: settingsPkg
+  content: contentPkg,
+  navigation: navigationPkg,
+  schemas: schemasPkg,
+  settings: settingsPkg,
+  storage: storagePkg,
+  users: usersPkg
 };
 
 const external = Object.keys(pkg.dependencies || {});
@@ -86,6 +97,9 @@ export default [
     external
   },
 
+  /**
+   * UMD build for each module
+   */
   ...moduleNames.map(moduleName => ({
     input: `src/${moduleName}/index.ts`,
     output: {
@@ -114,23 +128,23 @@ export default [
     },
     external: ['@flamelink/sdk-app'],
     plugins: umdPlugins
-  }))
+  })),
 
-  // ...moduleNames.map(moduleName => {
-  //   const modulePkg = modulePkgs[moduleName];
+  ...moduleNames.map(moduleName => {
+    const modulePkg = modulePkgs[moduleName];
 
-  //   return {
-  //     input: `src/${moduleName}/index.ts`,
-  //     output: [
-  //       {
-  //         file: modulePkg.module,
-  //         format: 'esm'
-  //       },
-  //       {
-  //         file: modulePkg.main,
-  //         format: 'cjs'
-  //       }
-  //     ]
-  //   };
-  // })
+    return {
+      input: `src/${moduleName}/index.ts`,
+      output: [
+        {
+          file: modulePkg.module,
+          format: 'esm'
+        },
+        {
+          file: modulePkg.main,
+          format: 'cjs'
+        }
+      ]
+    };
+  })
 ];

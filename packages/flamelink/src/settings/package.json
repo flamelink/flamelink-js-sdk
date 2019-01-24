@@ -1,0 +1,5 @@
+{
+  "name": "flamelink/settings",
+  "main": "dist/settings/index.js",
+  "module": "dist/settings/index.mjs"
+}

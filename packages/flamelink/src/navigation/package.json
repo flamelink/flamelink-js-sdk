@@ -1,0 +1,5 @@
+{
+  "name": "flamelink/navigation",
+  "main": "dist/navigation/index.js",
+  "module": "dist/navigation/index.mjs"
+}

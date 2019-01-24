@@ -1,0 +1,5 @@
+{
+  "name": "flamelink/storage",
+  "main": "dist/storage/index.js",
+  "module": "dist/storage/index.mjs"
+}

@@ -1,0 +1,5 @@
+{
+  "name": "flamelink/schemas",
+  "main": "dist/schemas/index.js",
+  "module": "dist/schemas/index.mjs"
+}
