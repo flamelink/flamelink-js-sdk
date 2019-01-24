@@ -1,7 +1,6 @@
 import { resolve } from 'path'
 import { terser } from 'rollup-plugin-terser'
 import typescript from 'rollup-plugin-typescript2'
-import tslint from 'rollup-plugin-tslint'
 import resolveModule from 'rollup-plugin-node-resolve'
 import commonjs from 'rollup-plugin-commonjs'
 import gzipPlugin from 'rollup-plugin-gzip'
@@ -32,7 +31,6 @@ const external = Object.keys(pkg.dependencies || {})
 
 const plugins = [
   resolveModule(),
-  // tslint({}),
   typescript({
     typescript: require('typescript')
   }),
@@ -64,7 +62,7 @@ export default [
    * Global UMD build
    */
   {
-    input: 'src/index.ts',
+    input: 'src/index.cdn.ts',
     output: {
       file: 'dist/flamelink.js',
       format: 'umd',

@@ -15,20 +15,17 @@ by your application when you use this SDK in production.
 
 ---------------------------------- CommonJS ------------------------------------
 
-Instead of doing this:
-import flamelink from 'flamelink'
-
-Do this instead:
 import flamelink from 'flamelink/app'
 import 'flamelink/<module>'
 
 ------------------------------- EcmaScript Modules -----------------------------
 
-Instead of doing this:
-import flamelink from 'flamelink'
-
-Do this instead:
 import flamelink from 'flamelink/app'
+import 'flamelink/<module>'
+
+----------------------------------- TypeScript ---------------------------------
+
+import * as flamelink from 'flamelink/app'
 import 'flamelink/<module>'
 
 --------------------------------------------------------------------------------
