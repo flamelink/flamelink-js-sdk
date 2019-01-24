@@ -79,8 +79,7 @@ export default [
    * Node.js Build
    */
   {
-    // input: 'src/index.node.ts',
-    input: 'src/index.ts',
+    input: 'src/index.node.ts',
     output: [{ file: pkg.main, format: 'cjs' }],
     plugins,
     external

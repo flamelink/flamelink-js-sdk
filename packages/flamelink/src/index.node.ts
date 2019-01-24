@@ -13,25 +13,12 @@ Importing the whole Flamelink SDK is fine for development or quick prototyping,
 but it is highly recommended that you only import the individual modules used
 by your application when you use this SDK in production.
 
----------------------------------- CommonJS ------------------------------------
-
 Instead of doing this:
-import flamelink from 'flamelink'
+const flamelink = require('flamelink')
 
 Do this instead:
-import flamelink from 'flamelink/app'
-import 'flamelink/<module>'
-
-------------------------------- EcmaScript Modules -----------------------------
-
-Instead of doing this:
-import flamelink from 'flamelink'
-
-Do this instead:
-import flamelink from 'flamelink/app'
-import 'flamelink/<module>'
-
---------------------------------------------------------------------------------
+const flamelink = require('flamelink/app')
+require('flamelink/<module>')
 
 Where <module> can be one of 'content', 'navigation', 'storage', 'users' or 'settings'
 `)
