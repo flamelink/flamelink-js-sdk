@@ -15,7 +15,16 @@ const getModule = (moduleName, context) => {
     : null
 }
 
-const createFlamelinkFactory = () => {
+interface FlamelinkPublicApi {
+  content: any
+  schemas: any
+  storage: any
+  nav: any
+  settings: any
+  users: any
+}
+
+export const createFlamelinkFactory = () => {
   const context = {
     env: 'production',
     locale: 'en-US',
@@ -27,16 +36,31 @@ const createFlamelinkFactory = () => {
     // Config checks
     console.log(context)
 
-    const api = {
+    const api: FlamelinkPublicApi = {
+      get content() {
+        return getModule('content', context)
+      },
+      get schemas() {
+        return getModule('schemas', context)
+      },
+      get storage() {
+        return getModule('storage', context)
+      },
+      get nav() {
+        return getModule('nav', context)
+      },
       get settings() {
         return getModule('settings', context)
+      },
+      get users() {
+        return getModule('users', context)
       }
     }
 
     return api
   }
 
-  flamelink.registerModule = (moduleName, setupModule) => {
+  flamelink._registerModule = (moduleName, setupModule) => {
     if (context.modules[moduleName]) {
       throw new Error('Module already registered') // Create error util with user friendly error message
     }

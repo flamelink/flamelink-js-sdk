@@ -16,4 +16,4 @@ const schemas = context => {
   }
 }
 
-export default flamelink.registerModule('schemas', schemas)
+export default flamelink._registerModule('schemas', schemas)

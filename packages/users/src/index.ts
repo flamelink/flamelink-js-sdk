@@ -8,4 +8,4 @@ const users = context => {
   }
 }
 
-export default flamelink.registerModule('users', users)
+export default flamelink._registerModule('users', users)

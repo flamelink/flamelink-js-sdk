@@ -20,4 +20,4 @@ const settings = context => {
   }
 }
 
-export default flamelink.registerModule('settings', settings)
+export default flamelink._registerModule('settings', settings)
