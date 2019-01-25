@@ -1,6 +1,7 @@
 import flamelink from '@flamelink/sdk-app'
+import { SetupModule } from '@flamelink/sdk-app'
 
-const schemas = context => {
+const schemas: SetupModule = context => {
   // If any bootstrapping is required, do it here
 
   return {

@@ -1,19 +1,20 @@
 import flamelink from '@flamelink/sdk-app'
+import { SetupModule } from '@flamelink/sdk-app'
 
-const settings = context => {
+const settings: SetupModule = context => {
   // If any bootstrapping is required, do it here
 
   return {
-    setEnvironment: env => {
+    setEnvironment: (env: string) => {
       context.env = env
       return env
     },
-    getEnvironment: () => context.env,
-    setLocale: locale => {
+    getEnvironment: (): string => context.env,
+    setLocale: (locale: string) => {
       context.locale = locale
       return locale
     },
-    getLocale: () => context.locale,
+    getLocale: (): string => context.locale,
     getGlobals: () => {},
     getImageSizes: () => {},
     getDefaultPermissionsGroup: () => {}

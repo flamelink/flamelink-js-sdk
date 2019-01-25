@@ -8,7 +8,7 @@
     "lib": ["es2015", "dom"],
     "module": "es2015",
     "moduleResolution": "node",
-    "noImplicitAny": false,
+    "noImplicitAny": true,
     "noLib": false,
     "removeComments": true,
     "sourceMap": true,
