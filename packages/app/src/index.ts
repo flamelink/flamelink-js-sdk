@@ -1,4 +1,44 @@
-const getModule = (moduleName, context) => {
+export type ModuleName =
+  | 'content'
+  | 'schemas'
+  | 'settings'
+  | 'nav'
+  | 'users'
+  | 'storage'
+
+export interface FlamelinkConfig {
+  firebaseApp: any
+  env?: string
+  locale?: string
+  dbType?: 'rtdb' | 'cf'
+}
+
+export interface FlamelinkPublicApi {
+  content: any
+  schemas: any
+  storage: any
+  nav: any
+  settings: any
+  users: any
+}
+
+export interface FlamelinkFactory {
+  (config: FlamelinkConfig): FlamelinkPublicApi
+  _registerModule(moduleName: ModuleName, setupModule: SetupModule): void
+}
+
+export interface FlamelinkFactoryCreator {
+  (): FlamelinkFactory
+}
+
+export interface FlamelinkContext extends FlamelinkConfig {
+  modules: any
+  proxySupported: boolean
+}
+
+export type SetupModule = (context: FlamelinkContext) => any
+
+const getModule = (moduleName: ModuleName, context: FlamelinkContext) => {
   return context.modules[moduleName] || context.proxySupported
     ? new Proxy(
         {},
@@ -15,24 +55,17 @@ const getModule = (moduleName, context) => {
     : null
 }
 
-interface FlamelinkPublicApi {
-  content: any
-  schemas: any
-  storage: any
-  nav: any
-  settings: any
-  users: any
-}
-
-export const createFlamelinkFactory = () => {
-  const context = {
+export const createFlamelinkFactory: FlamelinkFactoryCreator = () => {
+  const context: FlamelinkContext = {
+    firebaseApp: null,
     env: 'production',
     locale: 'en-US',
+    dbType: 'rtdb',
     modules: {},
     proxySupported: typeof Proxy !== 'undefined'
   }
 
-  function flamelink(config) {
+  function flamelink(config: FlamelinkConfig): FlamelinkPublicApi {
     // Config checks
     console.log(context)
 
@@ -60,7 +93,10 @@ export const createFlamelinkFactory = () => {
     return api
   }
 
-  flamelink._registerModule = (moduleName, setupModule) => {
+  flamelink._registerModule = (
+    moduleName: ModuleName,
+    setupModule: SetupModule
+  ) => {
     if (context.modules[moduleName]) {
       throw new Error('Module already registered') // Create error util with user friendly error message
     }

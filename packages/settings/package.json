@@ -13,6 +13,7 @@
   "main": "dist/index.node.cjs.js",
   "browser": "dist/index.cjs.js",
   "module": "dist/index.esm.js",
+  "typings": "dist/index.d.ts",
   "directories": {
     "lib": "src",
     "test": "__tests__"
