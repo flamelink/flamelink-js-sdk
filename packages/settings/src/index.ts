@@ -1,24 +1,14 @@
 import flamelink from '@flamelink/sdk-app'
-import { SetupModule } from '@flamelink/sdk-app'
+import { SetupModule } from '@flamelink/sdk-app-types'
 
-const settings: SetupModule = context => {
-  // If any bootstrapping is required, do it here
-
-  return {
-    setEnvironment: (env: string) => {
-      context.env = env
-      return env
-    },
-    getEnvironment: (): string => context.env,
-    setLocale: (locale: string) => {
-      context.locale = locale
-      return locale
-    },
-    getLocale: (): string => context.locale,
-    getGlobals: () => {},
-    getImageSizes: () => {},
-    getDefaultPermissionsGroup: () => {}
+const settings: SetupModule = async function(context) {
+  if (context.dbType === 'rtdb') {
+    const fn: any = await import('./rtdb')
+    return fn(context)
   }
+
+  const fn: any = await import('./cf')
+  return fn(context)
 }
 
 export default flamelink._registerModule('settings', settings)

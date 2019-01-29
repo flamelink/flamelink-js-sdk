@@ -1,0 +1,30 @@
+{
+  "name": "@flamelink/sdk-users-types",
+  "version": "0.0.1",
+  "description": "Users Types for Flamelink JavaScript SDK",
+  "keywords": [
+    "flamelink",
+    "sdk",
+    "javascript",
+    "types"
+  ],
+  "author": "Flamelink <feedback@flamelink.io> (https://flamelink.io)",
+  "homepage": "https://flamelink.github.io/flamelink/",
+  "license": "MIT",
+  "files": [
+    "index.d.ts"
+  ],
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/flamelink/flamelink-js-sdk/tree/master/packages/users-types"
+  },
+  "bugs": {
+    "url": "https://github.com/flamelink/flamelink-js-sdk/issues"
+  },
+  "dependencies": {
+    "@flamelink/sdk-app-types": "^0.0.1"
+  },
+  "scripts": {
+    "build": "tsc"
+  }
+}

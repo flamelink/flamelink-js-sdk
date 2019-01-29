@@ -9,6 +9,7 @@
       "severity": "warn"
     },
     "object-literal-sort-keys": false,
+    "only-arrow-functions": false,
     "ordered-imports": false
   },
   "rulesDirectory": []

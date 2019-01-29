@@ -1,0 +1,28 @@
+{
+  "name": "@flamelink/sdk-app-types",
+  "version": "0.0.1",
+  "description": "App Types for Flamelink JavaScript SDK",
+  "keywords": [
+    "flamelink",
+    "sdk",
+    "javascript",
+    "types"
+  ],
+  "author": "Flamelink <feedback@flamelink.io> (https://flamelink.io)",
+  "homepage": "https://flamelink.github.io/flamelink/",
+  "license": "MIT",
+  "files": [
+    "index.d.ts",
+    "private.d.ts"
+  ],
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/flamelink/flamelink-js-sdk/tree/master/packages/app-types"
+  },
+  "bugs": {
+    "url": "https://github.com/flamelink/flamelink-js-sdk/issues"
+  },
+  "scripts": {
+    "build": "tsc"
+  }
+}

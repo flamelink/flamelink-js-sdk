@@ -70,6 +70,7 @@ export default [
       esModule: false,
       sourcemap: true
     },
+    inlineDynamicImports: true,
     plugins: umdPlugins
   },
 
@@ -100,7 +101,10 @@ export default [
    * UMD build for each module
    */
   ...moduleNames.map(moduleName => ({
-    input: `src/${moduleName}/index.ts`,
+    input:
+      moduleName === 'app'
+        ? `src/${moduleName}/index.ts`
+        : `src/${moduleName}/index.cdn.ts`,
     output: {
       file: `dist/flamelink-${moduleName}.js`,
       format: 'umd',
@@ -125,6 +129,7 @@ export default [
         );
       }`
     },
+    inlineDynamicImports: true,
     external: ['@flamelink/sdk-app'],
     plugins: umdPlugins
   })),
