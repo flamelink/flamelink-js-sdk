@@ -10,9 +10,9 @@
   "author": "Flamelink <feedback@flamelink.io> (https://flamelink.io)",
   "homepage": "https://flamelink.github.io/flamelink/",
   "license": "MIT",
-  "main": "dist/index.node.cjs.js",
-  "browser": "dist/index.cjs.js",
-  "module": "dist/index.esm.js",
+  "main": "dist/cjs/index.js",
+  "browser": "dist/cjs/index.js",
+  "module": "dist/esm/index.js",
   "typings": "dist/index.d.ts",
   "directories": {
     "lib": "src",
@@ -22,7 +22,9 @@
     "dist"
   ],
   "dependencies": {
-    "@flamelink/sdk-app": "^0.0.1"
+    "@flamelink/sdk-app-types": "^0.0.1",
+    "@flamelink/sdk-app": "^0.0.1",
+    "@flamelink/sdk-users-types": "^0.0.1"
   },
   "scripts": {
     "prebuild": "rimraf dist",

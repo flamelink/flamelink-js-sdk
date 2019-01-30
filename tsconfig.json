@@ -6,7 +6,7 @@
     "experimentalDecorators": true,
     "importHelpers": true,
     "lib": ["es2015", "dom"],
-    "module": "es2015",
+    "module": "esnext",
     "moduleResolution": "node",
     "noImplicitAny": true,
     "noLib": false,

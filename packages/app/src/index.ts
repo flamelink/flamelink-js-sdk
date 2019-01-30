@@ -1,42 +1,12 @@
-export type ModuleName =
-  | 'content'
-  | 'schemas'
-  | 'settings'
-  | 'nav'
-  | 'users'
-  | 'storage'
-
-export interface FlamelinkConfig {
-  firebaseApp: any
-  env?: string
-  locale?: string
-  dbType?: 'rtdb' | 'cf'
-}
-
-export interface FlamelinkPublicApi {
-  content: any
-  schemas: any
-  storage: any
-  nav: any
-  settings: any
-  users: any
-}
-
-export interface FlamelinkFactory {
-  (config: FlamelinkConfig): FlamelinkPublicApi
-  _registerModule(moduleName: ModuleName, setupModule: SetupModule): void
-}
-
-export interface FlamelinkFactoryCreator {
-  (): FlamelinkFactory
-}
-
-export interface FlamelinkContext extends FlamelinkConfig {
-  modules: any
-  proxySupported: boolean
-}
-
-export type SetupModule = (context: FlamelinkContext) => any
+// TODO: Move the necessary types to the `@flamelink/sdk-app-types/private.d.ts` file
+import {
+  ModuleName,
+  FlamelinkContext,
+  FlamelinkFactoryCreator,
+  FlamelinkConfig,
+  FlamelinkPublicApi,
+  SetupModule
+} from '@flamelink/sdk-app-types'
 
 const getModule = (moduleName: ModuleName, context: FlamelinkContext) => {
   return context.modules[moduleName] || context.proxySupported

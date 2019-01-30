@@ -3,6 +3,7 @@
     "flamelink",
     "lerna",
     "outro",
+    "rtdb",
     "sourcemap"
   ]
 }
