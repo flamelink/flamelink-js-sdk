@@ -51,7 +51,7 @@ aliases:
       - <<: *install_node_modules
       - <<: *persist_cache
       # - <<: *attach_to_bootstrap
-      - run: yarn test
+      - run: yarn test:coverage
 
 version: 2.1
 
@@ -79,11 +79,11 @@ jobs:
       - <<: *persist_cache
       - run: yarn lint:ci
 
-  unit_tests_node6:
-    executor:
-      name: node
-      image: '6'
-    <<: *test_template
+  # unit_tests_node6:
+  #   executor:
+  #     name: node
+  #     image: '6'
+  #   <<: *test_template
 
   unit_tests_node8:
     executor:
@@ -107,10 +107,10 @@ workflows:
     jobs:
       - bootstrap
       - lint
-      - unit_tests_node6:
-          <<: *ignore_docs
-          requires:
-            - bootstrap
+      # - unit_tests_node6:
+      #     <<: *ignore_docs
+      #     requires:
+      #       - bootstrap
       - unit_tests_node8:
           <<: *ignore_docs
           requires:
