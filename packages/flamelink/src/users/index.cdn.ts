@@ -13,12 +13,12 @@ import { SetupModule, FlamelinkContext } from '@flamelink/sdk-app-types'
 
 const users: SetupModule = async (context: FlamelinkContext) => {
   if (context.dbType === 'rtdb') {
-    const fn: any = await import('@flamelink/sdk-users/dist/rtdb')
-    return fn(context)
+    const getApiForRTDB: any = await import('@flamelink/sdk-users/dist/rtdb')
+    return getApiForRTDB(context)
   }
 
-  const fn: any = await import('@flamelink/sdk-users/dist/cf')
-  return fn(context)
+  const getApiForCF: any = await import('@flamelink/sdk-users/dist/cf')
+  return getApiForCF(context)
 }
 
 export default flamelink._registerModule('users', users)

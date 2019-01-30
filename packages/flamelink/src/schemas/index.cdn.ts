@@ -13,12 +13,12 @@ import { SetupModule, FlamelinkContext } from '@flamelink/sdk-app-types'
 
 const schemas: SetupModule = async (context: FlamelinkContext) => {
   if (context.dbType === 'rtdb') {
-    const fn: any = await import('@flamelink/sdk-schemas/dist/rtdb')
-    return fn(context)
+    const getApiForRTDB: any = await import('@flamelink/sdk-schemas/dist/rtdb')
+    return getApiForRTDB(context)
   }
 
-  const fn: any = await import('@flamelink/sdk-schemas/dist/cf')
-  return fn(context)
+  const getApiForCF: any = await import('@flamelink/sdk-schemas/dist/cf')
+  return getApiForCF(context)
 }
 
 export default flamelink._registerModule('schemas', schemas)

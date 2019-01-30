@@ -4,12 +4,12 @@ import '@flamelink/sdk-schemas'
 
 const content: SetupModule = async function(context) {
   if (context.dbType === 'rtdb') {
-    const fn: any = await import('./rtdb')
-    return fn(context)
+    const getApiForRTDB: any = await import('./rtdb')
+    return getApiForRTDB(context)
   }
 
-  const fn: any = await import('./cf')
-  return fn(context)
+  const getApiForCF: any = await import('./cf')
+  return getApiForCF(context)
 }
 
 export default flamelink._registerModule('content', content)
