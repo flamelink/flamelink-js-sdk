@@ -1,0 +1,125 @@
+executors:
+  node:
+    parameters:
+      image:
+        type: string
+        default: '10'
+    docker:
+      - image: circleci/node:<< parameters.image >>
+
+aliases:
+  restore_cache: &restore_cache
+    restore_cache:
+      name: Restore node_modules cache
+      keys:
+        - yarn-cache-{{ checksum "yarn.lock" }}
+
+  persist_cache: &persist_cache
+    save_cache:
+      name: Save node_modules cache
+      key: yarn-cache-{{ checksum "yarn.lock" }}
+      paths:
+        - ~/.cache
+
+  install_node_modules: &install_node_modules
+    run:
+      name: Install node modules
+      command: yarn --frozen-lockfile
+
+  # attach_to_bootstrap: &attach_to_bootstrap
+  #   attach_workspace:
+  #     at: packages
+
+  ignore_master: &ignore_master
+    filters:
+      branches:
+        ignore:
+          - master
+
+  ignore_docs: &ignore_docs
+    filters:
+      branches:
+        ignore:
+          - /docs.+/
+          - /blog.+/
+
+  test_template: &test_template
+    steps:
+      - checkout
+      - run: ./scripts/assert-changed-files.sh "packages/*|.circleci/*"
+      - <<: *restore_cache
+      - <<: *install_node_modules
+      - <<: *persist_cache
+      # - <<: *attach_to_bootstrap
+      - run: yarn test
+
+version: 2.1
+
+jobs:
+  bootstrap:
+    executor: node
+    steps:
+      - checkout
+      - run: ./scripts/assert-changed-files.sh "packages/*|.circleci/*"
+      - <<: *restore_cache
+      - <<: *install_node_modules
+      - <<: *persist_cache
+      - run: yarn bootstrap && yarn build
+      - persist_to_workspace:
+          root: packages
+          paths:
+            - '*'
+
+  lint:
+    executor: node
+    steps:
+      - checkout
+      - <<: *restore_cache
+      - <<: *install_node_modules
+      - <<: *persist_cache
+      - run: yarn lint:ci
+
+  unit_tests_node6:
+    executor:
+      name: node
+      image: '6'
+    <<: *test_template
+
+  unit_tests_node8:
+    executor:
+      name: node
+      image: '8'
+    <<: *test_template
+
+  unit_tests_node10:
+    executor: node
+    <<: *test_template
+
+  unit_tests_node_current:
+    executor:
+      name: node
+      image: '11'
+    <<: *test_template
+
+workflows:
+  version: 2
+  build-test:
+    jobs:
+      - bootstrap
+      - lint
+      - unit_tests_node6:
+          <<: *ignore_docs
+          requires:
+            - bootstrap
+      - unit_tests_node8:
+          <<: *ignore_docs
+          requires:
+            - bootstrap
+      - unit_tests_node10:
+          <<: *ignore_docs
+          requires:
+            - bootstrap
+      - unit_tests_node_current:
+          <<: *ignore_docs
+          requires:
+            - bootstrap

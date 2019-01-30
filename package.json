@@ -20,6 +20,7 @@
     "real-time"
   ],
   "engines": {
+    "yarn": "^1.2.1",
     "node": ">=8.0.0"
   },
   "repository": {
@@ -74,6 +75,7 @@
     "build": "lerna run build",
     "test": "lerna exec yarn run test",
     "publish": "lerna run build && lerna publish",
-    "lint": "tslint -p tsconfig.json -c tslint.json && prettier --write 'packages/**/*.ts'"
+    "lint:ci": "tslint -p tsconfig.json -c tslint.json && prettier 'packages/**/*.ts'",
+    "lint": "tslint --fix -p tsconfig.json -c tslint.json && prettier --write 'packages/**/*.ts'"
   }
 }
