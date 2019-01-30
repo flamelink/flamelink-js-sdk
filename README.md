@@ -1,7 +1,7 @@
 # Flamelink JavaScript SDK
 
 [![lerna](https://img.shields.io/badge/maintained%20with-lerna-cc00ff.svg)](https://lernajs.io/)
-[![CircleCI](https://circleci.com/gh/jperasmus/flamelink-js-sdk/tree/master.svg?style=svg)](https://circleci.com/gh/jperasmus/flamelink-js-sdk/tree/master)
+[![CircleCI](https://circleci.com/gh/jperasmus/flamelink-js-sdk.svg?style=svg&circle-token=dd64f26e069cdd05f52cf304304e0d97ee967b07)](https://circleci.com/gh/jperasmus/flamelink-js-sdk)
 
 ![logo](https://raw.githubusercontent.com/flamelink/flamelink/master/docs/_assets/icon.svg?sanitize=true)
 
