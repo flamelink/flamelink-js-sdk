@@ -5,9 +5,14 @@ const pkgs = glob.sync(`./packages/*`).map(p => p.replace(/^\./, `<rootDir>`))
 
 module.exports = {
   notify: !process.env.CI,
-  verbose: false,
-  coverageReporters: [`json-summary`, `text`, `html`, `cobertura`],
-  collectCoverageFrom: ['**/*.{js,ts}', '!**/node_modules/**', '!**/dist/**'],
+  verbose: true,
+  // coverageReporters: [`json-summary`, `text`, `html`, `cobertura`],
+  collectCoverageFrom: [
+    '**/*.{js,ts}',
+    '!**/node_modules/**',
+    '!**/dist/**',
+    '!**/index.cdn.ts'
+  ],
   roots: pkgs.filter(p => !p.endsWith('-types')).map(p => `${p}/src`),
   transform: {
     '^.+\\.tsx?$': 'ts-jest'
