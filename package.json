@@ -73,7 +73,7 @@
     "create-package": "lerna create",
     "dev": "lerna run dev",
     "build": "lerna run build",
-    "test": "lerna exec yarn run test",
+    "test": "lerna exec --ignore '@flamelink/sdk-*-types' yarn run test",
     "publish": "lerna run build && lerna publish",
     "lint:ci": "tslint -p tsconfig.json -c tslint.json && prettier 'packages/**/*.ts'",
     "lint": "tslint --fix -p tsconfig.json -c tslint.json && prettier --write 'packages/**/*.ts'"
