@@ -1,12 +1,13 @@
 # Flamelink JavaScript SDK
 
+[![lerna](https://img.shields.io/badge/maintained%20with-lerna-cc00ff.svg)](https://lernajs.io/)
+[![CircleCI](https://circleci.com/gh/jperasmus/flamelink-js-sdk/tree/master.svg?style=svg)](https://circleci.com/gh/jperasmus/flamelink-js-sdk/tree/master)
+
 ![logo](https://raw.githubusercontent.com/flamelink/flamelink/master/docs/_assets/icon.svg?sanitize=true)
 
 > Easily integrate with your Flamelink CMS.
 
-[![lerna](https://img.shields.io/badge/maintained%20with-lerna-cc00ff.svg)](https://lernajs.io/)
-
-_THIS PACKAGE IS IN BETA - Please report any issues!_
+_THIS PACKAGE IS UNDER DEVELOPMENT AND NOT READY TO BE USED_
 
 This SDK is intended to be used in a browser or in a Node.js environment.
 

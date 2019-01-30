@@ -3,12 +3,12 @@ import { SetupModule } from '@flamelink/sdk-app-types'
 
 const navigation: SetupModule = async function(context) {
   if (context.dbType === 'rtdb') {
-    const fn: any = await import('./rtdb')
-    return fn(context)
+    const getApiForRTDB: any = await import('./rtdb')
+    return getApiForRTDB(context)
   }
 
-  const fn: any = await import('./cf')
-  return fn(context)
+  const getApiForCF: any = await import('./cf')
+  return getApiForCF(context)
 }
 
 export default flamelink._registerModule('nav', navigation) // TODO: Check if module can be aliased to "navigation" as well
