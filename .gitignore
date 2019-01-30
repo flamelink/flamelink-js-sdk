@@ -42,6 +42,7 @@ typings/
 
 # Whitelist dot files
 !.gitignore
+!.circleci
 !.prettierrc
 !.vscode
 !.github
