@@ -69,7 +69,7 @@
     "cacheDir": ".changelog"
   },
   "scripts": {
-    "bootstrap": "lerna bootstrap",
+    "bootstrap": "lerna bootstrap && lerna link",
     "changelog": "lerna-changelog",
     "create-package": "lerna create",
     "dev": "lerna run dev",
