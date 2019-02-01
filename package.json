@@ -36,6 +36,7 @@
   "devDependencies": {
     "@types/jest": "^23.3.13",
     "brotli": "^1.3.2",
+    "docsify-cli": "^4.3.0",
     "glob": "^7.1.3",
     "husky": "^1.3.1",
     "jest": "^23.6.0",
@@ -78,6 +79,7 @@
     "test:coverage": "jest --coverage",
     "publish": "lerna run build && lerna publish",
     "lint:ci": "tslint -p tsconfig.json -c tslint.json && prettier 'packages/**/*.ts'",
-    "lint": "tslint --fix -p tsconfig.json -c tslint.json && prettier --write 'packages/**/*.ts'"
+    "lint": "tslint --fix -p tsconfig.json -c tslint.json && prettier --write 'packages/**/*.ts'",
+    "serve-docs": "docsify serve ./docs -o true -p 4000"
   }
 }
