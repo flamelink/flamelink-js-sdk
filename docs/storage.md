@@ -64,7 +64,7 @@ app.storage
 ### Input parameters
 
 | Type                              | Variable   | Required | Description                                       |
-| --------------------------------- | ---------- | -------- | ------------------------------------------------- |
+|-----------------------------------|------------|----------|---------------------------------------------------|
 | File / Blob / Uint8Array / String | `fileData` | required | The file content to upload to the storage bucket. |
 | Object                            | `options`  | optional | Additional options                                |
 
@@ -257,7 +257,7 @@ app.storage
 This method only takes a single optional argument.
 
 | Type   | Variable  | Required | Description                         |
-| ------ | --------- | -------- | ----------------------------------- |
+|--------|-----------|----------|-------------------------------------|
 | Object | `options` | optional | Order, filter and structure options |
 
 #### Available Options
@@ -305,7 +305,7 @@ app.storage
 This method only takes a single optional argument. Used without any parameters will return all your files.
 
 | Type   | Variable  | Required | Description                         |
-| ------ | --------- | -------- | ----------------------------------- |
+|--------|-----------|----------|-------------------------------------|
 | Object | `options` | optional | Order, filter and structure options |
 
 #### Available Options
@@ -379,7 +379,7 @@ app.storage
 This method has one required parameter, which is the file ID and also an optional `options` argument.
 
 | Type   | Variable  | Required | Description                                          |
-| ------ | --------- | -------- | ---------------------------------------------------- |
+|--------|-----------|----------|------------------------------------------------------|
 | String | `fileId`  | required | The file ID you want to retrieve the file object for |
 | Object | `options` | optional | Optional options                                     |
 
@@ -428,7 +428,7 @@ app.storage
 This method has one required parameter, which is the file ID and also an optional `options` argument.
 
 | Type   | Variable  | Required | Description                                  |
-| ------ | --------- | -------- | -------------------------------------------- |
+|--------|-----------|----------|----------------------------------------------|
 | String | `fileId`  | required | The file ID you want to retrieve the URL for |
 | Object | `options` | optional | Optional options                             |
 
@@ -495,7 +495,7 @@ app.storage
 This method takes only one required parameter, the `fileId` for the file you want to delete.
 
 | Type   | Variable | Required | Description                                 |
-| ------ | -------- | -------- | ------------------------------------------- |
+|--------|----------|----------|---------------------------------------------|
 | String | `fileId` | required | The file ID for the file you want to delete |
 
 #### Available Options
@@ -529,7 +529,7 @@ app.storage
 This method takes only one required parameter, the `fileId` for the file you want to retrieve the metadata.
 
 | Type   | Variable | Required | Description                                                |
-| ------ | -------- | -------- | ---------------------------------------------------------- |
+|--------|----------|----------|------------------------------------------------------------|
 | String | `fileId` | required | The file ID for the file you want to retrieve the metadata |
 
 #### Available Options
@@ -565,7 +565,7 @@ app.storage
 This method takes two required parameters:
 
 | Type   | Variable  | Required | Description                                              |
-| ------ | --------- | -------- | -------------------------------------------------------- |
+|--------|-----------|----------|----------------------------------------------------------|
 | String | `fileId`  | required | The file ID for the file you want to update the metadata |
 | Object | `payload` | required | The metadata properties you want to update               |
 
@@ -604,7 +604,7 @@ app.storage.ref('gs://your-storage-bucket/flamelink/image.jpg')
 The `.ref()` method takes a two parameters
 
 | Type   | Variable                 | Required | Description                                                                                          |
-| ------ | ------------------------ | -------- | ---------------------------------------------------------------------------------------------------- |
+|--------|--------------------------|----------|------------------------------------------------------------------------------------------------------|
 | String | `filename` or `filepath` | required | Either the filename for which you want to retrieve a reference or a full URL to your storage bucket. |
 | Object | `options`                | optional | Optional options. Currently only applies if you pass through a `filename` and not a `filepath`.      |
 
@@ -632,6 +632,6 @@ A `Promise` that resolves to the reference `{Object}` on success or will reject 
 
 ---
 
-Next up: [Environments](/environments)
+Next up: [Settings](/settings)
 
 > 🔥🔥🔥 **Grab a Fire Extinguisher. Your coding abilities are a Raging Inferno.** 🔥🔥🔥
