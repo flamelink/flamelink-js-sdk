@@ -37,3 +37,8 @@ export interface FlamelinkContext extends FlamelinkConfig {
 }
 
 export type SetupModule = (context: FlamelinkContext) => any
+
+export interface RegisteredModule {
+  moduleName: ModuleName
+  setupModule: SetupModule
+}

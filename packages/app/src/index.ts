@@ -5,16 +5,29 @@ import {
   FlamelinkFactoryCreator,
   FlamelinkConfig,
   FlamelinkPublicApi,
-  SetupModule
+  SetupModule,
+  RegisteredModule
 } from '@flamelink/sdk-app-types'
 
+const PUBLIC_MODULES: ModuleName[] = [
+  'content',
+  'schemas',
+  'storage',
+  'nav',
+  'settings',
+  'users'
+]
+
 const getModule = (moduleName: ModuleName, context: FlamelinkContext) => {
-  return context.modules[moduleName] || context.proxySupported
+  if (context.modules[moduleName]) {
+    return context.modules[moduleName]
+  }
+
+  return context.proxySupported
     ? new Proxy(
         {},
         {
           get(obj, prop) {
-            console.log('proxy', obj, prop)
             return () =>
               console.error(
                 `Oh no! Looks like you have not imported the "${moduleName}" module.`
@@ -26,39 +39,47 @@ const getModule = (moduleName: ModuleName, context: FlamelinkContext) => {
 }
 
 export const createFlamelinkFactory: FlamelinkFactoryCreator = () => {
-  const context: FlamelinkContext = {
-    firebaseApp: null,
-    env: 'production',
-    locale: 'en-US',
-    dbType: 'rtdb',
-    modules: {},
-    proxySupported: typeof Proxy !== 'undefined'
+  const registeredModules: RegisteredModule[] = []
+
+  const initRegisteredModules = (context: FlamelinkContext): void => {
+    registeredModules.forEach(({ moduleName, setupModule }) => {
+      if (context.modules[moduleName]) {
+        return console.warn(
+          `[FLAMELINK]: Duplicate imports for the "${moduleName}" module`
+        )
+      }
+
+      Object.defineProperty(context.modules, moduleName, {
+        value: setupModule(context),
+        writable: false
+      })
+    })
   }
 
   function flamelink(config: FlamelinkConfig): FlamelinkPublicApi {
-    // Config checks
-    console.log(context)
-
-    const api: FlamelinkPublicApi = {
-      get content() {
-        return getModule('content', context)
-      },
-      get schemas() {
-        return getModule('schemas', context)
-      },
-      get storage() {
-        return getModule('storage', context)
-      },
-      get nav() {
-        return getModule('nav', context)
-      },
-      get settings() {
-        return getModule('settings', context)
-      },
-      get users() {
-        return getModule('users', context)
-      }
+    const context: FlamelinkContext = {
+      firebaseApp: null,
+      env: 'production',
+      locale: 'en-US',
+      dbType: 'rtdb',
+      modules: {},
+      proxySupported: typeof Proxy !== 'undefined'
     }
+
+    Object.assign(context, config)
+
+    initRegisteredModules(context)
+
+    const api: FlamelinkPublicApi = PUBLIC_MODULES.reduce(
+      (acc: any, moduleName) => {
+        return Object.assign(acc, {
+          get [moduleName]() {
+            return getModule(moduleName, context)
+          }
+        })
+      },
+      {}
+    )
 
     return api
   }
@@ -67,13 +88,9 @@ export const createFlamelinkFactory: FlamelinkFactoryCreator = () => {
     moduleName: ModuleName,
     setupModule: SetupModule
   ) => {
-    if (context.modules[moduleName]) {
-      throw new Error('Module already registered') // Create error util with user friendly error message
-    }
-
-    Object.defineProperty(context.modules, moduleName, {
-      value: setupModule(context),
-      writable: false
+    registeredModules.push({
+      moduleName,
+      setupModule
     })
   }
 
