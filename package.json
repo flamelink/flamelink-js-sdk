@@ -73,7 +73,7 @@
     "bootstrap": "lerna bootstrap && lerna link",
     "changelog": "lerna-changelog",
     "create-package": "lerna create",
-    "dev": "lerna run dev",
+    "dev": "lerna exec --parallel --ignore '@flamelink/sdk-*-types' yarn run dev",
     "build": "lerna run build",
     "test": "lerna exec --ignore '@flamelink/sdk-*-types' yarn run test",
     "test:coverage": "jest --coverage",
