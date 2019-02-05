@@ -1,15 +1,19 @@
 import flamelink from '@flamelink/sdk-app'
 import { SetupModule } from '@flamelink/sdk-app-types'
+import { getDefaultImport } from '@flamelink/sdk-utils'
 import '@flamelink/sdk-schemas'
 
-const content: SetupModule = async function(context) {
-  if (context.dbType === 'rtdb') {
-    const getApiForRTDB: any = await import('./rtdb')
-    return getApiForRTDB(context)
-  }
+const content: SetupModule = function(context) {
+  switch (context.dbType) {
+    case 'rtdb':
+      return getDefaultImport(require('./rtdb'))(context)
 
-  const getApiForCF: any = await import('./cf')
-  return getApiForCF(context)
+    case 'cf':
+      return getDefaultImport(require('./cf'))(context)
+
+    default:
+      throw new Error('[FLAMELINK] No valid database type was provided')
+  }
 }
 
-export default flamelink._registerModule('content', content)
+flamelink._registerModule('content', content)

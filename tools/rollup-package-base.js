@@ -46,6 +46,7 @@ export default function getRollupConfig(pkg = pkgIsRequired()) {
       plugins,
       external
     },
+    // CDN imports
     {
       input: 'src/rtdb/index.ts',
       output: { file: 'dist/rtdb/index.js', format: 'esm' },
@@ -55,6 +56,32 @@ export default function getRollupConfig(pkg = pkgIsRequired()) {
     {
       input: 'src/cf/index.ts',
       output: { file: 'dist/cf/index.js', format: 'esm' },
+      plugins,
+      external
+    },
+    // CJS imports
+    {
+      input: 'src/rtdb/index.ts',
+      output: { file: 'dist/cjs/rtdb/index.js', format: 'cjs' },
+      plugins,
+      external
+    },
+    {
+      input: 'src/cf/index.ts',
+      output: { file: 'dist/cjs/cf/index.js', format: 'cjs' },
+      plugins,
+      external
+    },
+    // ESM imports
+    {
+      input: 'src/rtdb/index.ts',
+      output: { file: 'dist/esm/rtdb/index.js', format: 'esm' },
+      plugins,
+      external
+    },
+    {
+      input: 'src/cf/index.ts',
+      output: { file: 'dist/esm/cf/index.js', format: 'esm' },
       plugins,
       external
     }

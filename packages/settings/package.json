@@ -22,6 +22,7 @@
     "dist"
   ],
   "dependencies": {
+    "@flamelink/sdk-utils": "^0.0.1",
     "@flamelink/sdk-app-types": "^0.0.1",
     "@flamelink/sdk-app": "^0.0.1",
     "@flamelink/sdk-settings-types": "^0.0.1"
