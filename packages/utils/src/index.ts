@@ -6,4 +6,4 @@
  * @returns The module's default import
  */
 export const getDefaultImport = (mod: any) =>
-  mod && typeof mod === 'object' && 'default' in mod ? mod['default'] : mod
+  mod && typeof mod === 'object' && 'default' in mod ? mod.default : mod
