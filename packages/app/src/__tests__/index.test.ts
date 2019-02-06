@@ -1,7 +1,10 @@
 'use strict'
 
-import app from '../'
+import flamelink from '../'
 
-test('should export a factory function to create a new flamelink app instance', () => {
-  expect(typeof app).toBe('function')
+describe('App Module', () => {
+  test('should throw an error if not initialized with a Firebase app instance', () => {
+    expect(() => flamelink({ firebaseApp: null })).toThrowError()
+    expect(() => flamelink({ firebaseApp: {} })).not.toThrowError()
+  })
 })

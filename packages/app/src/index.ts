@@ -9,7 +9,7 @@ import {
   RegisteredModule
 } from '@flamelink/sdk-app-types'
 import { logWarning } from '@flamelink/sdk-utils'
-import { getModule } from './helpers'
+import { getModule, ensureValidContext, isAdminApp } from './helpers'
 import {
   PUBLIC_MODULES,
   DEFAULT_ENVIRONMENT,
@@ -40,8 +40,11 @@ const createFlamelinkFactory: FlamelinkFactoryCreator = () => {
       locale: config.locale || DEFAULT_LOCALE,
       dbType: config.dbType || DEFAULT_DB_TYPE,
       modules: {},
-      proxySupported: typeof Proxy !== 'undefined'
+      proxySupported: typeof Proxy !== 'undefined',
+      usesAdminApp: isAdminApp(config.firebaseApp)
     }
+
+    ensureValidContext(context)
 
     initRegisteredModules(context)
 
