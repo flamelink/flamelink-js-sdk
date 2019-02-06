@@ -26,9 +26,9 @@ aliases:
       name: Install node modules
       command: yarn --frozen-lockfile
 
-  # attach_to_bootstrap: &attach_to_bootstrap
-  #   attach_workspace:
-  #     at: packages
+  attach_to_bootstrap: &attach_to_bootstrap
+    attach_workspace:
+      at: packages
 
   ignore_master: &ignore_master
     filters:
@@ -50,7 +50,7 @@ aliases:
       - <<: *restore_cache
       - <<: *install_node_modules
       - <<: *persist_cache
-      # - <<: *attach_to_bootstrap
+      - <<: *attach_to_bootstrap
       - run: yarn test:ci
 
 version: 2.1
