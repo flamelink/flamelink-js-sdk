@@ -51,7 +51,7 @@ aliases:
       - <<: *install_node_modules
       - <<: *persist_cache
       # - <<: *attach_to_bootstrap
-      - run: yarn test:coverage
+      - run: yarn test:ci
 
 version: 2.1
 
