@@ -76,7 +76,7 @@
     "dev": "lerna exec --parallel --ignore '@flamelink/sdk-*-types' yarn run dev",
     "build": "lerna run build",
     "test": "lerna exec --ignore '@flamelink/sdk-*-types' yarn run test",
-    "test:ci": "jest",
+    "test:ci": "jest --coverage",
     "test:watch": "jest --watch",
     "publish": "lerna run build && lerna publish",
     "lint:ci": "tslint -p tsconfig.json -c tslint.json && prettier 'packages/**/*.ts'",
