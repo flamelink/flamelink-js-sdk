@@ -7,6 +7,7 @@ describe('App Helpers', () => {
       const contentModule = helpers.getModule('content', {
         modules: {},
         proxySupported: true,
+        usesAdminApp: true,
         firebaseApp: null
       })
       contentModule.get()
