@@ -39,7 +39,7 @@ app.nav
 ### Input parameters
 
 | Type   | Variable       | Required | Description                                                               |
-| ------ | -------------- | -------- | ------------------------------------------------------------------------- |
+|--------|----------------|----------|---------------------------------------------------------------------------|
 | String | `navReference` | optional | The navigation entry you want to retrieve (don't specify to retrieve all) |
 | Object | `options`      | optional | Additional options                                                        |
 
@@ -113,7 +113,7 @@ app.nav
 
 ```javascript
 app.nav
-  .getItems('main-menu', { fields: ['items'] })
+  .get('main-menu', { fields: ['items'] })
   .then(items => console.log('Menu items:', items))
   .catch(error =>
     console.error(
@@ -126,7 +126,7 @@ app.nav
 ### Input parameters
 
 | Type   | Variable       | Required | Description                                         |
-| ------ | -------------- | -------- | --------------------------------------------------- |
+|--------|----------------|----------|-----------------------------------------------------|
 | String | `navReference` | required | The navigation entry reference you want to retrieve |
 | Object | `options`      | optional | Additional options                                  |
 
@@ -206,7 +206,7 @@ app.nav.subscribe('main-menu', { event: 'child_changed' }, function(
 Parameters should be passed in the order of the following table. If an optional parameter, like the `options` are left out, the following parameter just moves left in its place.
 
 | Type     | Variable       | Required | Description                                                              |
-| -------- | -------------- | -------- | ------------------------------------------------------------------------ |
+|----------|----------------|----------|--------------------------------------------------------------------------|
 | String   | `navReference` | optional | The navigation entry/menu reference you want to retrieve (otherwise all) |
 | Object   | `options`      | optional | Additional options                                                       |
 | Function | `callback`     | required | Function called once when subscribed and when subscribed data changes    |
@@ -275,7 +275,7 @@ app.nav.unsubscribe('main-menu', 'child_changed')
 All parameters are optional and calling this method without options will unsubscribe from all callbacks.
 
 | Type   | Variable       | Required | Description                                                    |
-| ------ | -------------- | -------- | -------------------------------------------------------------- |
+|--------|----------------|----------|----------------------------------------------------------------|
 | String | `navReference` | required | The navigation entry reference you want to unsubscribe from    |
 | String | `event`        | optional | The child event to unsubscribe from (see allowed child events) |
 
@@ -303,7 +303,7 @@ app.nav
 ### Input parameters
 
 | Type   | Variable       | Required | Description                                          |
-| ------ | -------------- | -------- | ---------------------------------------------------- |
+|--------|----------------|----------|------------------------------------------------------|
 | String | `navReference` | required | The navigation entry you want to set                 |
 | Object | `payload`      | required | Payload object to set at the given entry's reference |
 
@@ -331,7 +331,7 @@ app.nav
 ### Input parameters
 
 | Type   | Variable       | Required | Description                                             |
-| ------ | -------------- | -------- | ------------------------------------------------------- |
+|--------|----------------|----------|---------------------------------------------------------|
 | String | `navReference` | required | The navigation entry you want to update                 |
 | Object | `updates`      | required | Payload object to update at the given entry's reference |
 
@@ -357,7 +357,7 @@ app.nav
 ### Input parameters
 
 | Type   | Variable       | Required | Description                             |
-| ------ | -------------- | -------- | --------------------------------------- |
+|--------|----------------|----------|-----------------------------------------|
 | String | `navReference` | required | The navigation entry you want to remove |
 
 ### Return value
@@ -390,7 +390,7 @@ app.nav.transaction(
 ### Input parameters
 
 | Type     | Variable       | Required | Description                                                           |
-| -------- | -------------- | -------- | --------------------------------------------------------------------- |
+|----------|----------------|----------|-----------------------------------------------------------------------|
 | String   | `navReference` | required | The navigation entry you want to update                               |
 | Function | `updateFn`     | required | The update function that will be called with the existing entry state |
 | Function | `callback`     | optional | The callback function that will be called when transaction finishes   |

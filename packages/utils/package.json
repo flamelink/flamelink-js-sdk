@@ -1,7 +1,7 @@
 {
-  "name": "@flamelink/sdk-storage",
+  "name": "@flamelink/sdk-utils",
   "version": "0.0.1",
-  "description": "Storage module for Flamelink JavaScript SDK",
+  "description": "Internal utils for Flamelink JavaScript SDK",
   "keywords": [
     "flamelink",
     "sdk",
@@ -21,12 +21,7 @@
   "files": [
     "dist"
   ],
-  "dependencies": {
-    "@flamelink/sdk-utils": "^0.0.1",
-    "@flamelink/sdk-app-types": "^0.0.1",
-    "@flamelink/sdk-app": "^0.0.1",
-    "@flamelink/sdk-storage-types": "^0.0.1"
-  },
+  "dependencies": {},
   "scripts": {
     "prebuild": "rimraf dist",
     "build": "rollup -c",

@@ -13,10 +13,10 @@ Importing the whole Flamelink SDK is fine for development or quick prototyping,
 but it is highly recommended that you only import the individual modules used
 by your application when you use this SDK in production.
 
-Instead of doing this:
+Instead of importing everything:
 const flamelink = require('flamelink')
 
-Do this instead:
+Only import the app and specific modules you use:
 const flamelink = require('flamelink/app')
 require('flamelink/<module>')
 
