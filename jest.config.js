@@ -13,6 +13,13 @@ module.exports = {
     '!**/dist/**',
     '!**/index.cdn.ts'
   ],
+  globals: {
+    'ts-jest': {
+      diagnostics: {
+        warnOnly: true
+      }
+    }
+  },
   roots: pkgs.filter(p => !p.endsWith('-types')).map(p => `${p}/src`),
   transform: {
     '^.+\\.tsx?$': 'ts-jest'
