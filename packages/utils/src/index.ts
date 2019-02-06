@@ -7,3 +7,11 @@
  */
 export const getDefaultImport = (mod: any) =>
   mod && typeof mod === 'object' && 'default' in mod ? mod.default : mod
+
+export function logError(str: string) {
+  console.error(`[FLAMELINK] ${str}`)
+}
+
+export function logWarning(str: string) {
+  console.warn(`[FLAMELINK] ${str}`)
+}
