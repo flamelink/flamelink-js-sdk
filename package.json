@@ -70,12 +70,13 @@
     "cacheDir": ".changelog"
   },
   "scripts": {
-    "bootstrap": "lerna bootstrap && lerna link && yarn link",
+    "bootstrap": "lerna bootstrap && lerna link",
     "changelog": "lerna-changelog",
     "create-package": "lerna create",
     "dev": "lerna exec --parallel --ignore '@flamelink/sdk-*-types' yarn run dev",
     "build": "lerna run build",
     "test": "lerna exec --ignore '@flamelink/sdk-*-types' yarn run test",
+    "pretest:ci": "yarn run build",
     "test:ci": "jest",
     "test:watch": "jest --watch",
     "publish": "lerna run build && lerna publish",
