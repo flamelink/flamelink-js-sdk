@@ -1,21 +1,26 @@
 import { FlamelinkSettingsFactory } from '@flamelink/sdk-settings-types'
 
 const factory: FlamelinkSettingsFactory = context => {
-  console.log('settings from cf', context)
-
   return {
-    setEnvironment: (env: string) => {
+    setEnvironment: async env => {
       context.env = env
       return env
     },
-    getEnvironment: (): string => context.env,
-    setLocale: (locale: string) => {
+
+    getEnvironment: async () => context.env,
+
+    setLocale: async locale => {
+      // TODO: Consider checking for supported locales - if we want - don't want to make API request
       context.locale = locale
       return locale
     },
-    getLocale: (): string => context.locale,
+
+    getLocale: async () => context.locale,
+
     getGlobals: () => {},
+
     getImageSizes: () => {},
+
     getDefaultPermissionsGroup: () => {}
   }
 }

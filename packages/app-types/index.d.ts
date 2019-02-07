@@ -34,6 +34,7 @@ export interface FlamelinkFactoryCreator {
 export interface FlamelinkContext extends FlamelinkConfig {
   modules: any
   proxySupported: boolean
+  usesAdminApp: boolean
 }
 
 export type SetupModule = (context: FlamelinkContext) => any

@@ -70,13 +70,14 @@
     "cacheDir": ".changelog"
   },
   "scripts": {
-    "bootstrap": "lerna bootstrap && lerna link",
+    "bootstrap": "lerna bootstrap",
     "changelog": "lerna-changelog",
     "create-package": "lerna create",
     "dev": "lerna exec --parallel --ignore '@flamelink/sdk-*-types' yarn run dev",
     "build": "lerna run build",
     "test": "lerna exec --ignore '@flamelink/sdk-*-types' yarn run test",
-    "test:coverage": "jest --coverage",
+    "test:ci": "jest --coverage",
+    "test:watch": "jest --watch",
     "publish": "lerna run build && lerna publish",
     "lint:ci": "tslint -p tsconfig.json -c tslint.json && prettier 'packages/**/*.ts'",
     "lint": "tslint --fix -p tsconfig.json -c tslint.json && prettier --write 'packages/**/*.ts'",

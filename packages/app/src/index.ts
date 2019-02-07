@@ -8,45 +8,22 @@ import {
   SetupModule,
   RegisteredModule
 } from '@flamelink/sdk-app-types'
+import { logWarning } from '@flamelink/sdk-utils'
+import { getModule, ensureValidContext, isAdminApp } from './helpers'
+import {
+  PUBLIC_MODULES,
+  DEFAULT_ENVIRONMENT,
+  DEFAULT_LOCALE,
+  DEFAULT_DB_TYPE
+} from './constants'
 
-const PUBLIC_MODULES: ModuleName[] = [
-  'content',
-  'schemas',
-  'storage',
-  'nav',
-  'settings',
-  'users'
-]
-
-const getModule = (moduleName: ModuleName, context: FlamelinkContext) => {
-  if (context.modules[moduleName]) {
-    return context.modules[moduleName]
-  }
-
-  return context.proxySupported
-    ? new Proxy(
-        {},
-        {
-          get(obj, prop) {
-            return () =>
-              console.error(
-                `Oh no! Looks like you have not imported the "${moduleName}" module.`
-              )
-          }
-        }
-      )
-    : null
-}
-
-export const createFlamelinkFactory: FlamelinkFactoryCreator = () => {
+const createFlamelinkFactory: FlamelinkFactoryCreator = () => {
   const registeredModules: RegisteredModule[] = []
 
   const initRegisteredModules = (context: FlamelinkContext): void => {
     registeredModules.forEach(({ moduleName, setupModule }) => {
       if (context.modules[moduleName]) {
-        return console.warn(
-          `[FLAMELINK]: Duplicate imports for the "${moduleName}" module`
-        )
+        return logWarning(`Duplicate imports for the "${moduleName}" module`)
       }
 
       Object.defineProperty(context.modules, moduleName, {
@@ -58,15 +35,16 @@ export const createFlamelinkFactory: FlamelinkFactoryCreator = () => {
 
   function flamelink(config: FlamelinkConfig): FlamelinkPublicApi {
     const context: FlamelinkContext = {
-      firebaseApp: null,
-      env: 'production',
-      locale: 'en-US',
-      dbType: 'rtdb',
+      firebaseApp: config.firebaseApp,
+      env: config.env || DEFAULT_ENVIRONMENT,
+      locale: config.locale || DEFAULT_LOCALE,
+      dbType: config.dbType || DEFAULT_DB_TYPE,
       modules: {},
-      proxySupported: typeof Proxy !== 'undefined'
+      proxySupported: typeof Proxy !== 'undefined',
+      usesAdminApp: isAdminApp(config.firebaseApp)
     }
 
-    Object.assign(context, config)
+    ensureValidContext(context)
 
     initRegisteredModules(context)
 

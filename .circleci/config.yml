@@ -3,7 +3,7 @@ executors:
     parameters:
       image:
         type: string
-        default: '10'
+        default: 'latest'
     docker:
       - image: circleci/node:<< parameters.image >>
 
@@ -26,9 +26,9 @@ aliases:
       name: Install node modules
       command: yarn --frozen-lockfile
 
-  # attach_to_bootstrap: &attach_to_bootstrap
-  #   attach_workspace:
-  #     at: packages
+  attach_to_bootstrap: &attach_to_bootstrap
+    attach_workspace:
+      at: packages
 
   ignore_master: &ignore_master
     filters:
@@ -50,8 +50,8 @@ aliases:
       - <<: *restore_cache
       - <<: *install_node_modules
       - <<: *persist_cache
-      # - <<: *attach_to_bootstrap
-      - run: yarn test:coverage
+      - <<: *attach_to_bootstrap
+      - run: yarn test:ci
 
 version: 2.1
 
@@ -79,12 +79,6 @@ jobs:
       - <<: *persist_cache
       - run: yarn lint:ci
 
-  # unit_tests_node6:
-  #   executor:
-  #     name: node
-  #     image: '6'
-  #   <<: *test_template
-
   unit_tests_node8:
     executor:
       name: node
@@ -92,13 +86,13 @@ jobs:
     <<: *test_template
 
   unit_tests_node10:
-    executor: node
-    <<: *test_template
-
-  unit_tests_node_current:
     executor:
       name: node
-      image: '11'
+      image: '10'
+    <<: *test_template
+
+  unit_tests_node_latest:
+    executor: node
     <<: *test_template
 
 workflows:
@@ -107,10 +101,6 @@ workflows:
     jobs:
       - bootstrap
       - lint
-      # - unit_tests_node6:
-      #     <<: *ignore_docs
-      #     requires:
-      #       - bootstrap
       - unit_tests_node8:
           <<: *ignore_docs
           requires:
@@ -119,7 +109,7 @@ workflows:
           <<: *ignore_docs
           requires:
             - bootstrap
-      - unit_tests_node_current:
+      - unit_tests_node_latest:
           <<: *ignore_docs
           requires:
             - bootstrap
