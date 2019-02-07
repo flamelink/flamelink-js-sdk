@@ -1,6 +1,7 @@
 // TODO: Move the necessary types to the `@flamelink/sdk-app-types/private.d.ts` file
 import {
   ModuleName,
+  FirebaseService,
   FlamelinkContext,
   FlamelinkFactoryCreator,
   FlamelinkConfig,
@@ -8,7 +9,7 @@ import {
   SetupModule,
   RegisteredModule
 } from '@flamelink/sdk-app-types'
-import { logWarning } from '@flamelink/sdk-utils'
+import { logWarning, logError } from '@flamelink/sdk-utils'
 import { getModule, ensureValidContext, isAdminApp } from './helpers'
 import {
   PUBLIC_MODULES,
@@ -40,6 +41,7 @@ const createFlamelinkFactory: FlamelinkFactoryCreator = () => {
       locale: config.locale || DEFAULT_LOCALE,
       dbType: config.dbType || DEFAULT_DB_TYPE,
       modules: {},
+      services: {},
       proxySupported: typeof Proxy !== 'undefined',
       usesAdminApp: isAdminApp(config.firebaseApp)
     }
@@ -70,6 +72,26 @@ const createFlamelinkFactory: FlamelinkFactoryCreator = () => {
       moduleName,
       setupModule
     })
+  }
+
+  flamelink._ensureService = (
+    serviceName: FirebaseService,
+    context: FlamelinkContext
+  ) => {
+    if (context.services[serviceName]) {
+      return context.services[serviceName]
+    }
+
+    try {
+      context.services[serviceName] = context.firebaseApp[serviceName]()
+    } catch (error) {
+      logError(
+        `The "${serviceName}" Firebase service could not be instantiated. Please ensure you have imported the package for this service.`
+      )
+      throw error
+    }
+
+    return context.services[serviceName]
   }
 
   return flamelink

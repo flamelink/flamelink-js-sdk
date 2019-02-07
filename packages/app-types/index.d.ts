@@ -6,6 +6,8 @@ export type ModuleName =
   | 'users'
   | 'storage'
 
+export type FirebaseService = 'auth' | 'database' | 'firestore' | 'storage'
+
 export interface FlamelinkConfig {
   firebaseApp: any
   env?: string
@@ -25,6 +27,7 @@ export interface FlamelinkPublicApi {
 export interface FlamelinkFactory {
   (config: FlamelinkConfig): FlamelinkPublicApi
   _registerModule(moduleName: ModuleName, setupModule: SetupModule): void
+  _ensureService(serviceName: FirebaseService, context: FlamelinkContext): any
 }
 
 export interface FlamelinkFactoryCreator {
@@ -33,6 +36,7 @@ export interface FlamelinkFactoryCreator {
 
 export interface FlamelinkContext extends FlamelinkConfig {
   modules: any
+  services: any
   proxySupported: boolean
   usesAdminApp: boolean
 }
