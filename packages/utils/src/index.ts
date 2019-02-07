@@ -15,3 +15,10 @@ export function logError(str: string) {
 export function logWarning(str: string) {
   console.warn(`[FLAMELINK] ${str}`)
 }
+
+export class FlamelinkError extends Error {
+  constructor(message: string, public code?: string) {
+    super(`[FLAMELINK]: ${message}`)
+    this.name = 'FlamelinkError'
+  }
+}
