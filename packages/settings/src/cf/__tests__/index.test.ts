@@ -4,6 +4,7 @@ const baseContext = {
   env: 'production',
   locale: 'en-US',
   modules: {},
+  services: {},
   proxySupported: false,
   usesAdminApp: false,
   firebaseApp: {}

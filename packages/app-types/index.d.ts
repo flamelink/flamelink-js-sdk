@@ -47,3 +47,31 @@ export interface RegisteredModule {
   moduleName: ModuleName
   setupModule: SetupModule
 }
+
+export interface OrderByOptionsForRTDB {
+  orderByChild?: string
+  orderByValue?: boolean
+  orderByKey?: boolean
+}
+
+export interface FilterOptionsForRTDB {
+  limitToFirst?: number
+  limitToLast?: number
+  startAt?: string | number
+  endAt?: string | number
+  equalTo?: string | number
+  [x: string]: any
+}
+
+export interface OptionsForRTDB
+  extends OrderByOptionsForRTDB,
+    FilterOptionsForRTDB {
+  needsWrap?: boolean
+  event?: string
+  fields?: string[]
+}
+
+export interface SnapshotForRTDB {
+  val(): any
+  [x: string]: any
+}

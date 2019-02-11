@@ -1,7 +1,10 @@
-import { FlamelinkSettingsFactory } from '@flamelink/sdk-settings-types'
+import {
+  FlamelinkSettingsFactory,
+  SettingsPublicApi
+} from '@flamelink/sdk-settings-types'
 
 const factory: FlamelinkSettingsFactory = context => {
-  return {
+  const api: SettingsPublicApi = {
     setEnvironment: async env => {
       context.env = env
       return env
@@ -17,12 +20,14 @@ const factory: FlamelinkSettingsFactory = context => {
 
     getLocale: async () => context.locale,
 
-    getGlobals: () => {},
+    getGlobals: async () => {},
 
-    getImageSizes: () => {},
+    getImageSizes: async () => {},
 
-    getDefaultPermissionsGroup: () => {}
+    getDefaultPermissionsGroup: async () => {}
   }
+
+  return api
 }
 
 export default factory
