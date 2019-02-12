@@ -6,6 +6,8 @@ export type ModuleName =
   | 'users'
   | 'storage'
 
+export type FirebaseService = 'auth' | 'database' | 'firestore' | 'storage'
+
 export interface FlamelinkConfig {
   firebaseApp: any
   env?: string
@@ -25,6 +27,7 @@ export interface FlamelinkPublicApi {
 export interface FlamelinkFactory {
   (config: FlamelinkConfig): FlamelinkPublicApi
   _registerModule(moduleName: ModuleName, setupModule: SetupModule): void
+  _ensureService(serviceName: FirebaseService, context: FlamelinkContext): any
 }
 
 export interface FlamelinkFactoryCreator {
@@ -33,6 +36,7 @@ export interface FlamelinkFactoryCreator {
 
 export interface FlamelinkContext extends FlamelinkConfig {
   modules: any
+  services: any
   proxySupported: boolean
   usesAdminApp: boolean
 }
@@ -42,4 +46,70 @@ export type SetupModule = (context: FlamelinkContext) => any
 export interface RegisteredModule {
   moduleName: ModuleName
   setupModule: SetupModule
+}
+
+export interface OrderByOptionsForRTDB {
+  orderByChild?: string
+  orderByValue?: boolean
+  orderByKey?: boolean
+}
+
+export interface FilterOptionsForRTDB {
+  limitToFirst?: number
+  limitToLast?: number
+  startAt?: string | number
+  endAt?: string | number
+  equalTo?: string | number
+  [x: string]: any
+}
+
+export interface OptionsForRTDB
+  extends OrderByOptionsForRTDB,
+    FilterOptionsForRTDB {
+  needsWrap?: boolean
+  event?: string
+  fields?: string[]
+}
+
+export interface SnapshotForRTDB {
+  val(): any
+  [x: string]: any
+}
+
+export interface OrderByFieldForCF {
+  field: string
+  order?: string
+}
+
+export interface OrderByOptionsForCF {
+  orderBy?: string | string[] | OrderByFieldForCF | OrderByFieldForCF[]
+}
+
+export type FilterClauseForCF = [string, string, any]
+
+export interface FilterOptionsForCF {
+  filters?: FilterClauseForCF[]
+}
+
+type StringOrNumber = string | number
+
+export interface LimitOptionsForCF {
+  startAt?: StringOrNumber | StringOrNumber[]
+  startAfter?: StringOrNumber | StringOrNumber[]
+  endAt?: StringOrNumber | StringOrNumber[]
+  endBefore?: StringOrNumber | StringOrNumber[]
+  limit?: number
+  [x: string]: any
+}
+
+export interface OptionsForCF extends OrderByOptionsForCF, FilterOptionsForCF {
+  document?: string
+  changeType?: string
+  fields?: string[]
+  [x: string]: any
+}
+
+export interface SnapshotForCF {
+  val(): any
+  [x: string]: any
 }

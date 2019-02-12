@@ -1,9 +1,11 @@
 import getAPI from '../index'
+import imageSizesFixture from '../../../../../fixtures/image-sizes'
 
 const baseContext = {
   env: 'production',
   locale: 'en-US',
   modules: {},
+  services: {},
   proxySupported: false,
   usesAdminApp: false,
   firebaseApp: {}
@@ -15,7 +17,6 @@ describe('- RTDB', () => {
     test('should resolve with the given locale if called with a supported locale', () => {
       expect.assertions(1)
       const testLocale = 'af-ZA'
-
       return expect(
         getAPI({ ...baseContext }).setLocale(testLocale)
       ).resolves.toBe(testLocale)
@@ -33,11 +34,9 @@ describe('- RTDB', () => {
 
     test('should resolve with the previously explicitly set locale', async () => {
       expect.assertions(1)
-
       const testLocale = 'af-ZA'
       const api = getAPI({ ...baseContext })
       await api.setLocale(testLocale)
-
       return expect(api.getLocale()).resolves.toBe(testLocale)
     })
   })
@@ -46,7 +45,6 @@ describe('- RTDB', () => {
     test('should resolve with the given environment if called with a supported environment', () => {
       expect.assertions(1)
       const testEnvironment = 'staging'
-
       return expect(
         getAPI({ ...baseContext }).setEnvironment(testEnvironment)
       ).resolves.toBe(testEnvironment)
@@ -64,12 +62,15 @@ describe('- RTDB', () => {
 
     test('should resolve with the previously explicitly set environment', async () => {
       expect.assertions(1)
-
       const testEnvironment = 'staging'
       const api = getAPI({ ...baseContext })
       await api.setEnvironment(testEnvironment)
-
       return expect(api.getEnvironment()).resolves.toBe(testEnvironment)
     })
+  })
+
+  test.skip('should expose a "getImageSizes" method', () => {
+    const api = getAPI({ ...baseContext })
+    return expect(api.getImageSizes()).resolves.toEqual(imageSizesFixture())
   })
 })
