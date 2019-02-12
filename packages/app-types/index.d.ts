@@ -75,3 +75,41 @@ export interface SnapshotForRTDB {
   val(): any
   [x: string]: any
 }
+
+export interface OrderByFieldForCF {
+  field: string
+  order?: string
+}
+
+export interface OrderByOptionsForCF {
+  orderBy?: string | string[] | OrderByFieldForCF | OrderByFieldForCF[]
+}
+
+export type FilterClauseForCF = [string, string, any]
+
+export interface FilterOptionsForCF {
+  filters?: FilterClauseForCF[]
+}
+
+type StringOrNumber = string | number
+
+export interface LimitOptionsForCF {
+  startAt?: StringOrNumber | StringOrNumber[]
+  startAfter?: StringOrNumber | StringOrNumber[]
+  endAt?: StringOrNumber | StringOrNumber[]
+  endBefore?: StringOrNumber | StringOrNumber[]
+  limit?: number
+  [x: string]: any
+}
+
+export interface OptionsForCF extends OrderByOptionsForCF, FilterOptionsForCF {
+  document?: string
+  changeType?: string
+  fields?: string[]
+  [x: string]: any
+}
+
+export interface SnapshotForCF {
+  val(): any
+  [x: string]: any
+}

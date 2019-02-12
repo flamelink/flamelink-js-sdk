@@ -8,7 +8,12 @@ import isPlainObject from 'lodash/isPlainObject'
 import pick from 'lodash/fp/pick'
 import {
   OrderByOptionsForRTDB,
-  FilterOptionsForRTDB
+  FilterOptionsForRTDB,
+  OrderByOptionsForCF,
+  FilterOptionsForCF,
+  LimitOptionsForCF,
+  OptionsForCF,
+  OptionsForRTDB
 } from '@flamelink/sdk-app-types'
 
 /**
@@ -88,6 +93,11 @@ export const applyFiltersForRTDB = (
   }, ref)
 }
 
+export const applyOptionsForRTDB = (ref: any, options: OptionsForRTDB) => {
+  const ordered = applyOrderByForRTDB(ref, options)
+  return applyFiltersForRTDB(ordered, options)
+}
+
 export const applyOrderByForCF = (ref: any, options: any): any => {
   if (!keys(options).length) {
     return ref
@@ -103,9 +113,12 @@ export const applyOrderByForCF = (ref: any, options: any): any => {
     }
 
     if (Array.isArray(options.orderBy)) {
-      return options.orderBy.reduce((orderedRef: any, option: any) => {
-        return applyOrderByForCF(orderedRef, { orderBy: option })
-      }, ref)
+      return options.orderBy.reduce(
+        (orderedRef: any, option: OrderByOptionsForCF) => {
+          return applyOrderByForCF(orderedRef, { orderBy: option })
+        },
+        ref
+      )
     }
 
     logWarning('Ignored invalid "orderBy" parameters supplied.')
@@ -114,13 +127,16 @@ export const applyOrderByForCF = (ref: any, options: any): any => {
   return ref
 }
 
-export const applyFiltersForCF = (ref: any, options: any): any => {
+export const applyFiltersForCF = (
+  ref: any,
+  options: FilterOptionsForCF
+): any => {
   if (!keys(options).length) {
     return ref
   }
 
   if (Array.isArray(options.filters)) {
-    return options.filters.reduce((filteredRef: any, clause: any) => {
+    return options.filters.reduce((filteredRef: any, clause) => {
       if (Array.isArray(clause)) {
         return filteredRef.where(...clause)
       }
@@ -140,7 +156,10 @@ export const applyFiltersForCF = (ref: any, options: any): any => {
 
 const CF_QUERY_CURSORS = ['startAt', 'startAfter', 'endAt', 'endBefore']
 
-export const applyLimitAndOffsetsForCF = (ref: any, options: any) => {
+export const applyLimitAndOffsetsForCF = (
+  ref: any,
+  options: LimitOptionsForCF
+) => {
   if (!keys(options).length) {
     return ref
   }
@@ -191,7 +210,7 @@ export const pluckResultFields = curry(
   }
 )
 
-export const applyOptionsForCF = (ref: any, options: any) => {
+export const applyOptionsForCF = (ref: any, options: OptionsForCF) => {
   const filtered = applyFiltersForCF(ref, options)
   const ordered = applyOrderByForCF(filtered, options)
   return applyLimitAndOffsetsForCF(ordered, options)

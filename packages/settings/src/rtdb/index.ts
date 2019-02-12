@@ -4,27 +4,23 @@ import {
   SettingsPublicApi,
   UnsubscribeMethod
 } from '@flamelink/sdk-settings-types'
-import {
-  applyFiltersForRTDB,
-  applyOrderByForRTDB,
-  pluckResultFields
-} from '@flamelink/sdk-utils'
+import { applyOptionsForRTDB, pluckResultFields } from '@flamelink/sdk-utils'
 import { getSettingsRefPath } from './helpers'
 
 const factory: FlamelinkSettingsFactory = context => {
   const api: SettingsPublicApi = {
-    ref(ref) {
+    ref: ref => {
       const dbService = flamelink._ensureService('database', context)
       return dbService.ref(getSettingsRefPath(ref))
     },
 
-    getRaw({ settingsKey, ...options }) {
-      const ordered = applyOrderByForRTDB(api.ref(settingsKey), options)
-      const filtered = applyFiltersForRTDB(ordered, options)
-      return filtered.once(options.event || 'value')
+    getRaw: ({ settingsKey, ...options }) => {
+      return applyOptionsForRTDB(api.ref(settingsKey), options).once(
+        options.event || 'value'
+      )
     },
 
-    async get({ settingsKey, ...options }) {
+    get: async ({ settingsKey, ...options }) => {
       const pluckFields = pluckResultFields(options.fields)
       const snapshot = await api.getRaw({ settingsKey, ...options })
       const value =
@@ -63,17 +59,16 @@ const factory: FlamelinkSettingsFactory = context => {
       }),
 
     subscribeRaw: ({ settingsKey, callback, ...options }) => {
-      const ordered = applyOrderByForRTDB(api.ref(settingsKey), options)
-      const filtered = applyFiltersForRTDB(ordered, options)
+      const filteredRef = applyOptionsForRTDB(api.ref(settingsKey), options)
 
-      filtered.on(
+      filteredRef.on(
         options.event || 'value',
         (snapshot: any) => callback(null, snapshot),
         (err: Error) => callback(err, null)
       )
 
       const unsubscribe: UnsubscribeMethod = () =>
-        filtered.off(options.event || 'value')
+        filteredRef.off(options.event || 'value')
       return unsubscribe
     },
 
