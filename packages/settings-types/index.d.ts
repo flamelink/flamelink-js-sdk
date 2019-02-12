@@ -23,7 +23,7 @@ export interface SettingsPublicApi {
    * @param {String} ref
    * @returns {Object} Ref object
    */
-  ref?(settingsKey?: string): any
+  ref?(referenceKey: string): any
 
   /**
    * @description Get snapshot for given settings reference
@@ -97,6 +97,20 @@ export interface SettingsPublicApi {
    * @returns {Function} Function that can be used to unsubscribe the subscription
    */
   subscribeGlobals(args: SubscribeArgs): UnsubscribeMethod
+
+  /**
+   * @description Establish stream to read value consistently from db, returning the processed value
+   * @param {Function} callback
+   * @returns {Function} Function that can be used to unsubscribe the subscription
+   */
+  subscribeImageSizes(args: SubscribeArgs): UnsubscribeMethod
+
+  /**
+   * @description Establish stream to read value consistently from db, returning the processed value
+   * @param {Function} callback
+   * @returns {Function} Function that can be used to unsubscribe the subscription
+   */
+  subscribeDefaultPermissionsGroup(args: SubscribeArgs): UnsubscribeMethod
 
   /**
    * Returns the set image sizes for the flamelink app

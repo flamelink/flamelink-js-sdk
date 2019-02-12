@@ -5,11 +5,11 @@ import {
   UnsubscribeMethod
 } from '@flamelink/sdk-settings-types'
 import {
-  getSettingsRefPath,
-  applyOrderBy,
-  applyFilters,
+  applyFiltersForRTDB,
+  applyOrderByForRTDB,
   pluckResultFields
-} from './helpers'
+} from '@flamelink/sdk-utils'
+import { getSettingsRefPath } from './helpers'
 
 const factory: FlamelinkSettingsFactory = context => {
   const api: SettingsPublicApi = {
@@ -19,8 +19,8 @@ const factory: FlamelinkSettingsFactory = context => {
     },
 
     getRaw({ settingsKey, ...options }) {
-      const ordered = applyOrderBy(api.ref(settingsKey), options)
-      const filtered = applyFilters(ordered, options)
+      const ordered = applyOrderByForRTDB(api.ref(settingsKey), options)
+      const filtered = applyFiltersForRTDB(ordered, options)
       return filtered.once(options.event || 'value')
     },
 
@@ -53,9 +53,18 @@ const factory: FlamelinkSettingsFactory = context => {
     getGlobals: async (options = {}) =>
       api.get({ ...options, needsWrap: true, settingsKey: 'globals' }),
 
+    getImageSizes: async (options = {}) =>
+      api.get({ ...options, settingsKey: 'general/imageSizes' }),
+
+    getDefaultPermissionsGroup: async (options = {}) =>
+      api.get({
+        ...options,
+        settingsKey: 'general/defaultPermissionsGroup'
+      }),
+
     subscribeRaw: ({ settingsKey, callback, ...options }) => {
-      const ordered = applyOrderBy(api.ref(settingsKey), options)
-      const filtered = applyFilters(ordered, options)
+      const ordered = applyOrderByForRTDB(api.ref(settingsKey), options)
+      const filtered = applyFiltersForRTDB(ordered, options)
 
       filtered.on(
         options.event || 'value',
@@ -96,11 +105,11 @@ const factory: FlamelinkSettingsFactory = context => {
     subscribeGlobals: options =>
       api.subscribe({ ...options, settingsKey: 'globals' }),
 
-    getImageSizes: async (options = {}) =>
-      api.get({ ...options, settingsKey: 'general/imageSizes' }),
+    subscribeImageSizes: options =>
+      api.subscribe({ ...options, settingsKey: 'general/imageSizes' }),
 
-    getDefaultPermissionsGroup: async (options = {}) =>
-      api.get({
+    subscribeDefaultPermissionsGroup: options =>
+      api.subscribe({
         ...options,
         settingsKey: 'general/defaultPermissionsGroup'
       })
