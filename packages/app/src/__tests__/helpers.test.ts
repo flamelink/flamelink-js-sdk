@@ -6,6 +6,7 @@ describe('App Helpers', () => {
       jest.spyOn(console, 'error')
       const contentModule = helpers.getModule('content', {
         modules: {},
+        services: {},
         proxySupported: true,
         usesAdminApp: true,
         firebaseApp: null
