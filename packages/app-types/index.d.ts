@@ -48,6 +48,10 @@ export interface RegisteredModule {
   setupModule: SetupModule
 }
 
+export type UnsubscribeMethod = () => any
+
+export type SubscriptionCallback = (error: Error | null, data: any) => any
+
 export interface OrderByOptionsForRTDB {
   orderByChild?: string
   orderByValue?: boolean

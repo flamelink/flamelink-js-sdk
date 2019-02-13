@@ -1,8 +1,8 @@
 import flamelink from '@flamelink/sdk-app'
+import { UnsubscribeMethod } from '@flamelink/sdk-app-types'
 import {
   FlamelinkSettingsFactory,
-  SettingsPublicApi,
-  UnsubscribeMethod
+  SettingsPublicApi
 } from '@flamelink/sdk-settings-types'
 import { applyOptionsForRTDB, pluckResultFields } from '@flamelink/sdk-utils'
 import { getSettingsRefPath } from './helpers'

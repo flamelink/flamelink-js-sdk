@@ -1,14 +1,11 @@
 import {
   FlamelinkContext,
   OptionsForRTDB,
-  SnapshotForRTDB,
   OptionsForCF,
-  SnapshotForCF
+  SnapshotForCF,
+  SubscriptionCallback,
+  UnsubscribeMethod
 } from '@flamelink/sdk-app-types'
-
-export type UnsubscribeMethod = () => any
-
-export type SubscriptionCallback = (error: Error | null, data: any) => any
 
 interface GetArgsForRTDB extends OptionsForRTDB {
   settingsKey?: string
@@ -28,7 +25,7 @@ interface SubscribeArgsForCF extends OptionsForCF {
 export interface SettingsPublicApi {
   ref?(referenceKey: string): any
 
-  getRaw?(args: GetArgsForRTDB | GetArgsForCF): Promise<SnapshotForRTDB>
+  getRaw?(args: GetArgsForRTDB | GetArgsForCF): Promise<any>
 
   get?(args: GetArgsForRTDB | GetArgsForCF): Promise<any>
 
