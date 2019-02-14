@@ -10,7 +10,7 @@ export const filterFilesByFolderId = curry(
     return reduce(
       files,
       (result, val, key) => {
-        if (val.folderId === folderId) {
+        if (String(val.folderId) === String(folderId)) {
           return Object.assign(result, { [key]: val })
         }
         return result

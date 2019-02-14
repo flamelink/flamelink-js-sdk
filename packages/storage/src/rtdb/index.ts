@@ -33,7 +33,11 @@ import { DEFAULT_REQUIRED_IMAGE_SIZE } from '../constants'
 
 const factory: FlamelinkStorageFactory = context => {
   const api: StoragePublicApi = {
-    _getFolderId: async ({ folderName = '', fallback = 'Root' }) => {
+    _getFolderId: async ({ folderName = '' }) => {
+      if (!folderName) {
+        return null
+      }
+
       const dbService = flamelink._ensureService('database', context)
       const foldersSnapshot = await dbService
         .ref(getFolderRefPath())
@@ -42,25 +46,23 @@ const factory: FlamelinkStorageFactory = context => {
       const folder = find(folders, { name: folderName }) as FolderObject
 
       if (!folder) {
-        const fallbackFolder = find(folders, { name: fallback }) as FolderObject
-        return get(fallbackFolder, 'id')
+        return folder
       }
 
       return folder.id
     },
 
     _getFolderIdFromOptions: async (
-      { folderId, folderName, folderFallback } = {
+      { folderId, folderName } = {
         folderId: '',
-        folderName: '',
-        folderFallback: ''
+        folderName: ''
       }
     ) => {
       if (folderId) {
         return folderId
       }
 
-      return api._getFolderId({ folderName, fallback: folderFallback })
+      return api._getFolderId({ folderName })
     },
 
     _setFile: (filePayload: FileObject) => {
