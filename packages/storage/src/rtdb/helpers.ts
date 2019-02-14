@@ -1,12 +1,16 @@
 import curry from 'lodash/curry'
 import reduce from 'lodash/reduce'
+import { ImageSize, FileObject } from '@flamelink/sdk-storage-types'
 
 /**
  * @description Return the reference path for the given file in the Cloud Storage Bucket
  * @param {String} filename
  * @param {Object} options
  */
-export const getStorageRefPath = (filename: string, { width, path } = {}) => {
+export const getStorageRefPath = (
+  filename: string,
+  { width, path }: ImageSize = {}
+) => {
   if (path) {
     return `/flamelink/media/sized/${path}/${filename}`
   }
@@ -34,19 +38,21 @@ export const getFolderRefPath = (folderID?: string) =>
 export const getMediaRefPath = (mediaRef?: string) =>
   `/flamelink/media/${mediaRef || ''}`
 
-export const filterByFolderId = curry((folderId, files) => {
-  if (!folderId) {
-    return files
-  }
+export const filterByFolderId = curry(
+  (folderId?: string | number, files?: FileObject[]) => {
+    if (!folderId) {
+      return files
+    }
 
-  return reduce(
-    files,
-    (result, val, key) => {
-      if (val.folderId === folderId) {
-        return Object.assign(result, { [key]: val })
-      }
-      return result
-    },
-    {}
-  )
-})
+    return reduce(
+      files,
+      (result, val, key) => {
+        if (val.folderId === folderId) {
+          return Object.assign(result, { [key]: val })
+        }
+        return result
+      },
+      {}
+    )
+  }
+)

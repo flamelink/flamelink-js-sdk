@@ -11,7 +11,9 @@ import {
   FlamelinkStorageFactory,
   StoragePublicApi,
   GetFilesArgsForRTDB,
-  ImageSize
+  ImageSize,
+  FolderObject,
+  FileObject
 } from '@flamelink/sdk-storage-types'
 import {
   applyOptionsForRTDB,
@@ -31,41 +33,29 @@ import { DEFAULT_REQUIRED_IMAGE_SIZE } from '../constants'
 
 const factory: FlamelinkStorageFactory = context => {
   const api: StoragePublicApi = {
-    /**
-     * @description Get the folder ID for a given folder name using an optional fallback folder name
-     * @param {string} [folderName='']
-     * @param {string} [fallback='Root']
-     * @returns {string} folderId
-     * @private
-     */
     _getFolderId: async ({ folderName = '', fallback = 'Root' }) => {
       const dbService = flamelink._ensureService('database', context)
       const foldersSnapshot = await dbService
         .ref(getFolderRefPath())
         .once('value')
       const folders = foldersSnapshot.val()
-      const folder = find(folders, { name: folderName })
+      const folder = find(folders, { name: folderName }) as FolderObject
 
       if (!folder) {
-        const fallbackFolder = find(folders, { name: fallback }) || {}
-        return fallbackFolder.id
+        const fallbackFolder = find(folders, { name: fallback }) as FolderObject
+        return get(fallbackFolder, 'id')
       }
 
       return folder.id
     },
 
-    /**
-     * @description Get the folder ID for a given options object. If the ID is given it is simply returned, otherwise it
-     * try and deduce it from a given folder name or falling back to the ID for the "Root" directory
-     * @param {any} [options={}]
-     * @returns {promise} Resolves to the folder ID
-     * @private
-     */
-    _getFolderIdFromOptions: async ({
-      folderId,
-      folderName,
-      folderFallback
-    } = {}) => {
+    _getFolderIdFromOptions: async (
+      { folderId, folderName, folderFallback } = {
+        folderId: '',
+        folderName: '',
+        folderFallback: ''
+      }
+    ) => {
       if (folderId) {
         return folderId
       }
@@ -73,14 +63,7 @@ const factory: FlamelinkStorageFactory = context => {
       return api._getFolderId({ folderName, fallback: folderFallback })
     },
 
-    /**
-     * @description Writes the file meta to the Firebase real-time db. Not intended as a public method.
-     * Used internally by the `upload` method.
-     * @param {object} [filePayload={}]
-     * @returns {promise}
-     * @private
-     */
-    _setFile: filePayload => {
+    _setFile: (filePayload: FileObject) => {
       const payload = Object.assign({}, filePayload, {
         __meta__: {
           createdBy: get(context, 'services.auth.currentUser.uid', 'UNKNOWN'),
@@ -91,18 +74,13 @@ const factory: FlamelinkStorageFactory = context => {
       return api.fileRef(filePayload.id).set(payload)
     },
 
-    /**
-     * @description Resizes a given file to the size provided in the options config. Not for public use.
-     * User internally by the `upload` method.
-     * @param {File} file
-     * @param {string} filename
-     * @param {object} options
-     * @returns {promise}
-     * @private
-     */
-    _createSizedImage: async (file, filename, options = {}) => {
+    _createSizedImage: async (
+      fileData: any,
+      filename: string,
+      options: ImageSize = {}
+    ) => {
       if (options && (options.path || options.width || options.maxWidth)) {
-        const resizedImage = await resizeImage(file, options)
+        const resizedImage = await resizeImage(fileData, options)
         return api
           .ref(filename, {
             path: options.path,
@@ -138,7 +116,9 @@ const factory: FlamelinkStorageFactory = context => {
       }
 
       return context.usesAdminApp
-        ? storageService.bucket().file(getStorageRefPath(filename, options))
+        ? storageService
+            .bucket()
+            .file(getStorageRefPath(filename, options as ImageSize))
         : storageService.ref(getStorageRefPath(filename, options))
     },
 
@@ -511,13 +491,13 @@ const factory: FlamelinkStorageFactory = context => {
       }
 
       const id = Date.now().toString()
-      const metadata = get(options, 'metadata', {})
+      const metadata = get(options, 'metadata', {} as any)
       const filename =
         (typeof fileData === 'object' && fileData.name) ||
         typeof metadata.name === 'string'
           ? `${id}_${metadata.name || fileData.name}`
           : id
-      const storageRef = api.ref(filename, options)
+      const storageRef = api.ref(filename, options as ImageSize)
       const updateMethod = typeof fileData === 'string' ? 'putString' : 'put'
       const args = [fileData]
 
@@ -544,7 +524,7 @@ const factory: FlamelinkStorageFactory = context => {
       const mediaType = /^image\//.test(get(snapshot, 'metadata.contentType'))
         ? 'images'
         : 'files'
-      const filePayload = {
+      const filePayload: FileObject = {
         id,
         file: get(snapshot, 'metadata.name', ''),
         folderId,
@@ -560,13 +540,11 @@ const factory: FlamelinkStorageFactory = context => {
       ) {
         filePayload.sizes = options.sizes.map(size => {
           const { width, height, quality } = size
-          if (
-            typeof width !== 'undefined' &&
-            typeof height !== 'undefined' &&
-            typeof quality !== 'undefined'
-          ) {
+          if (width && height && quality) {
             return Object.assign({}, size, {
-              path: `${width}_${height}_${Math.round(quality * 100)}`
+              path: `${width}_${height}_${Math.round(
+                parseFloat(quality.toString()) * 100
+              )}`
             })
           }
           return size

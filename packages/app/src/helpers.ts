@@ -63,7 +63,9 @@ export const isNodeEnvironment = (): boolean => {
     // Only Node.JS has a process variable that is of [[Class]] process
     isNode =
       Object.prototype.toString.call(global.process) === '[object process]'
-  } catch (e) {}
+  } catch (e) {
+    // noop
+  }
 
   return isNode
 }

@@ -47,13 +47,22 @@ interface GetURLArgsForRTDB extends OptionsForRTDB {
 }
 
 export interface FileObject {
-  id: number
-  folderId: number
+  id: string
+  folderId: StringOrNumber
   file: string
   type: string
   contentType: string
   __meta__?: any
   sizes?: any[]
+}
+
+export interface FolderObject {
+  id: StringOrNumber
+  name: string
+  order: number
+  parentId: StringOrNumber
+  uuid?: StringOrNumber
+  __meta__?: any
 }
 
 interface SubscribeArgsForRTDB extends OptionsForRTDB {
@@ -107,7 +116,7 @@ export interface StoragePublicApi {
    * @param {String} filename
    * @returns {Object} Ref object
    */
-  ref(filename: string, options?: { width?: string; path?: string }): any
+  ref(filename: string, options?: ImageSize): any
 
   /**
    * @description Establish and return a reference to a folder in the real-time db
