@@ -39,6 +39,7 @@ export interface FlamelinkContext extends FlamelinkConfig {
   services: any
   proxySupported: boolean
   usesAdminApp: boolean
+  isNodeEnvironment?: boolean
 }
 
 export type SetupModule = (context: FlamelinkContext) => any

@@ -51,3 +51,19 @@ export const isAdminApp = (firebaseApp: any): boolean => {
     !get(firebaseApp, 'options.apiKey')
   )
 }
+
+/**
+ * @description Determine if the SDK is running on a Node.js environment or in a browser
+ * @returns {Boolean} True if the running in Node.js environment
+ */
+export const isNodeEnvironment = (): boolean => {
+  let isNode = false
+
+  try {
+    // Only Node.JS has a process variable that is of [[Class]] process
+    isNode =
+      Object.prototype.toString.call(global.process) === '[object process]'
+  } catch (e) {}
+
+  return isNode
+}
