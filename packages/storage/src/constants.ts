@@ -1,0 +1,1 @@
+export const DEFAULT_REQUIRED_IMAGE_SIZE = 240

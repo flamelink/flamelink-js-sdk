@@ -210,6 +210,52 @@ export const pluckResultFields = curry(
   }
 )
 
+interface StructureOptions {
+  idProperty?: string
+  parentProperty?: string
+}
+
+export const formatStructure = curry(
+  (structure: string, options: StructureOptions, items: any): any[] => {
+    const { idProperty = 'id', parentProperty = 'parentId' } = options || {}
+
+    const formattedItems: any[] = isArray(items)
+      ? items
+      : keys(items).map(key => items[key])
+
+    if (!isArray(formattedItems)) {
+      throw new FlamelinkError(
+        '"formatStructure" should be called with an array of items'
+      )
+    }
+
+    if (structure === 'nested' || structure === 'tree') {
+      const mapChildren = (levelItems: any[], previousId = 0): any[] =>
+        levelItems
+          .map(item =>
+            Object.assign({}, item, {
+              children: formattedItems.filter(
+                innerItem => innerItem[parentProperty] === item[idProperty]
+              )
+            })
+          )
+          .filter(item => item[parentProperty] === previousId)
+          .map(item => {
+            if (item.children.length === 0) {
+              return item
+            }
+            return Object.assign({}, item, {
+              children: mapChildren(item.children, item[idProperty])
+            })
+          })
+
+      return mapChildren(formattedItems, 0)
+    }
+
+    return formattedItems
+  }
+)
+
 export const applyOptionsForCF = (ref: any, options: OptionsForCF) => {
   const filtered = applyFiltersForCF(ref, options)
   const ordered = applyOrderByForCF(filtered, options)
