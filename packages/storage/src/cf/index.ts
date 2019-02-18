@@ -6,44 +6,43 @@ import get from 'lodash/get'
 import set from 'lodash/set'
 import resizeImage from 'browser-image-resizer'
 import flamelink from '@flamelink/sdk-app'
-import { UnsubscribeMethod } from '@flamelink/sdk-app-types'
 import {
   FlamelinkStorageFactory,
   StoragePublicApi,
-  GetFilesArgsForRTDB,
+  GetFilesArgsForCF,
   ImageSize,
   FolderObject,
   FileObject
 } from '@flamelink/sdk-storage-types'
 import {
-  applyOptionsForRTDB,
+  applyOptionsForCF,
   pluckResultFields,
+  processReferencesForCF,
   formatStructure,
   FlamelinkError,
   logWarning
 } from '@flamelink/sdk-utils'
 import {
-  getStorageRefPath,
-  getFolderRefPath,
-  getFileRefPath,
-  getMediaRefPath
-} from '../rtdb/helpers'
-import { filterFilesByFolderId, getScreenResolution } from '../helpers'
+  filterFilesByFolderId,
+  getScreenResolution,
+  getStorageRefPath
+} from '../helpers'
 import { DEFAULT_REQUIRED_IMAGE_SIZE } from '../constants'
 
-const factory: FlamelinkStorageFactory = context => {
+const FILES_COLLECTION = 'fl_files'
+const FOLDERS_COLLECTION = 'fl_folders'
+
+const factory: FlamelinkStorageFactory = function(context) {
   const api: StoragePublicApi = {
-    _getFolderId: async ({ folderName = '' }) => {
+    async _getFolderId({ folderName = '' }) {
       if (!folderName) {
         return null
       }
 
-      const dbService = flamelink._ensureService('database', context)
-      const foldersSnapshot = await dbService
-        .ref(getFolderRefPath())
-        .once('value')
-      const folders = foldersSnapshot.val()
-      const folder = find(folders, { name: folderName }) as FolderObject
+      const foldersSnapshot = await api.folderRef().get()
+      const folders: FolderObject[] = []
+      foldersSnapshot.forEach((doc: any) => folders.push(doc.data()))
+      const folder = find(folders, { name: folderName })
 
       if (!folder) {
         return folder
@@ -52,12 +51,12 @@ const factory: FlamelinkStorageFactory = context => {
       return folder.id
     },
 
-    _getFolderIdFromOptions: async (
+    async _getFolderIdFromOptions(
       { folderId, folderName } = {
         folderId: '',
         folderName: ''
       }
-    ) => {
+    ) {
       if (folderId) {
         return folderId
       }
@@ -65,7 +64,7 @@ const factory: FlamelinkStorageFactory = context => {
       return api._getFolderId({ folderName })
     },
 
-    _setFile: (filePayload: FileObject) => {
+    async _setFile(filePayload: FileObject) {
       const payload = Object.assign({}, filePayload, {
         __meta__: {
           createdBy: get(context, 'services.auth.currentUser.uid', 'UNKNOWN'),
@@ -76,11 +75,11 @@ const factory: FlamelinkStorageFactory = context => {
       return api.fileRef(filePayload.id).set(payload)
     },
 
-    _createSizedImage: async (
+    async _createSizedImage(
       fileData: any,
       filename: string,
       options: ImageSize = {}
-    ) => {
+    ) {
       if (options && (options.path || options.width || options.maxWidth)) {
         const resizedImage = await resizeImage(fileData, options)
         return api
@@ -95,7 +94,7 @@ const factory: FlamelinkStorageFactory = context => {
       )
     },
 
-    ref: (filename, { ...options }) => {
+    ref(filename, { ...options }) {
       if (context.isNodeEnvironment && !context.usesAdminApp) {
         throw new FlamelinkError(`
         The Firebase client-side SDK cannot access the Storage Bucket server-side.
@@ -124,129 +123,90 @@ const factory: FlamelinkStorageFactory = context => {
         : storageService.ref(getStorageRefPath(filename, options))
     },
 
-    folderRef: folderID => {
-      const dbService = flamelink._ensureService('database', context)
-      return dbService.ref(getFolderRefPath(folderID))
+    folderRef(folderId) {
+      const firestoreService = flamelink._ensureService('firestore', context)
+
+      return folderId
+        ? firestoreService.collection(FOLDERS_COLLECTION).doc(folderId)
+        : firestoreService.collection(FOLDERS_COLLECTION)
     },
 
-    fileRef: fileId => {
-      const dbService = flamelink._ensureService('database', context)
-      return dbService.ref(getFileRefPath(fileId))
+    fileRef(fileId) {
+      const firestoreService = flamelink._ensureService('firestore', context)
+
+      return fileId
+        ? firestoreService.collection(FILES_COLLECTION).doc(fileId)
+        : firestoreService.collection(FILES_COLLECTION)
     },
 
-    mediaRef: storageKey => {
-      const dbService = flamelink._ensureService('database', context)
-      return dbService.ref(getMediaRefPath(storageKey))
-    },
-
-    getRaw: async ({ storageKey, ...options }) => {
-      const filtered = applyOptionsForRTDB(api.mediaRef(storageKey), options)
-      return filtered.once(options.event || 'value')
-    },
-
-    get: async ({ storageKey, ...options }) => {
-      const pluckFields = pluckResultFields(options.fields)
-      const snapshot = await api.getRaw({ storageKey, ...options })
-      const media = snapshot.val()
-
-      if (storageKey) {
-        // Wrapping value to create the correct structure for our field plucking to work
-        const wrapValue = { [storageKey]: media }
-        return pluckFields(wrapValue)[storageKey]
-      }
-
-      return pluckFields(media)
-    },
-
-    subscribeRaw: ({ storageKey, callback, ...options }) => {
-      const filteredRef = applyOptionsForRTDB(api.mediaRef(storageKey), options)
-
-      filteredRef.on(
-        options.event || 'value',
-        (snapshot: any) => callback(null, snapshot),
-        (err: Error) => callback(err, null)
-      )
-
-      const unsubscribe: UnsubscribeMethod = () =>
-        filteredRef.off(options.event || 'value')
-      return unsubscribe
-    },
-
-    subscribe: ({ storageKey, callback, ...options }) => {
-      const pluckFields = pluckResultFields(options.fields)
-
-      return api.subscribeRaw({
-        storageKey,
-        ...options,
-        callback: async (err, snapshot) => {
-          if (err) {
-            return callback(err, null)
-          }
-
-          const value = storageKey
-            ? { [storageKey]: snapshot.val() }
-            : snapshot.val()
-          const result = await pluckFields(value)
-
-          return callback(null, storageKey ? result[storageKey] : result)
-        }
+    async getFoldersRaw({ ...options }) {
+      return applyOptionsForCF(api.folderRef(), options).get({
+        source: options.source || 'default'
       })
     },
 
-    getFoldersRaw: ({ ...options }) => {
-      return applyOptionsForRTDB(api.folderRef(), options).once(
-        options.event || 'value'
-      )
-    },
-
-    getFolders: async ({ ...options }) => {
+    async getFolders({ ...options }) {
       const pluckFields = pluckResultFields(options.fields)
       const structureItems = formatStructure(options.structure, {
         idProperty: 'id',
         parentProperty: 'parentId'
       })
+      const processRefs = processReferencesForCF(options)
       const snapshot = await api.getFoldersRaw(options)
+
+      if (snapshot.empty) {
+        return []
+      }
+
+      const folderPromises: any[] = []
+      snapshot.forEach(async (doc: any) =>
+        folderPromises.push(processRefs(doc.data()))
+      )
+
+      const folders = await Promise.all(folderPromises)
+
       return compose(
         pluckFields,
-        structureItems,
-        values
-      )(snapshot.val())
+        structureItems
+      )(folders)
     },
 
-    getFileRaw: async ({ fileId, ...options }) => {
+    async getFileRaw({ fileId, ...options }) {
       if (!fileId) {
         throw new FlamelinkError(
           '"storage.getFileRaw()" should be called with at least the file ID'
         )
       }
 
-      return applyOptionsForRTDB(api.fileRef(fileId), options).once(
-        options.event || 'value'
-      )
+      return applyOptionsForCF(api.fileRef(fileId), options).get({
+        source: options.source || 'default'
+      })
     },
 
-    getFile: async ({ fileId, ...options }) => {
+    async getFile({ fileId, ...options }) {
       if (!fileId) {
         throw new FlamelinkError(
           '"storage.getFile()" should be called with at least the file ID'
         )
       }
       const pluckFields = pluckResultFields(options.fields)
+      const processRefs = processReferencesForCF(options)
       const snapshot = await api.getFileRaw({ fileId, ...options })
-      // Wrapping value to create the correct structure for our field plucking to work
-      const wrapValue = { [fileId]: snapshot.val() }
-      const file = await pluckFields(wrapValue)
-      return file[fileId]
+
+      const docData = await pluckFields({
+        [fileId]: await processRefs(snapshot.data())
+      })
+      return docData[fileId]
     },
 
-    getFilesRaw: ({ ...options }) => {
-      return applyOptionsForRTDB(api.fileRef(), options).once(
-        options.event || 'value'
-      )
+    async getFilesRaw({ ...options }) {
+      return applyOptionsForCF(api.fileRef(), options).get({
+        source: options.source || 'default'
+      })
     },
 
-    getFiles: async ({ ...options }) => {
-      const defaultOptions: GetFilesArgsForRTDB = { folderFallback: null }
+    async getFiles({ ...options }) {
+      const defaultOptions: GetFilesArgsForCF = {}
       const opts = Object.assign(
         defaultOptions,
         options,
@@ -260,14 +220,27 @@ const factory: FlamelinkStorageFactory = context => {
       const folderId = await api._getFolderIdFromOptions(opts)
       const filterFolders = filterFilesByFolderId(folderId)
       const pluckFields = pluckResultFields(opts.fields)
+      const processRefs = processReferencesForCF(options)
       const snapshot = await api.getFilesRaw(opts)
+
+      if (snapshot.empty) {
+        return []
+      }
+
+      const filePromises: any[] = []
+      snapshot.forEach(async (doc: any) =>
+        filePromises.push(processRefs(doc.data()))
+      )
+
+      const files = await Promise.all(filePromises)
+
       return compose(
         pluckFields,
         filterFolders
-      )(snapshot.val())
+      )(files)
     },
 
-    getURL: async ({ fileId, ...options }) => {
+    async getURL({ fileId, ...options }) {
       if (!fileId) {
         throw new FlamelinkError(
           '"storage.getURL()" should be called with at least the file ID'
@@ -370,7 +343,7 @@ const factory: FlamelinkStorageFactory = context => {
       return fileRef.getDownloadURL()
     },
 
-    getMetadata: async ({ fileId, ...options }) => {
+    async getMetadata({ fileId, ...options }) {
       if (!fileId) {
         throw new FlamelinkError(
           '"storage.getMetadata()" should be called with at least the file ID'
@@ -388,7 +361,7 @@ const factory: FlamelinkStorageFactory = context => {
       return api.ref(filename).getMetadata()
     },
 
-    updateMetadata: async ({ fileId, updates }) => {
+    async updateMetadata({ fileId, updates }) {
       if (!fileId || !updates) {
         throw new FlamelinkError(
           '"storage.updateMetadata()" should be called with the "fileID" and the "updates" object'
@@ -406,7 +379,7 @@ const factory: FlamelinkStorageFactory = context => {
       return api.ref(filename).updateMetadata(updates)
     },
 
-    deleteFile: async ({ fileId, ...options }) => {
+    async deleteFile({ fileId, ...options }) {
       if (context.usesAdminApp) {
         throw new FlamelinkError(
           '"storage.deleteFile()" is not currently supported for server-side use.'
@@ -451,7 +424,7 @@ const factory: FlamelinkStorageFactory = context => {
       return api.fileRef(fileId).remove()
     },
 
-    upload: async (fileData, options = {}) => {
+    async upload(fileData, options = {}) {
       if (context.usesAdminApp) {
         throw new FlamelinkError(
           '"storage.upload()" is not currently supported for server-side use.'

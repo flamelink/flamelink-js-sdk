@@ -1,21 +1,6 @@
 import curry from 'lodash/curry'
 import reduce from 'lodash/reduce'
-import { ImageSize, FileObject } from '@flamelink/sdk-storage-types'
-
-/**
- * @description Return the reference path for the given file in the Cloud Storage Bucket
- * @param {String} filename
- * @param {Object} options
- */
-export const getStorageRefPath = (
-  filename: string,
-  { width, path }: ImageSize = {}
-) => {
-  if (path) {
-    return `/flamelink/media/sized/${path}/${filename}`
-  }
-  return `/flamelink/media/${width ? `sized/${width}/` : ''}${filename}`
-}
+import { FileObject } from '@flamelink/sdk-storage-types'
 
 /**
  * @description Return the reference path for the given file in the realtime db

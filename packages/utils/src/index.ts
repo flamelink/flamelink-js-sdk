@@ -5,7 +5,9 @@ import curry from 'lodash/curry'
 import reduce from 'lodash/reduce'
 import isArray from 'lodash/isArray'
 import isPlainObject from 'lodash/isPlainObject'
+import memoize from 'lodash/memoize'
 import pick from 'lodash/fp/pick'
+import compose from 'compose-then'
 import {
   OrderByOptionsForRTDB,
   FilterOptionsForRTDB,
@@ -13,8 +15,16 @@ import {
   FilterOptionsForCF,
   LimitOptionsForCF,
   OptionsForCF,
-  OptionsForRTDB
+  OptionsForRTDB,
+  DocumentSnapshotForCF
 } from '@flamelink/sdk-app-types'
+
+interface Memo {
+  prepPopulateFields?(args: any): any
+}
+
+// Create empty memo object to which we can write for memoization
+const memo: Memo = {}
 
 /**
  * @description This method probably doesn't have the best name, but
@@ -210,6 +220,20 @@ export const pluckResultFields = curry(
   }
 )
 
+/**
+ * @description Check if a given value is a Firebase/Firestore reference.
+ * This should only be used for field values returned from Firebase.
+ * @param value The value you want to check
+ * @returns {Boolean}
+ */
+export const isRefLike = (value: any): boolean => {
+  if (typeof value !== 'object') {
+    return false
+  }
+
+  return typeof get(value, 'get') === 'function'
+}
+
 interface StructureOptions {
   idProperty?: string
   parentProperty?: string
@@ -260,4 +284,84 @@ export const applyOptionsForCF = (ref: any, options: OptionsForCF) => {
   const filtered = applyFiltersForCF(ref, options)
   const ordered = applyOrderByForCF(filtered, options)
   return applyLimitAndOffsetsForCF(ordered, options)
+}
+
+export const processReferencesForCF = curry(
+  async (options: OptionsForCF, document: any): Promise<any> => {
+    if (!isPlainObject(document) || !get(options, 'populate')) {
+      return document
+    }
+
+    const populateAllTheThings = options.populate === true
+
+    let fieldsToPopulate: PopulateFieldOption[]
+
+    if (isArray(options.populate)) {
+      fieldsToPopulate = prepPopulateFields(options.populate)
+    } else {
+      fieldsToPopulate = prepPopulateFields(Object.keys(document))
+    }
+
+    return fieldsToPopulate.reduce(async (chain, opt) => {
+      const { field, populate } = opt
+      const val = document[field]
+
+      if (isRefLike(val)) {
+        const processRefs = processReferencesForCF({
+          populate: populateAllTheThings ? true : populate
+        })
+        const snapshot = await val.get()
+
+        if (typeof snapshot.forEach === 'function') {
+          const docs: DocumentSnapshotForCF[] = []
+          snapshot.forEach(async (doc: DocumentSnapshotForCF) =>
+            docs.push(await processRefs(doc.data()))
+          )
+          return chain.then(acc => Object.assign(acc, { [field]: docs }))
+        }
+
+        return chain.then(async acc =>
+          Object.assign(acc, { [field]: await processRefs(snapshot.data()) })
+        )
+      }
+
+      return chain
+    }, Promise.resolve({ ...document }))
+  }
+)
+
+interface PopulateFieldOption {
+  field: string
+  [key: string]: any
+}
+
+/**
+ * @description Ensure that the passed in `populate` property is returning an array of objects
+ * required by other populate functions.
+ * @param {Array} `populate` Can be an array of strings, objects or a mix
+ * @returns {Array} Always an array of objects in the format `{ field: nameOfFieldToPopulate, ...otherOptions }`
+ */
+export const prepPopulateFields = (populate: any): PopulateFieldOption[] => {
+  if (typeof memo.prepPopulateFields === 'undefined') {
+    memo.prepPopulateFields = memoize(
+      fields => {
+        if (!fields || !isArray(fields)) {
+          return []
+        }
+
+        return fields.map(option => {
+          if (typeof option === 'string') {
+            return {
+              field: option
+            }
+          }
+
+          return option as PopulateFieldOption
+        })
+      },
+      fields => JSON.stringify(fields)
+    )
+  }
+
+  return memo.prepPopulateFields(populate)
 }

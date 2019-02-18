@@ -22,13 +22,12 @@ import {
   FlamelinkError,
   logWarning
 } from '@flamelink/sdk-utils'
+import { getFolderRefPath, getFileRefPath, getMediaRefPath } from './helpers'
 import {
-  getStorageRefPath,
-  getFolderRefPath,
-  getFileRefPath,
-  getMediaRefPath
-} from './helpers'
-import { filterFilesByFolderId, getScreenResolution } from '../helpers'
+  filterFilesByFolderId,
+  getScreenResolution,
+  getStorageRefPath
+} from '../helpers'
 import { DEFAULT_REQUIRED_IMAGE_SIZE } from '../constants'
 
 const factory: FlamelinkStorageFactory = function(context) {
