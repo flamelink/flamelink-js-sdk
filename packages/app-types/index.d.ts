@@ -114,7 +114,15 @@ export interface OptionsForCF extends OrderByOptionsForCF, FilterOptionsForCF {
   [x: string]: any
 }
 
-export interface SnapshotForCF {
-  val(): any
+export interface DocumentSnapshotForCF {
+  data(): any
+  [x: string]: any
+}
+
+type CollectionSnapshotForEach = (doc: DocumentSnapshotForCF) => void
+
+export interface CollectionSnapshotForCF {
+  empty: boolean
+  forEach(fn: CollectionSnapshotForEach): void
   [x: string]: any
 }

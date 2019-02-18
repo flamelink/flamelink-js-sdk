@@ -22,18 +22,17 @@ import {
   FlamelinkError,
   logWarning
 } from '@flamelink/sdk-utils'
+import { getFolderRefPath, getFileRefPath, getMediaRefPath } from './helpers'
 import {
-  getStorageRefPath,
-  getFolderRefPath,
-  getFileRefPath,
-  getMediaRefPath
-} from './helpers'
-import { filterFilesByFolderId, getScreenResolution } from '../helpers'
+  filterFilesByFolderId,
+  getScreenResolution,
+  getStorageRefPath
+} from '../helpers'
 import { DEFAULT_REQUIRED_IMAGE_SIZE } from '../constants'
 
-const factory: FlamelinkStorageFactory = context => {
+const factory: FlamelinkStorageFactory = function(context) {
   const api: StoragePublicApi = {
-    _getFolderId: async ({ folderName = '' }) => {
+    async _getFolderId({ folderName = '' }) {
       if (!folderName) {
         return null
       }
@@ -52,12 +51,12 @@ const factory: FlamelinkStorageFactory = context => {
       return folder.id
     },
 
-    _getFolderIdFromOptions: async (
+    async _getFolderIdFromOptions(
       { folderId, folderName } = {
         folderId: '',
         folderName: ''
       }
-    ) => {
+    ) {
       if (folderId) {
         return folderId
       }
@@ -65,7 +64,7 @@ const factory: FlamelinkStorageFactory = context => {
       return api._getFolderId({ folderName })
     },
 
-    _setFile: (filePayload: FileObject) => {
+    async _setFile(filePayload: FileObject) {
       const payload = Object.assign({}, filePayload, {
         __meta__: {
           createdBy: get(context, 'services.auth.currentUser.uid', 'UNKNOWN'),
@@ -76,11 +75,11 @@ const factory: FlamelinkStorageFactory = context => {
       return api.fileRef(filePayload.id).set(payload)
     },
 
-    _createSizedImage: async (
+    async _createSizedImage(
       fileData: any,
       filename: string,
       options: ImageSize = {}
-    ) => {
+    ) {
       if (options && (options.path || options.width || options.maxWidth)) {
         const resizedImage = await resizeImage(fileData, options)
         return api
@@ -95,7 +94,7 @@ const factory: FlamelinkStorageFactory = context => {
       )
     },
 
-    ref: (filename, { ...options }) => {
+    ref(filename, { ...options }) {
       if (context.isNodeEnvironment && !context.usesAdminApp) {
         throw new FlamelinkError(`
         The Firebase client-side SDK cannot access the Storage Bucket server-side.
@@ -124,41 +123,22 @@ const factory: FlamelinkStorageFactory = context => {
         : storageService.ref(getStorageRefPath(filename, options))
     },
 
-    folderRef: folderID => {
+    folderRef(folderID) {
       const dbService = flamelink._ensureService('database', context)
       return dbService.ref(getFolderRefPath(folderID))
     },
 
-    fileRef: fileId => {
+    fileRef(fileId) {
       const dbService = flamelink._ensureService('database', context)
       return dbService.ref(getFileRefPath(fileId))
     },
 
-    mediaRef: storageKey => {
+    mediaRef(storageKey) {
       const dbService = flamelink._ensureService('database', context)
       return dbService.ref(getMediaRefPath(storageKey))
     },
 
-    getRaw: async ({ storageKey, ...options }) => {
-      const filtered = applyOptionsForRTDB(api.mediaRef(storageKey), options)
-      return filtered.once(options.event || 'value')
-    },
-
-    get: async ({ storageKey, ...options }) => {
-      const pluckFields = pluckResultFields(options.fields)
-      const snapshot = await api.getRaw({ storageKey, ...options })
-      const media = snapshot.val()
-
-      if (storageKey) {
-        // Wrapping value to create the correct structure for our field plucking to work
-        const wrapValue = { [storageKey]: media }
-        return pluckFields(wrapValue)[storageKey]
-      }
-
-      return pluckFields(media)
-    },
-
-    subscribeRaw: ({ storageKey, callback, ...options }) => {
+    subscribeRaw({ storageKey, callback, ...options }) {
       const filteredRef = applyOptionsForRTDB(api.mediaRef(storageKey), options)
 
       filteredRef.on(
@@ -172,13 +152,13 @@ const factory: FlamelinkStorageFactory = context => {
       return unsubscribe
     },
 
-    subscribe: ({ storageKey, callback, ...options }) => {
+    subscribe({ storageKey, callback, ...options }) {
       const pluckFields = pluckResultFields(options.fields)
 
       return api.subscribeRaw({
         storageKey,
         ...options,
-        callback: async (err, snapshot) => {
+        async callback(err, snapshot) {
           if (err) {
             return callback(err, null)
           }
@@ -193,13 +173,13 @@ const factory: FlamelinkStorageFactory = context => {
       })
     },
 
-    getFoldersRaw: ({ ...options }) => {
+    async getFoldersRaw({ ...options }) {
       return applyOptionsForRTDB(api.folderRef(), options).once(
         options.event || 'value'
       )
     },
 
-    getFolders: async ({ ...options }) => {
+    async getFolders({ ...options }) {
       const pluckFields = pluckResultFields(options.fields)
       const structureItems = formatStructure(options.structure, {
         idProperty: 'id',
@@ -213,7 +193,11 @@ const factory: FlamelinkStorageFactory = context => {
       )(snapshot.val())
     },
 
-    getFileRaw: async ({ fileId, ...options }) => {
+    // subscribeFolders({ callback, ...options }) {
+    //   return api.subscribe({ storageKey: 'folders', callback, ...options })
+    // },
+
+    async getFileRaw({ fileId, ...options }) {
       if (!fileId) {
         throw new FlamelinkError(
           '"storage.getFileRaw()" should be called with at least the file ID'
@@ -225,7 +209,7 @@ const factory: FlamelinkStorageFactory = context => {
       )
     },
 
-    getFile: async ({ fileId, ...options }) => {
+    async getFile({ fileId, ...options }) {
       if (!fileId) {
         throw new FlamelinkError(
           '"storage.getFile()" should be called with at least the file ID'
@@ -239,14 +223,14 @@ const factory: FlamelinkStorageFactory = context => {
       return file[fileId]
     },
 
-    getFilesRaw: ({ ...options }) => {
+    async getFilesRaw({ ...options }) {
       return applyOptionsForRTDB(api.fileRef(), options).once(
         options.event || 'value'
       )
     },
 
-    getFiles: async ({ ...options }) => {
-      const defaultOptions: GetFilesArgsForRTDB = { folderFallback: null }
+    async getFiles({ ...options }) {
+      const defaultOptions: GetFilesArgsForRTDB = {}
       const opts = Object.assign(
         defaultOptions,
         options,
@@ -267,7 +251,7 @@ const factory: FlamelinkStorageFactory = context => {
       )(snapshot.val())
     },
 
-    getURL: async ({ fileId, ...options }) => {
+    async getURL({ fileId, ...options }) {
       if (!fileId) {
         throw new FlamelinkError(
           '"storage.getURL()" should be called with at least the file ID'
@@ -370,7 +354,7 @@ const factory: FlamelinkStorageFactory = context => {
       return fileRef.getDownloadURL()
     },
 
-    getMetadata: async ({ fileId, ...options }) => {
+    async getMetadata({ fileId, ...options }) {
       if (!fileId) {
         throw new FlamelinkError(
           '"storage.getMetadata()" should be called with at least the file ID'
@@ -388,7 +372,7 @@ const factory: FlamelinkStorageFactory = context => {
       return api.ref(filename).getMetadata()
     },
 
-    updateMetadata: async ({ fileId, updates }) => {
+    async updateMetadata({ fileId, updates }) {
       if (!fileId || !updates) {
         throw new FlamelinkError(
           '"storage.updateMetadata()" should be called with the "fileID" and the "updates" object'
@@ -406,7 +390,7 @@ const factory: FlamelinkStorageFactory = context => {
       return api.ref(filename).updateMetadata(updates)
     },
 
-    deleteFile: async ({ fileId, ...options }) => {
+    async deleteFile({ fileId, ...options }) {
       if (context.usesAdminApp) {
         throw new FlamelinkError(
           '"storage.deleteFile()" is not currently supported for server-side use.'
@@ -451,7 +435,7 @@ const factory: FlamelinkStorageFactory = context => {
       return api.fileRef(fileId).remove()
     },
 
-    upload: async (fileData, options = {}) => {
+    async upload(fileData, options = {}) {
       if (context.usesAdminApp) {
         throw new FlamelinkError(
           '"storage.upload()" is not currently supported for server-side use.'

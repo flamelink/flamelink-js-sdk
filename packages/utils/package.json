@@ -21,7 +21,10 @@
   "files": [
     "dist"
   ],
-  "dependencies": {},
+  "dependencies": {
+    "compose-then": "^1.0.1",
+    "lodash": "^4.17.11"
+  },
   "scripts": {
     "prebuild": "rimraf dist",
     "build": "rollup -c",

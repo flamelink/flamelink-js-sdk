@@ -2,7 +2,6 @@ import {
   FlamelinkContext,
   OptionsForRTDB,
   OptionsForCF,
-  SnapshotForCF,
   SubscriptionCallback,
   UnsubscribeMethod
 } from '@flamelink/sdk-app-types'
