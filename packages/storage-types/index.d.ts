@@ -17,10 +17,6 @@ export type ImageSize = {
   path?: string
 }
 
-interface GetArgsForRTDB extends OptionsForRTDB {
-  storageKey?: string
-}
-
 interface GetFileArgsForRTDB extends OptionsForRTDB {
   fileId: string
 }
@@ -37,7 +33,6 @@ interface UpdateMetadataArgsForRTDB extends OptionsForRTDB {
 interface GetFilesArgsForRTDB extends OptionsForRTDB {
   folderId?: string
   folderName?: string
-  folderFallback?: string
   mediaType?: 'files' | 'images'
 }
 
@@ -70,8 +65,6 @@ interface SubscribeArgsForRTDB extends OptionsForRTDB {
   callback: SubscriptionCallback
 }
 
-interface GetArgsForCF extends OptionsForCF {}
-
 interface GetFileArgsForCF extends OptionsForCF {
   fileId: string
 }
@@ -88,7 +81,6 @@ interface UpdateMetadataArgsForCF extends OptionsForCF {
 interface GetFilesArgsForCF extends OptionsForCF {
   folderId?: string
   folderName?: string
-  folderFallback?: string
   mediaType?: 'files' | 'images'
 }
 
@@ -134,17 +126,13 @@ export interface StoragePublicApi {
    * @description Establish and return a reference to the media directory in the real-time db
    * @param {String} [mediaRef] Optional media reference
    */
-  mediaRef(mediaRef?: string): any
+  mediaRef?(mediaRef?: string): any
 
-  getRaw(args: GetArgsForRTDB | GetArgsForCF): Promise<any>
-
-  get(args: GetArgsForRTDB | GetArgsForCF): Promise<any>
-
-  subscribeRaw(
+  subscribeRaw?(
     args: SubscribeArgsForRTDB | SubscribeArgsForCF
   ): UnsubscribeMethod
 
-  subscribe(args: SubscribeArgsForRTDB | SubscribeArgsForCF): UnsubscribeMethod
+  subscribe?(args: SubscribeArgsForRTDB | SubscribeArgsForCF): UnsubscribeMethod
 
   upload(fileData: any, options: UploadOptions): PromiseLike<any>
 
