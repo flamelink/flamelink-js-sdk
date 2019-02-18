@@ -3,6 +3,7 @@
     "firestore",
     "flamelink",
     "lerna",
+    "memoization",
     "outro",
     "rtdb",
     "sourcemap"
