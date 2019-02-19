@@ -1,6 +1,7 @@
 import curry from 'lodash/curry'
 import reduce from 'lodash/reduce'
 import { ImageSize } from '@flamelink/sdk-storage-types'
+import { logWarning, FlamelinkError } from '@flamelink/sdk-utils'
 
 export const filterFilesByFolderId = curry(
   (folderId: string, files: any): any => {
@@ -25,6 +26,13 @@ export const filterFilesByFolderId = curry(
  * @description Find the current device's screen resolution
  */
 export const getScreenResolution = (): number => {
+  if (typeof window === 'undefined') {
+    throw new FlamelinkError(
+      `The device's screen resolution can only be retrieved from a browser environment.`,
+      'incompatibility'
+    )
+  }
+
   const pixelRatio = 'devicePixelRatio' in window ? window.devicePixelRatio : 1
   return Math.max(window.screen.width, window.screen.height) * pixelRatio
 }

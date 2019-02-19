@@ -45,9 +45,18 @@ export function logWarning(str: string) {
 }
 
 export class FlamelinkError extends Error {
-  constructor(message: string, public code?: string) {
-    super(`[FLAMELINK]: ${message}`)
+  constructor(
+    message: string,
+    public code: string = 'generic-error',
+    private showStackTrace: boolean = false
+  ) {
+    super(`\n${message}\n`)
     this.name = 'FlamelinkError'
+    if (!this.showStackTrace) {
+      this.stack = null
+    }
+  }
+}
   }
 }
 
