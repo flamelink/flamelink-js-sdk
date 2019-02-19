@@ -9,18 +9,18 @@ import { getSettingsRefPath } from './helpers'
 
 const factory: FlamelinkSettingsFactory = context => {
   const api: SettingsPublicApi = {
-    ref: ref => {
+    ref(ref) {
       const dbService = flamelink._ensureService('database', context)
       return dbService.ref(getSettingsRefPath(ref))
     },
 
-    getRaw: ({ settingsKey, ...options }) => {
+    getRaw({ settingsKey, ...options }) {
       return applyOptionsForRTDB(api.ref(settingsKey), options).once(
         options.event || 'value'
       )
     },
 
-    get: async ({ settingsKey, ...options }) => {
+    async get({ settingsKey, ...options }) {
       const pluckFields = pluckResultFields(options.fields)
       const snapshot = await api.getRaw({ settingsKey, ...options })
       const value =
@@ -31,34 +31,41 @@ const factory: FlamelinkSettingsFactory = context => {
       return options.needsWrap ? result[settingsKey] : result
     },
 
-    setEnvironment: async env => {
+    async setEnvironment(env) {
       context.env = env
       return env
     },
 
-    getEnvironment: async () => context.env,
+    async getEnvironment() {
+      return context.env
+    },
 
     // TODO: Consider checking for supported locales - if we want - don't want to make API request
-    setLocale: async locale => {
+    async setLocale(locale) {
       context.locale = locale
       return locale
     },
 
-    getLocale: async () => context.locale,
+    async getLocale() {
+      return context.locale
+    },
 
-    getGlobals: async (options = {}) =>
-      api.get({ ...options, needsWrap: true, settingsKey: 'globals' }),
+    async getGlobals(options = {}) {
+      return api.get({ ...options, needsWrap: true, settingsKey: 'globals' })
+    },
 
-    getImageSizes: async (options = {}) =>
-      api.get({ ...options, settingsKey: 'general/imageSizes' }),
+    async getImageSizes(options = {}) {
+      return api.get({ ...options, settingsKey: 'general/imageSizes' })
+    },
 
-    getDefaultPermissionsGroup: async (options = {}) =>
-      api.get({
+    async getDefaultPermissionsGroup(options = {}) {
+      return api.get({
         ...options,
         settingsKey: 'general/defaultPermissionsGroup'
-      }),
+      })
+    },
 
-    subscribeRaw: ({ settingsKey, callback, ...options }) => {
+    subscribeRaw({ settingsKey, callback, ...options }) {
       const filteredRef = applyOptionsForRTDB(api.ref(settingsKey), options)
 
       filteredRef.on(
@@ -72,13 +79,13 @@ const factory: FlamelinkSettingsFactory = context => {
       return unsubscribe
     },
 
-    subscribe: ({ settingsKey, callback, ...options }) => {
+    subscribe({ settingsKey, callback, ...options }) {
       const pluckFields = pluckResultFields(options.fields)
 
       return api.subscribeRaw({
         settingsKey,
         ...options,
-        callback: async (err, snapshot) => {
+        async callback(err, snapshot) {
           if (err) {
             return callback(err, null)
           }
@@ -97,17 +104,20 @@ const factory: FlamelinkSettingsFactory = context => {
       })
     },
 
-    subscribeGlobals: options =>
-      api.subscribe({ ...options, settingsKey: 'globals' }),
+    subscribeGlobals(options) {
+      return api.subscribe({ ...options, settingsKey: 'globals' })
+    },
 
-    subscribeImageSizes: options =>
-      api.subscribe({ ...options, settingsKey: 'general/imageSizes' }),
+    subscribeImageSizes(options) {
+      return api.subscribe({ ...options, settingsKey: 'general/imageSizes' })
+    },
 
-    subscribeDefaultPermissionsGroup: options =>
-      api.subscribe({
+    subscribeDefaultPermissionsGroup(options) {
+      return api.subscribe({
         ...options,
         settingsKey: 'general/defaultPermissionsGroup'
       })
+    }
   }
 
   return api

@@ -9,7 +9,7 @@ const SETTINGS_COLLECTION = 'fl_settings'
 
 const factory: FlamelinkSettingsFactory = context => {
   const api: SettingsPublicApi = {
-    ref: document => {
+    ref(document) {
       const firestoreService = flamelink._ensureService('firestore', context)
 
       return document
@@ -19,13 +19,13 @@ const factory: FlamelinkSettingsFactory = context => {
       // .where('_fl_meta_.locale', '==', context.locale)
     },
 
-    getRaw: ({ document, ...options } = {}) => {
+    getRaw({ document, ...options } = {}) {
       return applyOptionsForCF(api.ref(document), options).get({
         source: options.source || 'default'
       })
     },
 
-    get: async ({ document, ...options } = {}) => {
+    async get({ document, ...options } = {}) {
       const pluckFields = pluckResultFields(options.fields)
       const snapshot = await api.getRaw({ document, ...options })
 
@@ -44,38 +44,49 @@ const factory: FlamelinkSettingsFactory = context => {
       return pluckFields(entries)
     },
 
-    setEnvironment: async env => {
+    async setEnvironment(env) {
       context.env = env
       return env
     },
 
-    getEnvironment: async () => context.env,
+    async getEnvironment() {
+      return context.env
+    },
 
     // TODO: Consider checking for supported locales - if we want - don't want to make API request
-    setLocale: async locale => {
+    async setLocale(locale) {
       context.locale = locale
       return locale
     },
 
-    getLocale: async () => context.locale,
+    async getLocale() {
+      return context.locale
+    },
 
-    getGlobals: async (options = {}) =>
-      api.get({
+    async getGlobals(options = {}) {
+      return api.get({
         ...options,
         document: 'globals'
-      }),
+      })
+    },
 
-    getImageSizes: async (options = {}) =>
-      api.get({ ...options, document: 'general', fields: ['imageSizes'] }),
+    async getImageSizes(options = {}) {
+      return api.get({
+        ...options,
+        document: 'general',
+        fields: ['imageSizes']
+      })
+    },
 
-    getDefaultPermissionsGroup: async (options = {}) =>
-      api.get({
+    async getDefaultPermissionsGroup(options = {}) {
+      return api.get({
         ...options,
         document: 'general',
         fields: ['defaultPermissionsGroup']
-      }),
+      })
+    },
 
-    subscribeRaw: ({ document, callback, ...options }) => {
+    subscribeRaw({ document, callback, ...options }) {
       const filtered = applyOptionsForCF(api.ref(document), options)
 
       return filtered.onSnapshot(
@@ -87,13 +98,13 @@ const factory: FlamelinkSettingsFactory = context => {
       )
     },
 
-    subscribe: ({ document, callback, changeType, ...options }) => {
+    subscribe({ document, callback, changeType, ...options }) {
       const pluckFields = pluckResultFields(options.fields)
 
       return api.subscribeRaw({
         document,
         ...options,
-        callback: async (err, snapshot) => {
+        async callback(err, snapshot) {
           if (err) {
             return callback(err, null)
           }
@@ -128,22 +139,25 @@ const factory: FlamelinkSettingsFactory = context => {
       })
     },
 
-    subscribeGlobals: options =>
-      api.subscribe({ ...options, document: 'globals' }),
+    subscribeGlobals(options) {
+      return api.subscribe({ ...options, document: 'globals' })
+    },
 
-    subscribeImageSizes: options =>
-      api.subscribe({
+    subscribeImageSizes(options) {
+      return api.subscribe({
         ...options,
         document: 'general',
         fields: ['imageSizes']
-      }),
+      })
+    },
 
-    subscribeDefaultPermissionsGroup: options =>
-      api.subscribe({
+    subscribeDefaultPermissionsGroup(options) {
+      return api.subscribe({
         ...options,
         document: 'general',
         fields: ['defaultPermissionsGroup']
       })
+    }
   }
 
   return api
