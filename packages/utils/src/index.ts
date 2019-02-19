@@ -16,7 +16,8 @@ import {
   LimitOptionsForCF,
   OptionsForCF,
   OptionsForRTDB,
-  DocumentSnapshotForCF
+  DocumentSnapshotForCF,
+  FlamelinkContext
 } from '@flamelink/sdk-app-types'
 
 interface Memo {
@@ -57,7 +58,22 @@ export class FlamelinkError extends Error {
     }
   }
 }
+
+export const getFirestoreServiceFactory = (context: FlamelinkContext): any => {
+  if (context.usesAdminApp) {
+    return get(context, 'firebaseApp.firebaseInternals_.firebase_.firestore')
   }
+  return get(context, 'firebaseApp.firebase_.firestore')
+}
+
+export const getTimestamp = (context: FlamelinkContext): any => {
+  if (context.dbType === 'cf') {
+    return get(getFirestoreServiceFactory(context), 'Timestamp.now', () =>
+      new Date().toISOString()
+    )()
+  }
+
+  return new Date().toISOString()
 }
 
 export const AVAILABLE_FILTER_OPTIONS_FOR_RTDB = [

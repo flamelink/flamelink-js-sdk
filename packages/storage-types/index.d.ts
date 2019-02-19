@@ -42,7 +42,7 @@ interface GetURLArgsForRTDB extends OptionsForRTDB {
 
 export interface FileObject {
   id: string
-  folderId: StringOrNumber
+  folderId: any
   file: string
   type: string
   contentType: string

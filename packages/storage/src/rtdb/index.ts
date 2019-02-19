@@ -20,13 +20,15 @@ import {
   pluckResultFields,
   formatStructure,
   FlamelinkError,
-  logWarning
+  logWarning,
+  getTimestamp
 } from '@flamelink/sdk-utils'
 import { getFolderRefPath, getFileRefPath, getMediaRefPath } from './helpers'
 import {
   filterFilesByFolderId,
   getScreenResolution,
-  getStorageRefPath
+  getStorageRefPath,
+  setImagePathByClosestSize
 } from '../helpers'
 import { DEFAULT_REQUIRED_IMAGE_SIZE } from '../constants'
 
@@ -68,7 +70,7 @@ const factory: FlamelinkStorageFactory = function(context) {
       const payload = Object.assign({}, filePayload, {
         __meta__: {
           createdBy: get(context, 'services.auth.currentUser.uid', 'UNKNOWN'),
-          createdDate: new Date().toISOString()
+          createdDate: getTimestamp(context)
         }
       })
 
@@ -82,12 +84,13 @@ const factory: FlamelinkStorageFactory = function(context) {
     ) {
       if (options && (options.path || options.width || options.maxWidth)) {
         const resizedImage = await resizeImage(fileData, options)
-        return api
-          .ref(filename, {
-            path: options.path,
-            width: options.width || options.maxWidth
-          })
-          .put(resizedImage)
+        const ref = api.ref(filename, {
+          path: options.path,
+          width: options.width || options.maxWidth
+        })
+
+        const uploadMethod = context.usesAdminApp ? 'upload' : 'put'
+        return ref[uploadMethod](resizedImage)
       }
       throw new FlamelinkError(
         `Invalid size object supplied - please refer to https://flamelink.github.io/flamelink-js-sdk/#/storage?id=upload for more details on upload options.\nImage upload for supplied size skipped for file: ${filename}`
@@ -96,12 +99,16 @@ const factory: FlamelinkStorageFactory = function(context) {
 
     ref(filename, { ...options }) {
       if (context.isNodeEnvironment && !context.usesAdminApp) {
-        throw new FlamelinkError(`
+        throw new FlamelinkError(
+          `
         The Firebase client-side SDK cannot access the Storage Bucket server-side.
         Please use the admin SDK instead - https://www.npmjs.com/package/firebase-admin
 
         Instructions here: https://flamelink.github.io/flamelink-js-sdk/#/getting-started?id=usage
-        `)
+        `,
+          'service-unavailable',
+          false
+        )
       }
 
       const storageService = flamelink._ensureService('storage', context)
@@ -110,7 +117,9 @@ const factory: FlamelinkStorageFactory = function(context) {
       if (/:\/\//.test(filename)) {
         if (context.usesAdminApp) {
           throw new FlamelinkError(
-            'Retrieving files from URL is not supported for the admin SDK'
+            'Retrieving files from URL is not supported for the admin SDK',
+            'service-unavailable',
+            false
           )
         }
         return storageService.refFromURL(filename)
@@ -268,35 +277,6 @@ const factory: FlamelinkStorageFactory = function(context) {
       const { file: filename, sizes: availableFileSizes } = file
       const storageRefArgs = { filename, options: {} }
 
-      const getImagePathByClosestSize = (minSize: number) => {
-        const smartWidth = availableFileSizes
-          .map(
-            availableSize =>
-              Object.assign({}, availableSize, {
-                width: parseInt(
-                  availableSize.width || availableSize.maxWidth,
-                  10
-                )
-              }),
-            []
-          )
-          .sort((a, b) => a.width - b.width) // sort widths ascending
-          .find(availableSize => availableSize.width >= minSize)
-
-        if (smartWidth) {
-          storageRefArgs.options = Object.assign(
-            storageRefArgs.options,
-            smartWidth
-          )
-        } else {
-          logWarning(
-            `The provided size (${size}) has been ignored because it did not match any of the given file's available sizes.\nAvailable sizes: ${availableFileSizes
-              .map(availableSize => availableSize.width)
-              .join(', ')}`
-          )
-        }
-      }
-
       if (isPlainObject(size)) {
         const { width, height, quality } = size as ImageSize
 
@@ -326,7 +306,11 @@ const factory: FlamelinkStorageFactory = function(context) {
             )
           }
         } else if (width && availableFileSizes && availableFileSizes.length) {
-          getImagePathByClosestSize(parseInt(width.toString(), 10))
+          setImagePathByClosestSize(
+            storageRefArgs,
+            availableFileSizes,
+            parseInt(width.toString(), 10)
+          )
         }
       } else if (
         typeof size === 'string' &&
@@ -335,7 +319,11 @@ const factory: FlamelinkStorageFactory = function(context) {
       ) {
         // This part is for the special 'device' use case and for the legacy width setting
         const minSize = size === 'device' ? getScreenResolution() : size
-        getImagePathByClosestSize(Number(minSize))
+        setImagePathByClosestSize(
+          storageRefArgs,
+          availableFileSizes,
+          Number(minSize)
+        )
       }
 
       const fileRef = await api.ref(
@@ -436,11 +424,6 @@ const factory: FlamelinkStorageFactory = function(context) {
     },
 
     async upload(fileData, options = {}) {
-      if (context.usesAdminApp) {
-        throw new FlamelinkError(
-          '"storage.upload()" is not currently supported for server-side use.'
-        )
-      }
       const { sizes: userSizes, overwriteSizes } = options
       const settingsImageSizes = await get(
         context,
@@ -484,7 +467,11 @@ const factory: FlamelinkStorageFactory = function(context) {
           ? `${id}_${metadata.name || fileData.name}`
           : id
       const storageRef = api.ref(filename, options as ImageSize)
-      const updateMethod = typeof fileData === 'string' ? 'putString' : 'put'
+      const updateMethod = context.usesAdminApp
+        ? 'upload'
+        : typeof fileData === 'string'
+        ? 'putString'
+        : 'put'
       const args = [fileData]
 
       let folderId = await api._getFolderIdFromOptions(options)
