@@ -8,11 +8,16 @@ export type ModuleName =
 
 export type FirebaseService = 'auth' | 'database' | 'firestore' | 'storage'
 
+interface PrecacheOptions {
+  schemas?: string[]
+}
+
 export interface FlamelinkConfig {
   firebaseApp: any
   env?: string
   locale?: string
   dbType?: 'rtdb' | 'cf'
+  precache?: boolean | PrecacheOptions
 }
 
 export interface FlamelinkPublicApi {
@@ -37,6 +42,7 @@ export interface FlamelinkFactoryCreator {
 export interface FlamelinkContext extends FlamelinkConfig {
   modules: any
   services: any
+  cache?: any
   proxySupported: boolean
   usesAdminApp: boolean
   isNodeEnvironment?: boolean
