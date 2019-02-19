@@ -5,6 +5,7 @@
     "lerna",
     "memoization",
     "outro",
+    "precache",
     "rtdb",
     "sourcemap"
   ]
