@@ -84,6 +84,19 @@ export const AVAILABLE_FILTER_OPTIONS_FOR_RTDB = [
   'equalTo'
 ]
 
+export const hasNonCacheableOptionsForRTDB = (options: any): any => {
+  const optionKeys = keys(options)
+  const nonCacheableProps = [
+    'noCache',
+    'event',
+    'orderByValue',
+    'orderByChild',
+    ...AVAILABLE_FILTER_OPTIONS_FOR_RTDB
+  ]
+
+  return optionKeys.some(key => nonCacheableProps.includes(key))
+}
+
 export const applyOrderByForRTDB = (
   ref: any,
   options: OrderByOptionsForRTDB

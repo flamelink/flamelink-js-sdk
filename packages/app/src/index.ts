@@ -47,6 +47,8 @@ const createFlamelinkFactory: FlamelinkFactoryCreator = () => {
       dbType: config.dbType || DEFAULT_DB_TYPE,
       modules: {},
       services: {},
+      cache: {},
+      precache: typeof config.precache === 'undefined' ? true : config.precache,
       proxySupported: typeof Proxy !== 'undefined',
       usesAdminApp: isAdminApp(config.firebaseApp),
       isNodeEnvironment: isNodeEnvironment()
