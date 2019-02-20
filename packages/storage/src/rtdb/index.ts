@@ -21,7 +21,8 @@ import {
   formatStructure,
   FlamelinkError,
   logWarning,
-  getTimestamp
+  getTimestamp,
+  getCurrentUser
 } from '@flamelink/sdk-utils'
 import { getFolderRefPath, getFileRefPath, getMediaRefPath } from './helpers'
 import {
@@ -69,7 +70,7 @@ const factory: FlamelinkStorageFactory = function(context) {
     async _setFile(filePayload: FileObject) {
       const payload = Object.assign({}, filePayload, {
         __meta__: {
-          createdBy: get(context, 'services.auth.currentUser.uid', 'UNKNOWN'),
+          createdBy: getCurrentUser(context),
           createdDate: getTimestamp(context)
         }
       })
