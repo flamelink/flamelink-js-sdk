@@ -1,6 +1,7 @@
 import get from 'lodash/get'
 import set from 'lodash/set'
 import keys from 'lodash/keys'
+import castArray from 'lodash/castArray'
 import flamelink from '@flamelink/sdk-app'
 import { UnsubscribeMethod } from '@flamelink/sdk-app-types'
 import {
@@ -12,7 +13,9 @@ import {
   pluckResultFields,
   hasNonCacheableOptionsForRTDB,
   logError,
-  FlamelinkError
+  FlamelinkError,
+  getTimestamp,
+  getCurrentUser
 } from '@flamelink/sdk-utils'
 import { getSchemasRefPath } from './helpers'
 
@@ -129,30 +132,39 @@ const factory: FlamelinkSchemasFactory = context => {
       })
     },
 
-    add(data) {
-      const schemaKey = Date.now().toString()
+    add({ schemaKey, data }) {
       const payload =
         typeof data === 'object'
           ? Object.assign({}, data, {
               __meta__: {
-                createdBy: get(
-                  context,
-                  'services.auth.currentUser.uid',
-                  'UNKNOWN'
-                ),
-                createdDate: new Date().toISOString()
+                createdBy: getCurrentUser(context),
+                createdDate: getTimestamp(context)
               },
-              id: schemaKey
+              description: data.description || '',
+              enabled:
+                typeof data.enabled === 'undefined'
+                  ? true
+                  : Boolean(data.enabled),
+              fields: castArray(data.fields) || [],
+              group: data.group || '',
+              icon: data.icon || '',
+              id: schemaKey,
+              sortable:
+                typeof data.sortable === 'undefined'
+                  ? true
+                  : Boolean(data.sortable),
+              title: data.title || schemaKey,
+              type: data.type || 'collection'
             })
           : data
 
       return api.ref(schemaKey).set(payload)
     },
 
-    update({ schemaKey, updates }) {
+    update({ schemaKey, data }) {
       if (
         typeof schemaKey !== 'string' ||
-        (typeof updates !== 'object' && updates !== null)
+        (typeof data !== 'object' && data !== null)
       ) {
         throw new FlamelinkError(
           '"update" called with the incorrect arguments. Check the docs for details.'
@@ -160,17 +172,13 @@ const factory: FlamelinkSchemasFactory = context => {
       }
 
       const payload =
-        typeof updates === 'object'
-          ? Object.assign({}, updates, {
-              '__meta__/lastModifiedBy': get(
-                context,
-                'services.auth.currentUser.uid',
-                'UNKNOWN'
-              ),
-              '__meta__/lastModifiedDate': new Date().toISOString(),
-              id: schemaKey.toString()
+        typeof data === 'object'
+          ? Object.assign({}, data, {
+              '__meta__/lastModifiedBy': getCurrentUser(context),
+              '__meta__/lastModifiedDate': getTimestamp(context),
+              id: schemaKey
             })
-          : updates
+          : data
 
       return api.ref(schemaKey).update(payload)
     },

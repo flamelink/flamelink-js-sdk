@@ -10,9 +10,9 @@ interface GetArgsForRTDB extends OptionsForRTDB {
   schemaKey?: string
 }
 
-interface UpdateArgsForRTDB extends OptionsForRTDB {
+interface UpsertArgsForRTDB extends OptionsForRTDB {
   schemaKey: string
-  updates: any
+  data: any
 }
 
 interface SubscribeArgsForRTDB extends OptionsForRTDB {
@@ -22,9 +22,9 @@ interface SubscribeArgsForRTDB extends OptionsForRTDB {
 
 interface GetArgsForCF extends OptionsForCF {}
 
-interface UpdateArgsForCF extends OptionsForCF {
+interface UpsertArgsForCF extends OptionsForCF {
   schemaKey: string
-  updates: any
+  data: any
 }
 
 interface SubscribeArgsForCF extends OptionsForCF {
@@ -32,13 +32,13 @@ interface SubscribeArgsForCF extends OptionsForCF {
 }
 
 export interface SchemasPublicApi {
-  ref(schemaRef: string): any
+  ref(schemaRef?: string): any
 
   getRaw(args: GetArgsForRTDB | GetArgsForCF): Promise<any>
 
   get(args: GetArgsForRTDB | GetArgsForCF): Promise<any>
 
-  getFieldsRaw(args: GetArgsForRTDB | GetArgsForCF): Promise<any>
+  getFieldsRaw?(args: GetArgsForRTDB | GetArgsForCF): Promise<any>
 
   getFields(args: GetArgsForRTDB | GetArgsForCF): Promise<any>
 
@@ -48,9 +48,9 @@ export interface SchemasPublicApi {
 
   subscribe(args: SubscribeArgsForRTDB | SubscribeArgsForCF): UnsubscribeMethod
 
-  add(payload: any): Promise<any>
+  add(args: UpsertArgsForRTDB | UpsertArgsForCF): Promise<any>
 
-  update(args: UpdateArgsForCF | UpdateArgsForCF): Promise<any>
+  update(args: UpsertArgsForRTDB | UpsertArgsForCF): Promise<any>
 
   remove(args: GetArgsForRTDB | GetArgsForCF): Promise<any>
 }

@@ -66,6 +66,13 @@ export const getFirestoreServiceFactory = (context: FlamelinkContext): any => {
   return get(context, 'firebaseApp.firebase_.firestore')
 }
 
+export const getAuthServiceFactory = (context: FlamelinkContext): any => {
+  if (context.usesAdminApp) {
+    return get(context, 'firebaseApp.firebaseInternals_.firebase_.auth')
+  }
+  return get(context, 'firebaseApp.firebase_.auth')
+}
+
 export const getTimestamp = (context: FlamelinkContext): any => {
   if (context.dbType === 'cf') {
     return get(getFirestoreServiceFactory(context), 'Timestamp.now', () =>
@@ -74,6 +81,16 @@ export const getTimestamp = (context: FlamelinkContext): any => {
   }
 
   return new Date().toISOString()
+}
+
+export const getCurrentUser = (context: FlamelinkContext): any => {
+  const auth = getAuthServiceFactory(context)
+
+  if (typeof auth !== 'function') {
+    return 'UNKNOWN'
+  }
+
+  return get(auth(), 'currentUser.uid', 'UNKNOWN')
 }
 
 export const AVAILABLE_FILTER_OPTIONS_FOR_RTDB = [
@@ -92,6 +109,20 @@ export const hasNonCacheableOptionsForRTDB = (options: any): any => {
     'orderByValue',
     'orderByChild',
     ...AVAILABLE_FILTER_OPTIONS_FOR_RTDB
+  ]
+
+  return optionKeys.some(key => nonCacheableProps.includes(key))
+}
+
+export const hasNonCacheableOptionsForCF = (options: any): any => {
+  const optionKeys = keys(options)
+  const nonCacheableProps = [
+    'noCache',
+    'includeMetadataChanges',
+    'source',
+    'changeType',
+    'limit',
+    ...CF_QUERY_CURSORS
   ]
 
   return optionKeys.some(key => nonCacheableProps.includes(key))
@@ -202,7 +233,7 @@ export const applyFiltersForCF = (
   return ref
 }
 
-const CF_QUERY_CURSORS = ['startAt', 'startAfter', 'endAt', 'endBefore']
+export const CF_QUERY_CURSORS = ['startAt', 'startAfter', 'endAt', 'endBefore']
 
 export const applyLimitAndOffsetsForCF = (
   ref: any,
@@ -403,3 +434,22 @@ export const prepPopulateFields = (populate: any): PopulateFieldOption[] => {
 
   return memo.prepPopulateFields(populate)
 }
+
+/**
+ * @description Utility to get the result of a given function invoked for a given list of items in sequence.
+ * Like `Promise.all()` but instead of parallel, promises resolve in sequence
+ * @param {Function} promiseFn Function that should be invoked for each item in the given array.
+ * @param {Array} list Array of items that passed to the `promiseFn`
+ * @returns {Promise} Resolves to array of arrays. Each internal array is the result of invoking the given function for each item
+ */
+export const createQueue = curry((promiseFn: any, list: any[]) => ({
+  start: () =>
+    list.reduce(
+      (queue, item, key) =>
+        queue.then(async (result: any[]) => {
+          const itemResult = await promiseFn(item, key)
+          return result.concat([itemResult])
+        }),
+      Promise.resolve([])
+    )
+}))

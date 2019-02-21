@@ -8,9 +8,7 @@ const schemas: SetupModule = function(context) {
       return getDefaultImport(require('./rtdb'))(context)
 
     case 'cf':
-      // return getDefaultImport(require('./cf'))(context)
-      // FIXME: Temp switched for build to pass type checks
-      return getDefaultImport(require('./rtdb'))(context)
+      return getDefaultImport(require('./cf'))(context)
 
     default:
       throw new Error('[FLAMELINK] No valid database type was provided')
