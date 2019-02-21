@@ -32,7 +32,7 @@ interface SubscribeArgsForCF extends OptionsForCF {
 }
 
 export interface NavigationPublicApi {
-  ref(navigationRef?: string): any
+  ref(navigationRef?: string | string[]): any
 
   getRaw(args: GetArgsForRTDB | GetArgsForCF): Promise<any>
 

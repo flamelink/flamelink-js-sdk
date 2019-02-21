@@ -1,4 +1,4 @@
-import get from 'lodash/get'
+import compose from 'compose-then'
 import keys from 'lodash/keys'
 import castArray from 'lodash/castArray'
 import flamelink from '@flamelink/sdk-app'
@@ -10,10 +10,11 @@ import {
 import {
   applyOptionsForRTDB,
   pluckResultFields,
-  hasNonCacheableOptionsForRTDB,
   FlamelinkError,
   getTimestamp,
-  getCurrentUser
+  getCurrentUser,
+  wrap,
+  unwrap
 } from '@flamelink/sdk-utils'
 import { getNavigationRefPath, structureItems } from './helpers'
 
@@ -63,47 +64,28 @@ const factory: FlamelinkNavigationFactory = context => {
     },
 
     getItemsRaw({ navigationKey, ...options }) {
+      if (!navigationKey) {
+        throw new FlamelinkError(
+          '"getItems" method requires a navigation reference'
+        )
+      }
+
       return applyOptionsForRTDB(
-        api.ref(navigationKey ? `${navigationKey}/items` : ''),
+        api.ref([navigationKey, `items`]),
         options
       ).once(options.event || 'value')
     },
 
-    async getItems({ navigationKey, ...options }) {
+    async getItems({ navigationKey, ...options } = {}) {
       const pluckFields = pluckResultFields(options.fields)
+      const snapshot = await api.getItemsRaw({ navigationKey, ...options })
 
-      const navigationCache = get(
-        context,
-        `cache.navigations[${context.env}]${
-          navigationKey ? `.${navigationKey}` : ''
-        }`
-      )
-
-      if (navigationKey) {
-        let fields = get(navigationCache, 'fields', null)
-
-        if (!fields || hasNonCacheableOptionsForRTDB(options)) {
-          const snapshot = await api.getItemsRaw({ navigationKey, ...options })
-          fields = snapshot.val()
-        }
-
-        return await pluckFields(fields)
-      }
-
-      let navigations = navigationCache
-
-      if (!navigations || hasNonCacheableOptionsForRTDB(options)) {
-        const snapshot = await api.getItemsRaw(options)
-        navigations = snapshot.val()
-      }
-
-      return keys(navigations).reduce(
-        (acc, key) =>
-          Object.assign(acc, {
-            [key]: pluckFields(navigations[key].fields)
-          }),
-        {}
-      )
+      return compose(
+        pluckFields,
+        unwrap('items'),
+        structureItems(options),
+        wrap('items')
+      )(snapshot.val())
     },
 
     subscribeRaw({ navigationKey, callback, ...options }) {
