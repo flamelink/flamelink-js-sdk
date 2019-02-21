@@ -4,7 +4,12 @@ import {
   FlamelinkSettingsFactory,
   SettingsPublicApi
 } from '@flamelink/sdk-settings-types'
-import { applyOptionsForRTDB, pluckResultFields } from '@flamelink/sdk-utils'
+import {
+  applyOptionsForRTDB,
+  pluckResultFields,
+  wrap,
+  unwrap
+} from '@flamelink/sdk-utils'
 import { getSettingsRefPath } from './helpers'
 
 const factory: FlamelinkSettingsFactory = context => {
@@ -25,10 +30,10 @@ const factory: FlamelinkSettingsFactory = context => {
       const snapshot = await api.getRaw({ settingsKey, ...options })
       const value =
         options.needsWrap && settingsKey
-          ? { [settingsKey]: snapshot.val() }
+          ? wrap(settingsKey, snapshot.val())
           : snapshot.val()
       const result = await pluckFields(value)
-      return options.needsWrap ? result[settingsKey] : result
+      return options.needsWrap ? unwrap(settingsKey, result) : result
     },
 
     async setEnvironment(env) {
@@ -92,13 +97,15 @@ const factory: FlamelinkSettingsFactory = context => {
 
           const value =
             options.needsWrap && settingsKey
-              ? { [settingsKey]: snapshot.val() }
+              ? wrap(settingsKey, snapshot.val())
               : snapshot.val()
           const result = await pluckFields(value)
 
           return callback(
             null,
-            options.needsWrap && settingsKey ? result[settingsKey] : result
+            options.needsWrap && settingsKey
+              ? unwrap(settingsKey, result)
+              : result
           )
         }
       })

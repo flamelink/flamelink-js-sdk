@@ -22,7 +22,9 @@ import {
   FlamelinkError,
   logWarning,
   getTimestamp,
-  getCurrentUser
+  getCurrentUser,
+  wrap,
+  unwrap
 } from '@flamelink/sdk-utils'
 import { getFolderRefPath, getFileRefPath, getMediaRefPath } from './helpers'
 import {
@@ -174,11 +176,14 @@ const factory: FlamelinkStorageFactory = function(context) {
           }
 
           const value = storageKey
-            ? { [storageKey]: snapshot.val() }
+            ? wrap(storageKey, snapshot.val())
             : snapshot.val()
           const result = await pluckFields(value)
 
-          return callback(null, storageKey ? result[storageKey] : result)
+          return callback(
+            null,
+            storageKey ? unwrap(storageKey, result) : result
+          )
         }
       })
     },
@@ -203,10 +208,6 @@ const factory: FlamelinkStorageFactory = function(context) {
       )(snapshot.val())
     },
 
-    // subscribeFolders({ callback, ...options }) {
-    //   return api.subscribe({ storageKey: 'folders', callback, ...options })
-    // },
-
     async getFileRaw({ fileId, ...options }) {
       if (!fileId) {
         throw new FlamelinkError(
@@ -227,10 +228,12 @@ const factory: FlamelinkStorageFactory = function(context) {
       }
       const pluckFields = pluckResultFields(options.fields)
       const snapshot = await api.getFileRaw({ fileId, ...options })
-      // Wrapping value to create the correct structure for our field plucking to work
-      const wrapValue = { [fileId]: snapshot.val() }
-      const file = await pluckFields(wrapValue)
-      return file[fileId]
+
+      return await compose(
+        unwrap(fileId),
+        pluckFields,
+        wrap(fileId)
+      )(snapshot.val())
     },
 
     async getFilesRaw({ ...options }) {
