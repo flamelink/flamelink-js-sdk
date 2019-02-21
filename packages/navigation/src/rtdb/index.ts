@@ -39,10 +39,11 @@ const factory: FlamelinkNavigationFactory = context => {
       const snapshot = await api.getRaw({ navigationKey, ...options })
 
       if (navigationKey) {
-        const wrappedNav = await pluckFields({
-          [navigationKey]: snapshot.val()
-        })
-        const nav = wrappedNav[navigationKey]
+        const nav = await compose(
+          unwrap(navigationKey),
+          pluckFields,
+          wrap(navigationKey)
+        )(snapshot.val())
 
         return structureItems(options, nav)
       }
@@ -103,24 +104,52 @@ const factory: FlamelinkNavigationFactory = context => {
     },
 
     subscribe({ navigationKey, callback, ...options }) {
-      const pluckFields = pluckResultFields(options.fields)
+      try {
+        const pluckFields = pluckResultFields(options.fields)
 
-      return api.subscribeRaw({
-        navigationKey,
-        ...options,
-        async callback(err, snapshot) {
-          if (err) {
-            return callback(err, null)
+        return api.subscribeRaw({
+          navigationKey,
+          ...options,
+          async callback(err, snapshot) {
+            if (err) {
+              return callback(err, null)
+            }
+
+            if (navigationKey) {
+              const nav = await compose(
+                unwrap(navigationKey),
+                pluckFields,
+                wrap(navigationKey)
+              )(snapshot.val())
+
+              return callback(null, structureItems(options, nav)) // Error-first callback
+            }
+
+            const withLocales = snapshot.val()
+
+            const withoutLocales = keys(withLocales).reduce(
+              (menus, key) =>
+                Object.assign(menus, {
+                  [key]: withLocales[key][context.locale]
+                }),
+              {}
+            )
+
+            const pluckedMenus = await pluckFields(withoutLocales)
+
+            const result = keys(pluckedMenus).reduce((menus, key) => {
+              const nav = pluckedMenus[key]
+              return Object.assign(menus, {
+                [key]: structureItems(options, nav)
+              })
+            }, {})
+
+            return callback(null, result) // Error-first callback
           }
-
-          const value = navigationKey
-            ? { [navigationKey]: snapshot.val() }
-            : snapshot.val()
-          const result = await pluckFields(value)
-
-          return callback(null, navigationKey ? result[navigationKey] : result)
-        }
-      })
+        })
+      } catch (err) {
+        return callback(err, null)
+      }
     },
 
     add({ navigationKey, data }) {
@@ -131,21 +160,9 @@ const factory: FlamelinkNavigationFactory = context => {
                 createdBy: getCurrentUser(context),
                 createdDate: getTimestamp(context)
               },
-              description: data.description || '',
-              enabled:
-                typeof data.enabled === 'undefined'
-                  ? true
-                  : Boolean(data.enabled),
-              fields: castArray(data.fields) || [],
-              group: data.group || '',
-              icon: data.icon || '',
+              items: castArray(data.items) || [],
               id: navigationKey,
-              sortable:
-                typeof data.sortable === 'undefined'
-                  ? true
-                  : Boolean(data.sortable),
-              title: data.title || navigationKey,
-              type: data.type || 'collection'
+              title: data.title || navigationKey
             })
           : data
 
