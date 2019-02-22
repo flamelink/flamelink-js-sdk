@@ -45,6 +45,9 @@ export function logWarning(str: string) {
   console.warn(`[FLAMELINK] ${str}`)
 }
 
+export const wrap = curry((key: string, val: any) => ({ [key]: val }))
+export const unwrap = curry((key: string, val: any) => val[key])
+
 export class FlamelinkError extends Error {
   constructor(
     message: string,

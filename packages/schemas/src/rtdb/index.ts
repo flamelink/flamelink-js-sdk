@@ -15,7 +15,9 @@ import {
   logError,
   FlamelinkError,
   getTimestamp,
-  getCurrentUser
+  getCurrentUser,
+  wrap,
+  unwrap
 } from '@flamelink/sdk-utils'
 import { getSchemasRefPath } from './helpers'
 
@@ -47,12 +49,10 @@ const factory: FlamelinkSchemasFactory = context => {
 
       if (schemaKey) {
         // Wrap result for the field plucking to work
-        result = {
-          [schemaKey]: result
-        }
+        result = wrap(schemaKey, result)
       }
 
-      return await pluckFields(schemaKey ? result[schemaKey] : result)
+      return await pluckFields(schemaKey ? unwrap(schemaKey, result) : result)
     },
 
     getFieldsRaw({ schemaKey, ...options }) {
@@ -123,11 +123,11 @@ const factory: FlamelinkSchemasFactory = context => {
           }
 
           const value = schemaKey
-            ? { [schemaKey]: snapshot.val() }
+            ? wrap(schemaKey, snapshot.val())
             : snapshot.val()
           const result = await pluckFields(value)
 
-          return callback(null, schemaKey ? result[schemaKey] : result)
+          return callback(null, schemaKey ? unwrap(schemaKey, result) : result)
         }
       })
     },
