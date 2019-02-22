@@ -18,7 +18,7 @@ import {
   getTimestamp,
   getCurrentUser
 } from '@flamelink/sdk-utils'
-import { BATCH_WRITE_LIMIT } from '../constants'
+import { CF_BATCH_WRITE_LIMIT } from '../constants'
 
 const SCHEMAS_COLLECTION = 'fl_schemas'
 
@@ -213,7 +213,7 @@ const factory: FlamelinkSchemasFactory = context => {
         return
       }
 
-      const schemaDocChunks: any[] = chunk(snapshot.docs, BATCH_WRITE_LIMIT)
+      const schemaDocChunks: any[] = chunk(snapshot.docs, CF_BATCH_WRITE_LIMIT)
       const db = flamelink._ensureService('firestore', context)
 
       const batchQueue = createQueue(async (schemaDocChunk: any[]) => {

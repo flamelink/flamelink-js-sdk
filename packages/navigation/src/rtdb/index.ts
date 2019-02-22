@@ -16,7 +16,8 @@ import {
   wrap,
   unwrap
 } from '@flamelink/sdk-utils'
-import { getNavigationRefPath, structureItems } from './helpers'
+import { getNavigationRefPath } from './helpers'
+import { structureItems } from '../helpers'
 
 const factory: FlamelinkNavigationFactory = context => {
   const api: NavigationPublicApi = {
