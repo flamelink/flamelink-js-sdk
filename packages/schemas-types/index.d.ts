@@ -20,7 +20,9 @@ interface SubscribeArgsForRTDB extends OptionsForRTDB {
   callback: SubscriptionCallback
 }
 
-interface GetArgsForCF extends OptionsForCF {}
+interface GetArgsForCF extends OptionsForCF {
+  schemaKey?: string
+}
 
 interface UpsertArgsForCF extends OptionsForCF {
   schemaKey: string

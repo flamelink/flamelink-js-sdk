@@ -4,9 +4,11 @@ import castArray from 'lodash/castArray'
 import curry from 'lodash/curry'
 import reduce from 'lodash/reduce'
 import isArray from 'lodash/isArray'
+import cloneDeep from 'lodash/cloneDeep'
 import isPlainObject from 'lodash/isPlainObject'
 import memoize from 'lodash/memoize'
 import pick from 'lodash/fp/pick'
+import compose from 'compose-then'
 import {
   OrderByOptionsForRTDB,
   FilterOptionsForRTDB,
@@ -328,21 +330,21 @@ export const formatStructure = curry(
     if (structure === 'nested' || structure === 'tree') {
       const mapChildren = (levelItems: any[], previousId = 0): any[] =>
         levelItems
-          .map(item =>
-            Object.assign({}, item, {
-              children: formattedItems.filter(
-                innerItem => innerItem[parentProperty] === item[idProperty]
-              )
-            })
-          )
+          .map(item => ({
+            ...item,
+            children: formattedItems.filter(
+              innerItem => innerItem[parentProperty] === item[idProperty]
+            )
+          }))
           .filter(item => item[parentProperty] === previousId)
           .map(item => {
             if (item.children.length === 0) {
               return item
             }
-            return Object.assign({}, item, {
+            return {
+              ...item,
               children: mapChildren(item.children, item[idProperty])
-            })
+            }
           })
 
       return mapChildren(formattedItems, 0)
@@ -369,7 +371,9 @@ interface PopulateFieldOption {
  * @param {Array} `populate` Can be an array of strings, objects or a mix
  * @returns {Array} Always an array of objects in the format `{ field: nameOfFieldToPopulate, ...otherOptions }`
  */
-export const prepPopulateFields = (populate: any): PopulateFieldOption[] => {
+export const prepPopulateFields = (
+  populate?: string[] | PopulateFieldOption | PopulateFieldOption[]
+): PopulateFieldOption[] => {
   if (typeof memo.prepPopulateFields === 'undefined') {
     memo.prepPopulateFields = memoize(
       fields => {
@@ -456,3 +460,371 @@ export const createQueue = curry((promiseFn: any, list: any[]) => ({
       Promise.resolve([])
     )
 }))
+
+const getPopulateFieldsForSchema = async (
+  schemasAPI: any,
+  schemaFields: SchemaField[]
+): Promise<any[]> =>
+  schemaFields.reduce(async (chain, field) => {
+    switch (field.type) {
+      case 'media':
+        return chain.then((result: any[]) =>
+          result.concat({ field: field.key })
+        )
+
+      case 'select-relational':
+      case 'tree-relational':
+        return chain.then(async (result: any[]) =>
+          result.concat({
+            field: field.key,
+            populate: await getPopulateFieldsForSchema(
+              schemasAPI,
+              await schemasAPI.getFields({ schemaKey: field.relation })
+            )
+          })
+        )
+
+      case 'fieldset':
+      case 'repeater':
+        return chain.then(async (result: any[]) =>
+          result.concat({
+            field: field.key,
+            subFields: await getPopulateFieldsForSchema(
+              schemasAPI,
+              field.options
+            )
+          })
+        )
+
+      default:
+        return chain
+    }
+  }, Promise.resolve([]))
+
+interface GridColumns {
+  lg?: number
+  md?: number
+  sm?: number
+  xs?: number
+}
+
+interface SchemaFieldConstraint {
+  rule: string
+  ruleValue?: any
+}
+
+interface SchemaField {
+  key: string
+  description: string
+  title: string
+  hidden: boolean
+  show: boolean
+  type: string
+  gridColumns: GridColumns
+  defaultValue?: any
+  multiple?: boolean
+  relation?: string
+  relationFieldsToShow?: string[]
+  fieldSeparator?: string
+  constraints?: SchemaFieldConstraint[]
+  [key: string]: any
+}
+
+const getFieldsToPopulate = (
+  preppedPopulateFields: PopulateFieldOption[],
+  schemaFields: SchemaField[]
+): PopulateFieldOption[] => {
+  return preppedPopulateFields.reduce((fields, preppedField) => {
+    const schemaField =
+      schemaFields &&
+      schemaFields.find(field => field.key === preppedField.field)
+
+    if (!schemaField) {
+      return fields
+    }
+
+    // Relational Fields
+    if (schemaField.relation) {
+      return fields.concat([
+        {
+          ...preppedField,
+          contentType: schemaField.relation,
+          populateType: 'relational'
+        }
+      ])
+    }
+
+    // Media Fields
+    if (schemaField.type === 'media') {
+      return fields.concat([{ ...preppedField, populateType: 'media' }])
+    }
+
+    // Repeater Fields
+    if (schemaField.type === 'repeater' && isArray(preppedField.subFields)) {
+      return fields.concat([{ ...preppedField, populateType: 'repeater' }])
+    }
+
+    // Fieldset Fields
+    if (schemaField.type === 'fieldset' && isArray(preppedField.subFields)) {
+      return fields.concat([{ ...preppedField, populateType: 'fieldset' }])
+    }
+
+    return fields
+  }, [])
+}
+
+/**
+ * TODO: This needs a proper refactor and type fix - so far it has been loosely copied over from previous JS version
+ */
+export const populateEntryForRTDB = curry(
+  async (
+    context: FlamelinkContext,
+    contentType: string,
+    populate: any,
+    originalEntry: any
+  ) => {
+    if (!originalEntry) {
+      return originalEntry
+    }
+
+    const entryKeys = keys(originalEntry)
+
+    if (entryKeys.length === 0) {
+      throw new FlamelinkError(
+        '"populateEntryForRTDB" should be called with an object of objects'
+      )
+    }
+
+    const contentAPI = context.modules.content
+    const schemasAPI = context.modules.schemas
+    const storageAPI = context.modules.storage
+
+    const processEntry = curry(
+      async (
+        entry: any,
+        schemaFields: SchemaField[],
+        preppedPopulateFields: PopulateFieldOption[],
+        entryKey: string
+      ) => {
+        if (!preppedPopulateFields[0]) {
+          return entry
+        }
+
+        const fieldsToPopulate = getFieldsToPopulate(
+          preppedPopulateFields,
+          schemaFields
+        )
+
+        if (!fieldsToPopulate[0]) {
+          return entry
+        }
+
+        const populatedFields = await Promise.all(
+          fieldsToPopulate.map(async populateField => {
+            const {
+              field,
+              subFields,
+              contentType: innerContentType,
+              populateType
+            } = populateField
+
+            switch (populateType) {
+              case 'media':
+                // if it exists, the entry value for this field should be an array
+                if (entry[entryKey] && entry[entryKey].hasOwnProperty(field)) {
+                  const mediaEntries = entry[entryKey][field] || []
+
+                  if (!isArray(mediaEntries)) {
+                    throw new FlamelinkError(
+                      `The "${field}" field does not seem to be a valid media property.`
+                    )
+                  }
+
+                  return Promise.all(
+                    mediaEntries.map(async innerEntryKey => {
+                      const pluckFields = pluckResultFields(
+                        populateField.fields
+                      )
+                      const populateFields = populateEntryForRTDB(
+                        context,
+                        innerContentType,
+                        populateField.populate
+                      )
+
+                      const [fileObject, fileURL] = await Promise.all([
+                        storageAPI.getFile({
+                          ...populateField,
+                          fileId: innerEntryKey
+                        }),
+                        storageAPI.getURL({
+                          ...populateField,
+                          fileId: innerEntryKey
+                        })
+                      ])
+
+                      return await compose(
+                        unwrap(innerEntryKey),
+                        populateFields,
+                        pluckFields,
+                        wrap(innerEntryKey)
+                      )({ ...fileObject, url: fileURL })
+                    })
+                  )
+                }
+
+                return null
+
+              case 'relational':
+                // if it exists, the entry value for this field should be an array
+                if (entry[entryKey] && entry[entryKey].hasOwnProperty(field)) {
+                  let relationalEntries: string[] = entry[entryKey][field]
+
+                  relationalEntries = castArray(relationalEntries)
+
+                  return Promise.all(
+                    relationalEntries.map(async innerEntryKey => {
+                      const pluckFields = pluckResultFields(
+                        populateField.fields
+                      )
+
+                      const populateFields = populateEntryForRTDB(
+                        context,
+                        innerContentType,
+                        populateField.populate
+                      )
+
+                      const snapshot = await contentAPI.getRaw({
+                        ...populateField,
+                        schemaKey: innerContentType,
+                        entryId: innerEntryKey
+                      })
+
+                      return await compose(
+                        unwrap(innerEntryKey),
+                        populateFields,
+                        pluckFields,
+                        wrap(innerEntryKey)
+                      )(snapshot.val())
+                    })
+                  )
+                }
+
+                return null
+
+              case 'repeater':
+                // if it exists, the entry value for this field should be an array
+                if (entry[entryKey] && entry[entryKey].hasOwnProperty(field)) {
+                  const repeaterFields = entry[entryKey][field] || []
+
+                  if (!isArray(repeaterFields)) {
+                    throw new FlamelinkError(
+                      `The "${field}" field does not seem to be a valid repeater field.`
+                    )
+                  }
+
+                  const schemaField =
+                    schemaFields && schemaFields.find(f => f.key === field)
+
+                  return Promise.all(
+                    repeaterFields.map(async (repeaterField, repeaterIndex) => {
+                      const repeaterIndexKey = repeaterIndex.toString()
+                      const processedRepeaterField = await processEntry(
+                        wrap(repeaterIndexKey, repeaterField),
+                        schemaField.options || [],
+                        prepPopulateFields(subFields),
+                        repeaterIndexKey
+                      )
+
+                      return unwrap(repeaterIndexKey, processedRepeaterField)
+                    })
+                  )
+                }
+
+                return null
+
+              case 'fieldset':
+                // if it exists, the entry value for this field should be an object
+                if (entry[entryKey] && entry[entryKey].hasOwnProperty(field)) {
+                  const fieldsetFields = entry[entryKey][field]
+
+                  if (!isPlainObject(fieldsetFields)) {
+                    throw new FlamelinkError(
+                      `The "${field}" field does not seem to be a valid fieldset field.`
+                    )
+                  }
+
+                  const schemaField =
+                    schemaFields && schemaFields.find(f => f.key === field)
+
+                  const processedFieldsetFields = await Promise.all(
+                    keys(fieldsetFields).map(
+                      async (fieldsetKey, fieldsetIndex) => {
+                        const fieldsetIndexKey = fieldsetIndex.toString()
+                        const processedFieldsetField = await processEntry(
+                          wrap(fieldsetIndexKey, {
+                            [fieldsetKey]: fieldsetFields[fieldsetKey]
+                          }), // entry
+                          schemaField.options || [], // schemaFields
+                          prepPopulateFields(subFields), // populate fields
+                          fieldsetIndexKey // entry key
+                        )
+
+                        return unwrap(fieldsetIndexKey, processedFieldsetField)
+                      }
+                    )
+                  )
+
+                  return processedFieldsetFields.reduce(
+                    (sum, fieldsetField) => Object.assign(sum, fieldsetField),
+                    {}
+                  )
+                }
+
+                return null
+
+              default:
+                return entry[entryKey][field]
+            }
+          })
+        )
+
+        return fieldsToPopulate.reduce(
+          (populatedEntry: any, populateField: any, index: any) => {
+            const { field } = populateField
+            if (
+              populatedEntry[entryKey] &&
+              populatedEntry[entryKey].hasOwnProperty(field)
+            ) {
+              populatedEntry[entryKey][field] = populatedFields[index] // eslint-disable-line no-param-reassign
+            }
+            return populatedEntry
+          },
+          cloneDeep(entry)
+        )
+      }
+    )
+
+    const schemaFields: SchemaField[] = await schemasAPI.getFields({
+      schemaKey: contentType
+    })
+
+    if (populate === true) {
+      populate = await getPopulateFieldsForSchema(schemasAPI, schemaFields)
+    }
+
+    const preppedPopulateFields = prepPopulateFields(populate)
+    const entries = await Promise.all(
+      entryKeys.map(
+        processEntry(originalEntry, schemaFields, preppedPopulateFields)
+      )
+    )
+
+    return entryKeys.reduce(
+      (populatedEntries, entryKey, index) =>
+        Object.assign(populatedEntries, {
+          [entryKey]: entries[index][entryKey]
+        }),
+      {}
+    )
+  }
+)

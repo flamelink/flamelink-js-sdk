@@ -39,8 +39,17 @@ export interface FlamelinkFactoryCreator {
   (): FlamelinkFactory
 }
 
+interface FlamelinkModules {
+  content?: any
+  schemas?: any
+  settings?: any
+  nav?: any
+  storage?: any
+  users?: any
+}
+
 export interface FlamelinkContext extends FlamelinkConfig {
-  modules: any
+  modules: FlamelinkModules
   services: any
   cache?: any
   proxySupported: boolean
