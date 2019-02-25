@@ -18,7 +18,10 @@ module.exports = {
     sourceType: 'module' // Allows for the use of imports
   },
   rules: {
-    '@typescript-eslint/explicit-function-return-type': 'off'
+    '@typescript-eslint/camelcase': 'off',
+    '@typescript-eslint/explicit-function-return-type': 'off',
+    '@typescript-eslint/no-parameter-properties': 'off',
+    'no-console': ['error', { allow: ['warn', 'error', 'log'] }]
   },
   overrides: [
     // Override some TypeScript rules just for .js files

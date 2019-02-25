@@ -7,7 +7,6 @@ import isArray from 'lodash/isArray'
 import isPlainObject from 'lodash/isPlainObject'
 import memoize from 'lodash/memoize'
 import pick from 'lodash/fp/pick'
-import compose from 'compose-then'
 import {
   OrderByOptionsForRTDB,
   FilterOptionsForRTDB,
@@ -49,6 +48,7 @@ export const wrap = curry((key: string, val: any) => ({ [key]: val }))
 export const unwrap = curry((key: string, val: any) => val[key])
 
 export class FlamelinkError extends Error {
+  // eslint-disable-next-line @typescript-eslint/explicit-member-accessibility
   constructor(
     message: string,
     public code: string = 'generic-error',
@@ -103,6 +103,8 @@ export const AVAILABLE_FILTER_OPTIONS_FOR_RTDB = [
   'endAt',
   'equalTo'
 ]
+
+export const CF_QUERY_CURSORS = ['startAt', 'startAfter', 'endAt', 'endBefore']
 
 export const hasNonCacheableOptionsForRTDB = (options: any): any => {
   const optionKeys = keys(options)
@@ -236,8 +238,6 @@ export const applyFiltersForCF = (
   return ref
 }
 
-export const CF_QUERY_CURSORS = ['startAt', 'startAfter', 'endAt', 'endBefore']
-
 export const applyLimitAndOffsetsForCF = (
   ref: any,
   options: LimitOptionsForCF
@@ -358,6 +358,42 @@ export const applyOptionsForCF = (ref: any, options: OptionsForCF) => {
   return applyLimitAndOffsetsForCF(ordered, options)
 }
 
+interface PopulateFieldOption {
+  field: string
+  [key: string]: any
+}
+
+/**
+ * @description Ensure that the passed in `populate` property is returning an array of objects
+ * required by other populate functions.
+ * @param {Array} `populate` Can be an array of strings, objects or a mix
+ * @returns {Array} Always an array of objects in the format `{ field: nameOfFieldToPopulate, ...otherOptions }`
+ */
+export const prepPopulateFields = (populate: any): PopulateFieldOption[] => {
+  if (typeof memo.prepPopulateFields === 'undefined') {
+    memo.prepPopulateFields = memoize(
+      fields => {
+        if (!fields || !isArray(fields)) {
+          return []
+        }
+
+        return fields.map(option => {
+          if (typeof option === 'string') {
+            return {
+              field: option
+            }
+          }
+
+          return option as PopulateFieldOption
+        })
+      },
+      fields => JSON.stringify(fields)
+    )
+  }
+
+  return memo.prepPopulateFields(populate)
+}
+
 export const processReferencesForCF = curry(
   async (options: OptionsForCF, document: any): Promise<any> => {
     if (!isPlainObject(document) || !get(options, 'populate')) {
@@ -401,42 +437,6 @@ export const processReferencesForCF = curry(
     }, Promise.resolve({ ...document }))
   }
 )
-
-interface PopulateFieldOption {
-  field: string
-  [key: string]: any
-}
-
-/**
- * @description Ensure that the passed in `populate` property is returning an array of objects
- * required by other populate functions.
- * @param {Array} `populate` Can be an array of strings, objects or a mix
- * @returns {Array} Always an array of objects in the format `{ field: nameOfFieldToPopulate, ...otherOptions }`
- */
-export const prepPopulateFields = (populate: any): PopulateFieldOption[] => {
-  if (typeof memo.prepPopulateFields === 'undefined') {
-    memo.prepPopulateFields = memoize(
-      fields => {
-        if (!fields || !isArray(fields)) {
-          return []
-        }
-
-        return fields.map(option => {
-          if (typeof option === 'string') {
-            return {
-              field: option
-            }
-          }
-
-          return option as PopulateFieldOption
-        })
-      },
-      fields => JSON.stringify(fields)
-    )
-  }
-
-  return memo.prepPopulateFields(populate)
-}
 
 /**
  * @description Utility to get the result of a given function invoked for a given list of items in sequence.

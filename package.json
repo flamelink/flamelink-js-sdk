@@ -82,7 +82,7 @@
     "test:ci": "jest",
     "test:watch": "jest --watch",
     "publish": "lerna run build && lerna publish",
-    "lint": "eslint --cache --ext js --ext ts 'packages/**/*.ts'",
+    "lint": "eslint --cache --ext ts 'packages/**/*.ts' --ignore-pattern '**/*.d.ts'",
     "lint:fix": "yarn run lint --fix",
     "serve-docs": "docsify serve ./docs -o true -p 4000"
   }

@@ -1,8 +1,6 @@
 import { FlamelinkContentFactory } from '@flamelink/sdk-content-types'
 
 const factory: FlamelinkContentFactory = context => {
-  console.log('content from cf', context)
-
   return {
     get: () => {},
     getByField: () => {},
