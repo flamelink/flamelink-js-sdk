@@ -8,7 +8,7 @@ import {
 
 type StringOrNumber = string | number
 
-export type ImageSize = {
+export interface ImageSize {
   width?: StringOrNumber
   maxWidth?: StringOrNumber
   height?: StringOrNumber

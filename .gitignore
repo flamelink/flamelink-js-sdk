@@ -44,6 +44,8 @@ typings/
 !.gitignore
 !.circleci
 !.prettierrc
+!.eslintrc.js
+!.lintstagedrc
 !.vscode
 !.github
 
