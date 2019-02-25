@@ -77,7 +77,7 @@ jobs:
       - <<: *restore_cache
       - <<: *install_node_modules
       - <<: *persist_cache
-      - run: yarn lint:ci
+      - run: yarn lint
 
   unit_tests_node8:
     executor:

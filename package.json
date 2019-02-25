@@ -35,14 +35,19 @@
   ],
   "devDependencies": {
     "@types/jest": "^23.3.13",
+    "@typescript-eslint/eslint-plugin": "^1.4.1",
+    "@typescript-eslint/parser": "^1.4.1",
     "brotli": "^1.3.2",
     "docsify-cli": "^4.3.0",
+    "eslint": "^5.14.1",
+    "eslint-config-prettier": "^4.0.0",
+    "eslint-plugin-prettier": "^3.0.1",
     "glob": "^7.1.3",
     "husky": "^1.3.1",
     "jest": "^23.6.0",
     "lerna": "^3.10.7",
     "lerna-changelog": "^0.8.2",
-    "precise-commits": "^1.0.2",
+    "lint-staged": "^8.1.4",
     "prettier": "1.16.0",
     "rimraf": "^2.6.3",
     "rollup": "^1.1.2",
@@ -52,13 +57,11 @@
     "rollup-plugin-terser": "^4.0.2",
     "rollup-plugin-typescript2": "^0.19.2",
     "ts-jest": "^23.10.5",
-    "tslint": "^5.12.1",
-    "tslint-config-prettier": "^1.17.0",
     "typescript": "^3.2.4"
   },
   "husky": {
     "hooks": {
-      "pre-commit": "precise-commits"
+      "pre-commit": ["lint-staged"]
     }
   },
   "changelog": {
@@ -79,8 +82,8 @@
     "test:ci": "jest",
     "test:watch": "jest --watch",
     "publish": "lerna run build && lerna publish",
-    "lint:ci": "tslint -p tsconfig.json -c tslint.json && prettier 'packages/**/*.ts'",
-    "lint": "tslint --fix -p tsconfig.json -c tslint.json && prettier --write 'packages/**/*.ts'",
+    "lint": "eslint --cache --ext ts 'packages/**/*.ts' --ignore-pattern '**/*.d.ts'",
+    "lint:fix": "yarn run lint --fix",
     "serve-docs": "docsify serve ./docs -o true -p 4000"
   }
 }
