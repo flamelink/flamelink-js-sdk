@@ -9,7 +9,8 @@ const content: SetupModule = function(context) {
       return getDefaultImport(require('./rtdb'))(context)
 
     case 'cf':
-      return getDefaultImport(require('./cf'))(context)
+      // return getDefaultImport(require('./cf'))(context)
+      return getDefaultImport(require('./rtdb'))(context)
 
     default:
       throw new Error('[FLAMELINK] No valid database type was provided')

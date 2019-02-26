@@ -103,10 +103,10 @@ const factory: FlamelinkStorageFactory = function(context) {
       if (context.isNodeEnvironment && !context.usesAdminApp) {
         throw new FlamelinkError(
           `
-        The Firebase client-side SDK cannot access the Storage Bucket server-side.
-        Please use the admin SDK instead - https://www.npmjs.com/package/firebase-admin
+The Firebase client-side SDK cannot access the Storage Bucket server-side.
+Please use the admin SDK instead - https://www.npmjs.com/package/firebase-admin
 
-        Instructions here: https://flamelink.github.io/flamelink-js-sdk/#/getting-started?id=usage`,
+Instructions here: https://flamelink.github.io/flamelink-js-sdk/#/getting-started?id=usage`,
           'service-unavailable'
         )
       }
