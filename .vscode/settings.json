@@ -9,5 +9,16 @@
     "rtdb",
     "schema",
     "sourcemap"
-  ]
+  ],
+  "workbench.colorCustomizations": {
+    "activityBar.background": "#ED463F",
+    "activityBar.foreground": "#e7e7e7",
+    "activityBar.inactiveForeground": "#e7e7e7",
+    "titleBar.activeBackground": "#ED463F",
+    "titleBar.activeForeground": "#e7e7e7",
+    "titleBar.inactiveBackground": "#ED463F",
+    "titleBar.inactiveForeground": "#e7e7e7",
+    "statusBar.background": "#ED463F",
+    "statusBar.foreground": "#e7e7e7"
+  }
 }

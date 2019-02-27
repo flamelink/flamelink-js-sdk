@@ -45,7 +45,13 @@ const factory: FlamelinkSchemasFactory = context => {
     async get({ schemaKey, ...options } = {}) {
       const pluckFields = pluckResultFields(options.fields)
 
-      const schemas: any[] = get(context, `cache.schemas[${context.env}]`, [])
+      let schemas: any[] = get(context, `cache.schemas[${context.env}]`, [])
+
+      if (schemaKey) {
+        schemas = schemas.filter(
+          schema => get(schema, '_fl_meta_.fl_id') === schemaKey
+        )
+      }
 
       if (
         !schemas.length ||
@@ -86,13 +92,20 @@ const factory: FlamelinkSchemasFactory = context => {
     subscribeRaw({ schemaKey, callback, ...options }) {
       const filtered = applyOptionsForCF(api.ref(schemaKey), options)
 
-      return filtered.onSnapshot(
-        {
+      const args = []
+
+      if (!context.usesAdminApp) {
+        args.push({
           includeMetadataChanges: !!options.includeMetadataChanges
-        },
+        })
+      }
+
+      args.push(
         (snapshot: any) => callback(null, snapshot),
         (err: Error) => callback(err, null)
       )
+
+      return filtered.onSnapshot(...args)
     },
 
     subscribe({ schemaKey, callback, changeType, ...options }) {
@@ -241,7 +254,7 @@ const factory: FlamelinkSchemasFactory = context => {
       schemaKeys.forEach(schemaKey => {
         api.subscribe({
           schemaKey,
-          callback: (err, schemas) => {
+          callback(err, schemas) {
             if (err) {
               return logError(err.toString())
             }

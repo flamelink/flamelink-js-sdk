@@ -1,4 +1,5 @@
 import get from 'lodash/get'
+import set from 'lodash/set'
 import keys from 'lodash/keys'
 import castArray from 'lodash/castArray'
 import curry from 'lodash/curry'
@@ -305,7 +306,7 @@ export const isRefLike = (value: any): boolean => {
     return false
   }
 
-  return typeof get(value, 'get') === 'function'
+  return typeof value.get === 'function'
 }
 
 interface StructureOptions {
@@ -399,7 +400,11 @@ export const prepPopulateFields = (
 }
 
 export const processReferencesForCF = curry(
-  async (options: OptionsForCF, document: any): Promise<any> => {
+  async (
+    firestoreService: any,
+    options: OptionsForCF,
+    document: any
+  ): Promise<any> => {
     if (!isPlainObject(document) || !get(options, 'populate')) {
       return document
     }
@@ -416,29 +421,72 @@ export const processReferencesForCF = curry(
 
     return fieldsToPopulate.reduce(async (chain, opt) => {
       const { field, populate } = opt
-      const val = document[field]
+      const val = get(document, field)
 
-      if (isRefLike(val)) {
-        const processRefs = processReferencesForCF({
-          populate: populateAllTheThings ? true : populate
-        })
-        const snapshot = await val.get()
+      const processRefs = processReferencesForCF(firestoreService, {
+        populate: populateAllTheThings ? true : populate
+      })
+
+      if (Array.isArray(val)) {
+        const fieldValue = await Promise.all(
+          val.map(async innerRef => {
+            if (isRefLike(innerRef)) {
+              const snapshot = await firestoreService.doc(innerRef.path).get()
+
+              if (typeof snapshot.forEach === 'function') {
+                const docs: DocumentSnapshotForCF[] = []
+                snapshot.forEach(async (doc: DocumentSnapshotForCF) =>
+                  docs.push(doc.data())
+                )
+                return Promise.all(docs.map(async doc => processRefs(doc)))
+              }
+
+              return processRefs(snapshot.data())
+            }
+
+            return innerRef
+          })
+        )
+
+        return chain.then(async acc => set(acc, field, fieldValue))
+      } else if (isRefLike(val)) {
+        const snapshot = await firestoreService.doc(val.path).get()
 
         if (typeof snapshot.forEach === 'function') {
           const docs: DocumentSnapshotForCF[] = []
           snapshot.forEach(async (doc: DocumentSnapshotForCF) =>
-            docs.push(await processRefs(doc.data()))
+            docs.push(doc.data())
           )
-          return chain.then(acc => Object.assign(acc, { [field]: docs }))
+          return chain.then(async acc =>
+            set(
+              acc,
+              field,
+              await Promise.all(docs.map(async doc => processRefs(doc)))
+            )
+          )
         }
 
         return chain.then(async acc =>
-          Object.assign(acc, { [field]: await processRefs(snapshot.data()) })
+          set(acc, field, await processRefs(snapshot.data()))
         )
       }
 
       return chain
     }, Promise.resolve({ ...document }))
+  }
+)
+
+export const populateEntriesForCF = curry(
+  async (firestoreService: any, options: OptionsForCF, entries: any[]) => {
+    if (!Array.isArray(entries)) {
+      return []
+    }
+
+    return Promise.all(
+      entries.map(async entry =>
+        processReferencesForCF(firestoreService, options, entry)
+      )
+    )
   }
 )
 
@@ -576,7 +624,7 @@ const getFieldsToPopulate = (
 /**
  * TODO: This needs a proper refactor and type fix - so far it has been loosely copied over from previous JS version
  */
-export const populateEntryForRTDB = curry(
+export const populateEntry = curry(
   async (
     context: FlamelinkContext,
     contentType: string,
@@ -591,7 +639,7 @@ export const populateEntryForRTDB = curry(
 
     if (entryKeys.length === 0) {
       throw new FlamelinkError(
-        '"populateEntryForRTDB" should be called with an object of objects'
+        '"populateEntry" should be called with an object of objects'
       )
     }
 
@@ -642,10 +690,14 @@ export const populateEntryForRTDB = curry(
 
                   return Promise.all(
                     mediaEntries.map(async innerEntryKey => {
+                      console.log({
+                        media: isRefLike(innerEntryKey),
+                        innerEntryKey
+                      })
                       const pluckFields = pluckResultFields(
                         populateField.fields
                       )
-                      const populateFields = populateEntryForRTDB(
+                      const populateFields = populateEntry(
                         context,
                         innerContentType,
                         populateField.populate
@@ -683,28 +735,11 @@ export const populateEntryForRTDB = curry(
 
                   return Promise.all(
                     relationalEntries.map(async innerEntryKey => {
-                      const pluckFields = pluckResultFields(
-                        populateField.fields
-                      )
-
-                      const populateFields = populateEntryForRTDB(
-                        context,
-                        innerContentType,
-                        populateField.populate
-                      )
-
-                      const snapshot = await contentAPI.getRaw({
+                      return contentAPI.get({
                         ...populateField,
                         schemaKey: innerContentType,
                         entryId: innerEntryKey
                       })
-
-                      return await compose(
-                        unwrap(innerEntryKey),
-                        populateFields,
-                        pluckFields,
-                        wrap(innerEntryKey)
-                      )(snapshot.val())
                     })
                   )
                 }
@@ -825,6 +860,25 @@ export const populateEntryForRTDB = curry(
           [entryKey]: entries[index][entryKey]
         }),
       {}
+    )
+  }
+)
+
+export const populateEntries = curry(
+  async (
+    context: FlamelinkContext,
+    contentType: string,
+    populate: any,
+    entries: any[]
+  ) => {
+    if (!Array.isArray(entries)) {
+      return []
+    }
+
+    return Promise.all(
+      entries.map(async entry =>
+        populateEntry(context, contentType, populate, entry)
+      )
     )
   }
 )
