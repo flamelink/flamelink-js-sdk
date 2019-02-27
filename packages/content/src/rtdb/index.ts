@@ -11,7 +11,7 @@ import {
 import {
   applyOptionsForRTDB,
   pluckResultFields,
-  populateEntryForRTDB,
+  populateEntry,
   FlamelinkError,
   getTimestamp,
   getCurrentUser,
@@ -39,11 +39,7 @@ const factory: FlamelinkContentFactory = context => {
 
     async get({ schemaKey, entryId, ...options } = {}) {
       const pluckFields = pluckResultFields(options.fields)
-      const populateFields = populateEntryForRTDB(
-        context,
-        schemaKey,
-        options.populate
-      )
+      const populateFields = populateEntry(context, schemaKey, options.populate)
       const snapshot = await api.getRaw({ ...options, schemaKey, entryId })
 
       if (entryId) {
@@ -87,20 +83,20 @@ const factory: FlamelinkContentFactory = context => {
       return result
     },
 
-    getByFieldRaw({ schemaKey, fields, value, ...options }) {
+    getByFieldRaw({ schemaKey, field, value, ...options }) {
       return api.getRaw({
         schemaKey,
         ...options,
-        orderByChild: fields,
+        orderByChild: field,
         equalTo: value
       })
     },
 
-    async getByField({ schemaKey, fields, value, ...options }) {
+    async getByField({ schemaKey, field, value, ...options }) {
       return api.get({
         schemaKey,
         ...options,
-        orderByChild: fields,
+        orderByChild: field,
         equalTo: value
       })
     },

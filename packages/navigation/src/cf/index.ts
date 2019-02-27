@@ -86,13 +86,20 @@ const factory: FlamelinkNavigationFactory = context => {
     subscribeRaw({ navigationKey, callback, ...options }) {
       const filtered = applyOptionsForCF(api.ref(navigationKey), options)
 
-      return filtered.onSnapshot(
-        {
+      const args = []
+
+      if (!context.usesAdminApp) {
+        args.push({
           includeMetadataChanges: !!options.includeMetadataChanges
-        },
+        })
+      }
+
+      args.push(
         (snapshot: any) => callback(null, snapshot),
         (err: Error) => callback(err, null)
       )
+
+      return filtered.onSnapshot(...args)
     },
 
     subscribe({ navigationKey, callback, changeType, ...options }) {
