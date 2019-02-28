@@ -26,6 +26,7 @@ const factory: FlamelinkSchemasFactory = context => {
   const api: SchemasPublicApi = {
     ref(schemaKey) {
       const firestoreService = flamelink._ensureService('firestore', context)
+      context.emitter.emit('schema:ref', { schemaKey })
 
       const baseRef = firestoreService
         .collection(SCHEMAS_COLLECTION)
@@ -282,7 +283,8 @@ const factory: FlamelinkSchemasFactory = context => {
     }
   }
 
-  subscribeAndCacheSchemas()
+  // Only start precaching when the user starts interacting with this API
+  context.emitter.once('schema:ref', subscribeAndCacheSchemas)
 
   return api
 }

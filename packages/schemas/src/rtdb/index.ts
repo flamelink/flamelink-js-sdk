@@ -23,9 +23,10 @@ import { getSchemasRefPath } from './helpers'
 
 const factory: FlamelinkSchemasFactory = context => {
   const api: SchemasPublicApi = {
-    ref(schemaRef) {
+    ref(schemaKey) {
       const dbService = flamelink._ensureService('database', context)
-      return dbService.ref(getSchemasRefPath(schemaRef, context.env))
+      context.emitter.emit('schema:ref', { schemaKey })
+      return dbService.ref(getSchemasRefPath(schemaKey, context.env))
     },
 
     getRaw({ schemaKey, ...options }) {
@@ -225,7 +226,8 @@ const factory: FlamelinkSchemasFactory = context => {
     }
   }
 
-  subscribeAndCacheSchemas()
+  // Only start precaching when the user starts interacting with this API
+  context.emitter.once('schema:ref', subscribeAndCacheSchemas)
 
   return api
 }
