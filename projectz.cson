@@ -26,7 +26,7 @@
         ['badge', {image: 'https://img.shields.io/badge/maintained%20with-lerna-cc00ff.svg', alt: 'Lerna', url: 'https://lernajs.io/', title: 'Maintained by Lerna'}],
         "npmversion",
         "npmdownloads",
-        ['badge', {image: 'https://circleci.com/gh/jperasmus/flamelink-js-sdk.svg?style=svg&circle-token=dd64f26e069cdd05f52cf304304e0d97ee967b07', alt: 'CircleCI', url: 'https://circleci.com/gh/jperasmus/flamelink-js-sdk.svg?style=svg&circle-token=dd64f26e069cdd05f52cf304304e0d97ee967b07', title: 'CircleCI'}],
+        ['badge', {image: 'https://circleci.com/gh/flamelink/flamelink-js-sdk.svg?style=svg&circle-token=dd64f26e069cdd05f52cf304304e0d97ee967b07', alt: 'CircleCI', url: 'https://circleci.com/gh/flamelink/flamelink-js-sdk.svg?style=svg&circle-token=dd64f26e069cdd05f52cf304304e0d97ee967b07', title: 'CircleCI'}],
         ['badge', {image: 'https://data.jsdelivr.com/v1/package/npm/flamelink/badge', alt: 'jsDelivr', url: 'https://www.jsdelivr.com/package/npm/flamelink', title: 'jsDelivr'}],
         "---",
         'twittertweet',
