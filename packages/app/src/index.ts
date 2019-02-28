@@ -22,6 +22,7 @@ import {
   DEFAULT_LOCALE,
   DEFAULT_DB_TYPE
 } from './constants'
+import { EventEmitter } from './event-emitter'
 
 const createFlamelinkFactory: FlamelinkFactoryCreator = () => {
   const registeredModules: RegisteredModule[] = []
@@ -48,6 +49,7 @@ const createFlamelinkFactory: FlamelinkFactoryCreator = () => {
       modules: {},
       services: {},
       cache: {},
+      emitter: new EventEmitter(),
       precache: typeof config.precache === 'undefined' ? true : config.precache,
       proxySupported: typeof Proxy !== 'undefined',
       usesAdminApp: isAdminApp(config.firebaseApp),

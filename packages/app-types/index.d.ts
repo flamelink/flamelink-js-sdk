@@ -48,10 +48,26 @@ interface FlamelinkModules {
   users?: any
 }
 
+export namespace EventEmitter {
+  type Listener = (...args: any[]) => void
+
+  interface Events {
+    [event: string]: Listener[]
+  }
+  interface Emitter {
+    on(event: string, listener: Listener): () => void
+    off(event: string, listener: Listener): void
+    offAll(): void
+    emit(event: string, ...args: any[]): void
+    once(event: string, listener: Listener): () => void
+  }
+}
+
 export interface FlamelinkContext extends FlamelinkConfig {
   modules: FlamelinkModules
   services: any
   cache?: any
+  emitter?: EventEmitter.Emitter
   proxySupported: boolean
   usesAdminApp: boolean
   isNodeEnvironment?: boolean
