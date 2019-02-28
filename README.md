@@ -10,7 +10,7 @@
 <span class="badge-badge"><a href="https://lernajs.io/" title="Maintained by Lerna"><img src="https://img.shields.io/badge/maintained%20with-lerna-cc00ff.svg" alt="Lerna" /></a></span>
 <span class="badge-npmversion"><a href="https://npmjs.org/package/flamelink" title="View this project on NPM"><img src="https://img.shields.io/npm/v/flamelink.svg" alt="NPM version" /></a></span>
 <span class="badge-npmdownloads"><a href="https://npmjs.org/package/flamelink" title="View this project on NPM"><img src="https://img.shields.io/npm/dm/flamelink.svg" alt="NPM downloads" /></a></span>
-<span class="badge-badge"><a href="https://circleci.com/gh/jperasmus/flamelink-js-sdk.svg?style=svg&circle-token=dd64f26e069cdd05f52cf304304e0d97ee967b07" title="CircleCI"><img src="https://circleci.com/gh/jperasmus/flamelink-js-sdk.svg?style=svg&circle-token=dd64f26e069cdd05f52cf304304e0d97ee967b07" alt="CircleCI" /></a></span>
+<span class="badge-badge"><a href="https://circleci.com/gh/flamelink/flamelink-js-sdk.svg?style=svg&circle-token=dd64f26e069cdd05f52cf304304e0d97ee967b07" title="CircleCI"><img src="https://circleci.com/gh/flamelink/flamelink-js-sdk.svg?style=svg&circle-token=dd64f26e069cdd05f52cf304304e0d97ee967b07" alt="CircleCI" /></a></span>
 <span class="badge-badge"><a href="https://www.jsdelivr.com/package/npm/flamelink" title="jsDelivr"><img src="https://data.jsdelivr.com/v1/package/npm/flamelink/badge" alt="jsDelivr" /></a></span>
 <br class="badge-separator" />
 
@@ -201,7 +201,7 @@ As easy as that. Read our [docs](https://flamelink.github.io/flamelink-js-sdk) f
 
 These amazing people are maintaining this project:
 
-<ul><li><a href="http://jperasmus.me">JP Erasmus</a></li></ul>
+<ul><li><a href="http://jperasmus.me">JP Erasmus</a> — <a href="https://github.com/flamelink/flamelink-js-sdk/commits?author=jperasmus" title="View the GitHub contributions of JP Erasmus on repository flamelink/flamelink-js-sdk">view contributions</a></li></ul>
 
 <h3>Sponsors</h3>
 
@@ -213,7 +213,7 @@ No sponsors yet! Will you be the first?
 
 These amazing people have contributed code to this project:
 
-<ul><li><a href="http://jperasmus.me">JP Erasmus</a></li></ul>
+<ul><li><a href="http://jperasmus.me">JP Erasmus</a> — <a href="https://github.com/flamelink/flamelink-js-sdk/commits?author=jperasmus" title="View the GitHub contributions of JP Erasmus on repository flamelink/flamelink-js-sdk">view contributions</a></li></ul>
 
 
 
