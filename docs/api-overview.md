@@ -18,7 +18,7 @@ Almost all API methods have a _raw_ method as well which will return the raw **s
 
 ## Firebase App Instance
 
-In the unlikely event that you run into a sticky situation where you need to perform an advanced query on your Firebase database that you're unable to do with the Flamelink SDK, we conveniently expose the Firebase app instance for you as `app.firebaseApp`. This means that you are never stuck. In any case we'd love to hear from you, so please take a few moments to [log your issue](https://github.com/flamelink/flamelink/issues) on GitHub and we'll see what we can do to help you out. _Flamelink’s got yo back, yo._
+In the unlikely event that you run into a sticky situation where you need to perform an advanced query on your Firebase database that you're unable to do with the Flamelink SDK, we conveniently expose the Firebase app instance for you as `app.firebaseApp`. This means that you are never stuck. In any case we'd love to hear from you, so please take a few moments to [log your issue](https://github.com/flamelink/flamelink-js-sdk/issues) on GitHub and we'll see what we can do to help you out. _Flamelink’s got yo back, yo._
 
 ## Firebase Services
 

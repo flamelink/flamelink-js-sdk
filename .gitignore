@@ -48,6 +48,7 @@ typings/
 !.lintstagedrc
 !.vscode
 !.github
+!.nojekyll
 
 # Build files
 dist
