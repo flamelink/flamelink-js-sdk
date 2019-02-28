@@ -1,0 +1,42 @@
+{
+    "title": "Flamelink JavaScript SDK",
+    "name": "flamelink",
+    "homepage": "https://github.com/flamelink/flamelink-js-sdk",
+    "demo": "https://github.com/flamelink/flamelink-js-sdk",
+    "description": "This SDK is intended for use in a browser or Node.js environment.
+    \n\nIf you are unfamiliar with Flamelink, please visit our [flamelink.io](https://www.flamelink.io/) website for more info on features, pricing and more.",
+    "license": "MIT",
+    "browsers": true,
+    "author": "Flamelink <feedback@flamelink.io> (http://flamelink.io)",
+    "maintainers": [
+      "JP Erasmus <jp@flamelink.io> (http://jperasmus.me)"
+    ],
+    "contributors": [
+      "JP Erasmus <jp@flamelink.io> (http://jperasmus.me)"
+    ]
+    "repository": {
+      "type": "git",
+      "url": "https://github.com/flamelink/flamelink-js-sdk.git"
+    },
+    "bugs": {
+      "url": "https://github.com/flamelink/flamelink-js-sdk/issues"
+    },
+    "badges": {
+      "list": [
+        ['badge', {image: 'https://img.shields.io/badge/maintained%20with-lerna-cc00ff.svg', alt: 'Lerna', url: 'https://lernajs.io/', title: 'Maintained by Lerna'}],
+        "npmversion",
+        "npmdownloads",
+        ['badge', {image: 'https://circleci.com/gh/jperasmus/flamelink-js-sdk.svg?style=svg&circle-token=dd64f26e069cdd05f52cf304304e0d97ee967b07', alt: 'CircleCI', url: 'https://circleci.com/gh/jperasmus/flamelink-js-sdk.svg?style=svg&circle-token=dd64f26e069cdd05f52cf304304e0d97ee967b07', title: 'CircleCI'}],
+        ['badge', {image: 'https://data.jsdelivr.com/v1/package/npm/flamelink/badge', alt: 'jsDelivr', url: 'https://www.jsdelivr.com/package/npm/flamelink', title: 'jsDelivr'}],
+        "---",
+        'twittertweet',
+        'twitterfollow',
+        'githubfollow',
+        'githubstar',
+      ],
+      "config": {
+        "twitterUsername": "FlamelinkCMS",
+        "githubUsername": "flamelink"
+      }
+    }
+}

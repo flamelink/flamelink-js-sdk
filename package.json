@@ -1,9 +1,9 @@
 {
-  "name": "flamelink-js-sdk",
+  "name": "flamelink",
   "version": "1.0.0",
-  "description": "Monorepo for all the Flamelink JavaScript SDK repos",
+  "description": "This SDK is intended for use in a browser or Node.js environment. \n\nIf you are unfamiliar with Flamelink, please visit our [flamelink.io](https://www.flamelink.io/) website for more info on features, pricing and more.",
   "private": true,
-  "author": "Flamelink <feedback@flamelink.io> (https://flamelink.io)",
+  "author": "Flamelink <feedback@flamelink.io> (http://flamelink.io)",
   "license": "MIT",
   "keywords": [
     "flamelink",
@@ -28,7 +28,7 @@
     "url": "git@github.com:jperasmus/flamelink-js-sdk.git"
   },
   "bugs": {
-    "url": "https://github.com/jperasmus/flamelink-js-sdk/issues"
+    "url": "https://github.com/flamelink/flamelink-js-sdk/issues"
   },
   "workspaces": [
     "packages/*"
@@ -49,6 +49,7 @@
     "lerna-changelog": "^0.8.2",
     "lint-staged": "^8.1.4",
     "prettier": "1.16.0",
+    "projectz": "^1.7.4",
     "rimraf": "^2.6.3",
     "rollup": "^1.1.2",
     "rollup-plugin-commonjs": "^9.2.0",
@@ -61,7 +62,7 @@
   },
   "husky": {
     "hooks": {
-      "pre-commit": ["lint-staged"]
+      "pre-commit": "npm run generate-readme && lint-staged"
     }
   },
   "changelog": {
@@ -76,6 +77,7 @@
     "bootstrap": "lerna bootstrap",
     "changelog": "lerna-changelog",
     "create-package": "lerna create",
+    "generate-readme": "projectz compile",
     "dev": "lerna exec --parallel --ignore '@flamelink/sdk-*-types' yarn run dev",
     "build": "lerna run build",
     "test": "lerna exec --ignore '@flamelink/sdk-*-types' yarn run test",
@@ -85,5 +87,11 @@
     "lint": "eslint --cache --ext ts 'packages/**/*.ts' --ignore-pattern '**/*.d.ts'",
     "lint:fix": "yarn run lint --fix",
     "serve-docs": "docsify serve ./docs -o true -p 4000"
-  }
+  },
+  "maintainers": [
+    "JP Erasmus <jp@flamelink.io> (http://jperasmus.me)"
+  ],
+  "contributors": [
+    "JP Erasmus <jp@flamelink.io> (http://jperasmus.me)"
+  ]
 }
