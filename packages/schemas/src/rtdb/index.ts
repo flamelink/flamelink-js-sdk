@@ -133,6 +133,39 @@ const factory: FlamelinkSchemasFactory = context => {
       })
     },
 
+    subscribeFields({ schemaKey, fields, callback, ...options }) {
+      const pluckFields = pluckResultFields(fields)
+
+      return api.subscribeRaw({
+        schemaKey,
+        ...options,
+        async callback(err, snapshot) {
+          if (err) {
+            return callback(err, null)
+          }
+
+          const val = snapshot.val()
+
+          if (schemaKey) {
+            const result = await pluckFields(get(val, 'fields', null))
+            return callback(null, result)
+          }
+
+          const result = await Object.keys(val || {}).reduce(
+            async (chain, sKey) => {
+              const sFields = await pluckFields(val[sKey].fields)
+              return chain.then(schemaFields =>
+                Object.assign(schemaFields, { [sKey]: sFields })
+              )
+            },
+            Promise.resolve({})
+          )
+
+          return callback(null, result)
+        }
+      })
+    },
+
     add({ schemaKey, data }) {
       const payload =
         typeof data === 'object'

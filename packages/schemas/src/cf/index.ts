@@ -146,6 +146,44 @@ const factory: FlamelinkSchemasFactory = context => {
       })
     },
 
+    subscribeFields({ schemaKey, fields, callback, changeType, ...options }) {
+      const pluckFields = pluckResultFields(fields)
+
+      return api.subscribeRaw({
+        schemaKey,
+        ...options,
+        async callback(err, snapshot) {
+          if (err) {
+            return callback(err, null)
+          }
+
+          if (snapshot.empty) {
+            return callback(null, [])
+          }
+
+          const schemaFields: any[] = []
+
+          if (changeType) {
+            snapshot.docChanges().forEach((change: any) => {
+              if (change.type === changeType) {
+                schemaFields.push(pluckFields(change.doc.data().fields))
+              }
+            })
+
+            if (!schemaFields.length) {
+              return
+            }
+          } else {
+            snapshot.forEach((doc: any) =>
+              schemaFields.push(pluckFields(doc.data().fields))
+            )
+          }
+
+          return callback(null, schemaKey ? schemaFields[0] : schemaFields)
+        }
+      })
+    },
+
     add({ schemaKey, data }) {
       if (!schemaKey) {
         throw new FlamelinkError(`Please provide the schema's "schemaKey"`)
