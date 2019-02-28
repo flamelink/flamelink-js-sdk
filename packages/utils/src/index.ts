@@ -449,6 +449,9 @@ export const processReferencesForCF = curry(
         )
 
         return chain.then(async acc => set(acc, field, fieldValue))
+      } else if (isPlainObject(val)) {
+        const newObject = await processRefs(val)
+        return chain.then(async acc => set(acc, field, newObject))
       } else if (isRefLike(val)) {
         const snapshot = await firestoreService.doc(val.path).get()
 

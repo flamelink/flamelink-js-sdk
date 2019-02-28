@@ -30,6 +30,7 @@ interface UpsertArgsForCF extends OptionsForCF {
 }
 
 interface SubscribeArgsForCF extends OptionsForCF {
+  schemaKey?: string
   callback: SubscriptionCallback
 }
 
@@ -49,6 +50,10 @@ export interface SchemasPublicApi {
   ): UnsubscribeMethod
 
   subscribe(args: SubscribeArgsForRTDB | SubscribeArgsForCF): UnsubscribeMethod
+
+  subscribeFields(
+    args: SubscribeArgsForRTDB | SubscribeArgsForCF
+  ): UnsubscribeMethod
 
   add(args: UpsertArgsForRTDB | UpsertArgsForCF): Promise<any>
 

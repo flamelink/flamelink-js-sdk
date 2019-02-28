@@ -26,6 +26,7 @@ const factory: FlamelinkSchemasFactory = context => {
   const api: SchemasPublicApi = {
     ref(schemaKey) {
       const firestoreService = flamelink._ensureService('firestore', context)
+      context.emitter.emit('schema:ref', { schemaKey })
 
       const baseRef = firestoreService
         .collection(SCHEMAS_COLLECTION)
@@ -141,6 +142,44 @@ const factory: FlamelinkSchemasFactory = context => {
 
           const plucked = pluckFields(schemas)
           return callback(null, schemaKey ? plucked[0] : plucked)
+        }
+      })
+    },
+
+    subscribeFields({ schemaKey, fields, callback, changeType, ...options }) {
+      const pluckFields = pluckResultFields(fields)
+
+      return api.subscribeRaw({
+        schemaKey,
+        ...options,
+        async callback(err, snapshot) {
+          if (err) {
+            return callback(err, null)
+          }
+
+          if (snapshot.empty) {
+            return callback(null, [])
+          }
+
+          const schemaFields: any[] = []
+
+          if (changeType) {
+            snapshot.docChanges().forEach((change: any) => {
+              if (change.type === changeType) {
+                schemaFields.push(pluckFields(change.doc.data().fields))
+              }
+            })
+
+            if (!schemaFields.length) {
+              return
+            }
+          } else {
+            snapshot.forEach((doc: any) =>
+              schemaFields.push(pluckFields(doc.data().fields))
+            )
+          }
+
+          return callback(null, schemaKey ? schemaFields[0] : schemaFields)
         }
       })
     },
@@ -282,7 +321,8 @@ const factory: FlamelinkSchemasFactory = context => {
     }
   }
 
-  subscribeAndCacheSchemas()
+  // Only start precaching when the user starts interacting with this API
+  context.emitter.once('schema:ref', subscribeAndCacheSchemas)
 
   return api
 }
