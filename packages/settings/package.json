@@ -1,6 +1,9 @@
 {
   "name": "@flamelink/sdk-settings",
-  "version": "0.0.1",
+  "version": "1.0.0-alpha.1",
+  "config": {
+    "access": "public"
+  },
   "description": "Settings module for Flamelink JavaScript SDK",
   "keywords": [
     "flamelink",
@@ -8,7 +11,7 @@
     "javascript"
   ],
   "author": "Flamelink <feedback@flamelink.io> (https://flamelink.io)",
-  "homepage": "https://flamelink.github.io/flamelink/",
+  "homepage": "https://flamelink.github.io/flamelink-js-sdk/",
   "license": "MIT",
   "main": "dist/cjs/index.js",
   "browser": "dist/cjs/index.js",
@@ -16,7 +19,7 @@
   "typings": "dist/index.d.ts",
   "directories": {
     "lib": "src",
-    "test": "__tests__"
+    "test": "src/__tests__"
   },
   "files": [
     "dist"

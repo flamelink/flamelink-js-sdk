@@ -7,7 +7,11 @@
     \n\nIf you are unfamiliar with Flamelink, please visit our [flamelink.io](https://www.flamelink.io/) website for more info on features, pricing and more.",
     "license": "MIT",
     "browsers": true,
-    "author": "Flamelink <feedback@flamelink.io> (http://flamelink.io)",
+    "author": {
+      "name": "Flamelink",
+      "email": "feedback@flamelink.io",
+      "url": "http://flamelink.io"
+    },
     "maintainers": [
       "JP Erasmus <jp@flamelink.io> (http://jperasmus.me)"
     ],

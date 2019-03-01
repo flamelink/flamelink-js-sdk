@@ -1,6 +1,9 @@
 {
   "name": "@flamelink/sdk-storage-types",
-  "version": "0.0.1",
+  "version": "1.0.0-alpha.1",
+  "config": {
+    "access": "public"
+  },
   "description": "Storage Types for Flamelink JavaScript SDK",
   "keywords": [
     "flamelink",
@@ -9,7 +12,7 @@
     "types"
   ],
   "author": "Flamelink <feedback@flamelink.io> (https://flamelink.io)",
-  "homepage": "https://flamelink.github.io/flamelink/",
+  "homepage": "https://flamelink.github.io/flamelink-js-sdk/",
   "license": "MIT",
   "files": [
     "index.d.ts"

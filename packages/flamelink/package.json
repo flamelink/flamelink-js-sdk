@@ -1,9 +1,9 @@
 {
   "name": "flamelink",
-  "version": "1.0.0-wip",
-  "description": "Javascript SDK for integrating with Flamelink CMS",
+  "version": "1.0.0-alpha.1",
+  "description": "Universal Javascript SDK for integrating with your Flamelink CMS",
   "author": "Flamelink <feedback@flamelink.io> (https://flamelink.io)",
-  "homepage": "https://flamelink.github.io/flamelink/",
+  "homepage": "https://flamelink.github.io/flamelink-js-sdk/",
   "license": "MIT",
   "keywords": [
     "flamelink",
