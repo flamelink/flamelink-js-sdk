@@ -1,13 +1,9 @@
 import get from 'lodash/get'
 import keys from 'lodash/keys'
-import castArray from 'lodash/castArray'
 import compose from 'compose-then'
 import flamelink from '@flamelink/sdk-app'
-import { UnsubscribeMethod } from '@flamelink/sdk-app-types'
-import {
-  FlamelinkContentFactory,
-  ContentPublicApi
-} from '@flamelink/sdk-content-types'
+import App from '@flamelink/sdk-app-types'
+import { FlamelinkFactory, Api, RTDB } from '@flamelink/sdk-content-types'
 import {
   applyOptionsForRTDB,
   pluckResultFields,
@@ -19,10 +15,9 @@ import {
   unwrap
 } from '@flamelink/sdk-utils'
 import { getContentRefPath } from './helpers'
-import { access } from 'fs'
 
-const factory: FlamelinkContentFactory = context => {
-  const api: ContentPublicApi = {
+const factory: FlamelinkFactory = context => {
+  const api: Api = {
     ref(reference) {
       const dbService = flamelink._ensureService('database', context)
       return dbService.ref(
@@ -30,14 +25,14 @@ const factory: FlamelinkContentFactory = context => {
       )
     },
 
-    getRaw({ schemaKey, entryId, ...options }) {
+    getRaw({ schemaKey, entryId, ...options }: RTDB.Get) {
       return applyOptionsForRTDB(
         api.ref(entryId ? [schemaKey, entryId] : schemaKey),
         options
       ).once(options.event || 'value')
     },
 
-    async get({ schemaKey, entryId, ...options } = {}) {
+    async get({ schemaKey, entryId, ...options }: RTDB.Get = {}) {
       const pluckFields = pluckResultFields(options.fields)
       const populateFields = populateEntry(context, schemaKey, options.populate)
       const snapshot = await api.getRaw({ ...options, schemaKey, entryId })
@@ -83,7 +78,7 @@ const factory: FlamelinkContentFactory = context => {
       return result
     },
 
-    getByFieldRaw({ schemaKey, field, value, ...options }) {
+    getByFieldRaw({ schemaKey, field, value, ...options }: RTDB.GetByField) {
       return api.getRaw({
         schemaKey,
         ...options,
@@ -92,7 +87,7 @@ const factory: FlamelinkContentFactory = context => {
       })
     },
 
-    async getByField({ schemaKey, field, value, ...options }) {
+    async getByField({ schemaKey, field, value, ...options }: RTDB.GetByField) {
       return api.get({
         schemaKey,
         ...options,
@@ -101,7 +96,7 @@ const factory: FlamelinkContentFactory = context => {
       })
     },
 
-    subscribeRaw({ schemaKey, entryId, callback, ...options }) {
+    subscribeRaw({ schemaKey, entryId, callback, ...options }: RTDB.Subscribe) {
       const filteredRef = applyOptionsForRTDB(
         api.ref(entryId ? [schemaKey, entryId] : schemaKey),
         options
@@ -113,12 +108,12 @@ const factory: FlamelinkContentFactory = context => {
         (err: Error) => callback(err, null)
       )
 
-      const unsubscribe: UnsubscribeMethod = () =>
+      const unsubscribe: App.UnsubscribeMethod = () =>
         filteredRef.off(options.event || 'value')
       return unsubscribe
     },
 
-    subscribe({ schemaKey, entryId, callback, ...options }) {
+    subscribe({ schemaKey, entryId, callback, ...options }: RTDB.Subscribe) {
       const pluckFields = pluckResultFields(options.fields)
 
       return api.subscribeRaw({
@@ -140,7 +135,7 @@ const factory: FlamelinkContentFactory = context => {
       })
     },
 
-    async add({ schemaKey, data }) {
+    async add({ schemaKey, data }: RTDB.Add) {
       const entryId = Date.now().toString()
 
       const schemasAPI = get(context, 'modules.schemas', {
@@ -179,7 +174,7 @@ const factory: FlamelinkContentFactory = context => {
       return api.ref([schemaKey, entryId]).set(payload)
     },
 
-    update({ schemaKey, entryId, data }) {
+    update({ schemaKey, entryId, data }: RTDB.Update) {
       if (
         typeof schemaKey !== 'string' ||
         !entryId ||
@@ -203,7 +198,7 @@ const factory: FlamelinkContentFactory = context => {
       return api.ref([schemaKey, entryId]).update(payload)
     },
 
-    remove({ schemaKey, entryId }) {
+    remove({ schemaKey, entryId }: RTDB.Remove) {
       if (!schemaKey) {
         throw new FlamelinkError(
           '"remove" called with the incorrect arguments. Check the docs for details.'

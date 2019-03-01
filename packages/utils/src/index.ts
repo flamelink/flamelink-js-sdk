@@ -10,17 +10,7 @@ import isPlainObject from 'lodash/isPlainObject'
 import memoize from 'lodash/memoize'
 import pick from 'lodash/fp/pick'
 import compose from 'compose-then'
-import {
-  OrderByOptionsForRTDB,
-  FilterOptionsForRTDB,
-  OrderByOptionsForCF,
-  FilterOptionsForCF,
-  LimitOptionsForCF,
-  OptionsForCF,
-  OptionsForRTDB,
-  DocumentSnapshotForCF,
-  FlamelinkContext
-} from '@flamelink/sdk-app-types'
+import App from '@flamelink/sdk-app-types'
 
 interface Memo {
   prepPopulateFields?(args: any): any
@@ -65,21 +55,21 @@ export class FlamelinkError extends Error {
   }
 }
 
-export const getFirestoreServiceFactory = (context: FlamelinkContext): any => {
+export const getFirestoreServiceFactory = (context: App.Context): any => {
   if (context.usesAdminApp) {
     return get(context, 'firebaseApp.firebaseInternals_.firebase_.firestore')
   }
   return get(context, 'firebaseApp.firebase_.firestore')
 }
 
-export const getAuthServiceFactory = (context: FlamelinkContext): any => {
+export const getAuthServiceFactory = (context: App.Context): any => {
   if (context.usesAdminApp) {
     return get(context, 'firebaseApp.firebaseInternals_.firebase_.auth')
   }
   return get(context, 'firebaseApp.firebase_.auth')
 }
 
-export const getTimestamp = (context: FlamelinkContext): any => {
+export const getTimestamp = (context: App.Context): any => {
   if (context.dbType === 'cf') {
     return get(getFirestoreServiceFactory(context), 'Timestamp.now', () =>
       new Date().toISOString()
@@ -89,7 +79,7 @@ export const getTimestamp = (context: FlamelinkContext): any => {
   return new Date().toISOString()
 }
 
-export const getCurrentUser = (context: FlamelinkContext): any => {
+export const getCurrentUser = (context: App.Context): any => {
   const auth = getAuthServiceFactory(context)
 
   if (typeof auth !== 'function') {
@@ -138,7 +128,7 @@ export const hasNonCacheableOptionsForCF = (options: any): any => {
 
 export const applyOrderByForRTDB = (
   ref: any,
-  options: OrderByOptionsForRTDB
+  options: App.RTDB.OrderByOptions
 ) => {
   if (options.orderByChild) {
     if (
@@ -165,7 +155,7 @@ export const applyOrderByForRTDB = (
 
 export const applyFiltersForRTDB = (
   ref: any,
-  options: FilterOptionsForRTDB = {}
+  options: App.RTDB.FilterOptions = {}
 ) => {
   if (!keys(options).length) {
     return ref
@@ -180,7 +170,7 @@ export const applyFiltersForRTDB = (
   }, ref)
 }
 
-export const applyOptionsForRTDB = (ref: any, options: OptionsForRTDB) => {
+export const applyOptionsForRTDB = (ref: any, options: App.RTDB.Options) => {
   const ordered = applyOrderByForRTDB(ref, options)
   return applyFiltersForRTDB(ordered, options)
 }
@@ -201,7 +191,7 @@ export const applyOrderByForCF = (ref: any, options: any): any => {
 
     if (Array.isArray(options.orderBy)) {
       return options.orderBy.reduce(
-        (orderedRef: any, option: OrderByOptionsForCF) => {
+        (orderedRef: any, option: App.CF.OrderByOptions) => {
           return applyOrderByForCF(orderedRef, { orderBy: option })
         },
         ref
@@ -216,7 +206,7 @@ export const applyOrderByForCF = (ref: any, options: any): any => {
 
 export const applyFiltersForCF = (
   ref: any,
-  options: FilterOptionsForCF
+  options: App.CF.FilterOptions
 ): any => {
   if (!keys(options).length) {
     return ref
@@ -243,7 +233,7 @@ export const applyFiltersForCF = (
 
 export const applyLimitAndOffsetsForCF = (
   ref: any,
-  options: LimitOptionsForCF
+  options: App.CF.LimitOptions
 ) => {
   if (!keys(options).length) {
     return ref
@@ -355,7 +345,7 @@ export const formatStructure = curry(
   }
 )
 
-export const applyOptionsForCF = (ref: any, options: OptionsForCF) => {
+export const applyOptionsForCF = (ref: any, options: App.CF.Options) => {
   const filtered = applyFiltersForCF(ref, options)
   const ordered = applyOrderByForCF(filtered, options)
   return applyLimitAndOffsetsForCF(ordered, options)
@@ -402,7 +392,7 @@ export const prepPopulateFields = (
 export const processReferencesForCF = curry(
   async (
     firestoreService: any,
-    options: OptionsForCF,
+    options: App.CF.Options,
     document: any
   ): Promise<any> => {
     if (!isPlainObject(document) || !get(options, 'populate')) {
@@ -434,8 +424,8 @@ export const processReferencesForCF = curry(
               const snapshot = await firestoreService.doc(innerRef.path).get()
 
               if (typeof snapshot.forEach === 'function') {
-                const docs: DocumentSnapshotForCF[] = []
-                snapshot.forEach(async (doc: DocumentSnapshotForCF) =>
+                const docs: App.CF.DocumentSnapshot[] = []
+                snapshot.forEach(async (doc: App.CF.DocumentSnapshot) =>
                   docs.push(doc.data())
                 )
                 return Promise.all(docs.map(async doc => processRefs(doc)))
@@ -456,8 +446,8 @@ export const processReferencesForCF = curry(
         const snapshot = await firestoreService.doc(val.path).get()
 
         if (typeof snapshot.forEach === 'function') {
-          const docs: DocumentSnapshotForCF[] = []
-          snapshot.forEach(async (doc: DocumentSnapshotForCF) =>
+          const docs: App.CF.DocumentSnapshot[] = []
+          snapshot.forEach(async (doc: App.CF.DocumentSnapshot) =>
             docs.push(doc.data())
           )
           return chain.then(async acc =>
@@ -480,7 +470,7 @@ export const processReferencesForCF = curry(
 )
 
 export const populateEntriesForCF = curry(
-  async (firestoreService: any, options: OptionsForCF, entries: any[]) => {
+  async (firestoreService: any, options: App.CF.Options, entries: any[]) => {
     if (!Array.isArray(entries)) {
       return []
     }
@@ -629,7 +619,7 @@ const getFieldsToPopulate = (
  */
 export const populateEntry = curry(
   async (
-    context: FlamelinkContext,
+    context: App.Context,
     contentType: string,
     populate: any,
     originalEntry: any
@@ -869,7 +859,7 @@ export const populateEntry = curry(
 
 export const populateEntries = curry(
   async (
-    context: FlamelinkContext,
+    context: App.Context,
     contentType: string,
     populate: any,
     entries: any[]

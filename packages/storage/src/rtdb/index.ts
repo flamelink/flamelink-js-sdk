@@ -6,7 +6,7 @@ import get from 'lodash/get'
 import set from 'lodash/set'
 import resizeImage from 'browser-image-resizer'
 import flamelink from '@flamelink/sdk-app'
-import { UnsubscribeMethod } from '@flamelink/sdk-app-types'
+import App from '@flamelink/sdk-app-types'
 import {
   FlamelinkStorageFactory,
   StoragePublicApi,
@@ -159,7 +159,7 @@ Instructions here: https://flamelink.github.io/flamelink-js-sdk/#/getting-starte
         (err: Error) => callback(err, null)
       )
 
-      const unsubscribe: UnsubscribeMethod = () =>
+      const unsubscribe: App.UnsubscribeMethod = () =>
         filteredRef.off(options.event || 'value')
       return unsubscribe
     },

@@ -9,9 +9,9 @@
  */
 
 import flamelink from '@flamelink/sdk-app'
-import { SetupModule, FlamelinkContext } from '@flamelink/sdk-app-types'
+import App from '@flamelink/sdk-app-types'
 
-const storage: SetupModule = async (context: FlamelinkContext) => {
+const storage: App.SetupModule = async (context: App.Context) => {
   if (context.dbType === 'rtdb') {
     const getApiForRTDB: any = await import('@flamelink/sdk-storage/dist/rtdb')
     return getApiForRTDB(context)

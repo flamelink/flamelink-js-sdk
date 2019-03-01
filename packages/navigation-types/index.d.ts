@@ -1,34 +1,28 @@
-import {
-  FlamelinkContext,
-  OptionsForRTDB,
-  OptionsForCF,
-  SubscriptionCallback,
-  UnsubscribeMethod
-} from '@flamelink/sdk-app-types'
+import App from '@flamelink/sdk-app-types'
 
-interface GetArgsForRTDB extends OptionsForRTDB {
+interface GetArgsForRTDB extends App.RTDB.Options {
   navigationKey?: string
 }
 
-interface UpsertArgsForRTDB extends OptionsForRTDB {
+interface UpsertArgsForRTDB extends App.RTDB.Options {
   navigationKey: string
   data: any
 }
 
-interface SubscribeArgsForRTDB extends OptionsForRTDB {
+interface SubscribeArgsForRTDB extends App.RTDB.Options {
   navigationKey?: string
-  callback: SubscriptionCallback
+  callback: App.SubscriptionCallback
 }
 
-interface GetArgsForCF extends OptionsForCF {}
+interface GetArgsForCF extends App.CF.Options {}
 
-interface UpsertArgsForCF extends OptionsForCF {
+interface UpsertArgsForCF extends App.CF.Options {
   navigationKey: string
   data: any
 }
 
-interface SubscribeArgsForCF extends OptionsForCF {
-  callback: SubscriptionCallback
+interface SubscribeArgsForCF extends App.CF.Options {
+  callback: App.SubscriptionCallback
 }
 
 export interface NavigationPublicApi {
@@ -44,9 +38,11 @@ export interface NavigationPublicApi {
 
   subscribeRaw(
     args: SubscribeArgsForRTDB | SubscribeArgsForCF
-  ): UnsubscribeMethod
+  ): App.UnsubscribeMethod
 
-  subscribe(args: SubscribeArgsForRTDB | SubscribeArgsForCF): UnsubscribeMethod
+  subscribe(
+    args: SubscribeArgsForRTDB | SubscribeArgsForCF
+  ): App.UnsubscribeMethod
 
   add(args: UpsertArgsForRTDB | UpsertArgsForCF): Promise<any>
 
@@ -56,5 +52,5 @@ export interface NavigationPublicApi {
 }
 
 export type FlamelinkNavigationFactory = (
-  context: FlamelinkContext
+  context: App.Context
 ) => NavigationPublicApi

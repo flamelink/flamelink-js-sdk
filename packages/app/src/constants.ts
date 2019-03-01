@@ -1,6 +1,6 @@
-import { ModuleName } from '@flamelink/sdk-app-types'
+import App from '@flamelink/sdk-app-types'
 
-export const PUBLIC_MODULES: ModuleName[] = [
+export const PUBLIC_MODULES: App.ModuleName[] = [
   'content',
   'schemas',
   'storage',

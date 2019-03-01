@@ -1,14 +1,4 @@
-// TODO: Move the necessary types to the `@flamelink/sdk-app-types/private.d.ts` file
-import {
-  ModuleName,
-  FirebaseService,
-  FlamelinkContext,
-  FlamelinkFactoryCreator,
-  FlamelinkConfig,
-  FlamelinkPublicApi,
-  SetupModule,
-  RegisteredModule
-} from '@flamelink/sdk-app-types'
+import App from '@flamelink/sdk-app-types'
 import { logWarning, logError } from '@flamelink/sdk-utils'
 import {
   getModule,
@@ -24,10 +14,10 @@ import {
 } from './constants'
 import { EventEmitter } from './event-emitter'
 
-const createFlamelinkFactory: FlamelinkFactoryCreator = () => {
-  const registeredModules: RegisteredModule[] = []
+const createFlamelinkFactory: App.FactoryCreator = () => {
+  const registeredModules: App.RegisteredModule[] = []
 
-  const initRegisteredModules = (context: FlamelinkContext): void => {
+  const initRegisteredModules = (context: App.Context): void => {
     registeredModules.forEach(({ moduleName, setupModule }) => {
       if (context.modules[moduleName]) {
         return logWarning(`Duplicate imports for the "${moduleName}" module`)
@@ -40,8 +30,8 @@ const createFlamelinkFactory: FlamelinkFactoryCreator = () => {
     })
   }
 
-  function flamelink(config: FlamelinkConfig): FlamelinkPublicApi {
-    const context: FlamelinkContext = {
+  function flamelink(config: App.Config): App.PublicApi {
+    const context: App.Context = {
       firebaseApp: config.firebaseApp,
       env: config.env || DEFAULT_ENVIRONMENT,
       locale: config.locale || DEFAULT_LOCALE,
@@ -60,23 +50,20 @@ const createFlamelinkFactory: FlamelinkFactoryCreator = () => {
 
     initRegisteredModules(context)
 
-    const api: FlamelinkPublicApi = PUBLIC_MODULES.reduce(
-      (acc: any, moduleName) => {
-        return Object.assign(acc, {
-          get [moduleName]() {
-            return getModule(moduleName, context)
-          }
-        })
-      },
-      {}
-    )
+    const api: App.PublicApi = PUBLIC_MODULES.reduce((acc: any, moduleName) => {
+      return Object.assign(acc, {
+        get [moduleName]() {
+          return getModule(moduleName, context)
+        }
+      })
+    }, {})
 
     return api
   }
 
   flamelink._registerModule = (
-    moduleName: ModuleName,
-    setupModule: SetupModule
+    moduleName: App.ModuleName,
+    setupModule: App.SetupModule
   ) => {
     registeredModules.push({
       moduleName,
@@ -85,8 +72,8 @@ const createFlamelinkFactory: FlamelinkFactoryCreator = () => {
   }
 
   flamelink._ensureService = (
-    serviceName: FirebaseService,
-    context: FlamelinkContext
+    serviceName: App.FirebaseService,
+    context: App.Context
   ) => {
     if (context.services[serviceName]) {
       return context.services[serviceName]
