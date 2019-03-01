@@ -63,7 +63,7 @@
   },
   "husky": {
     "hooks": {
-      "pre-commit": "npm run generate-readme ** git add README.md && lint-staged"
+      "pre-commit": "npm run generate-readme && git add README.md && lint-staged"
     }
   },
   "changelog": {
