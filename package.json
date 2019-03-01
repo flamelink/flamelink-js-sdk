@@ -3,11 +3,7 @@
   "version": "1.0.0",
   "description": "This SDK is intended for use in a browser or Node.js environment. \n\nIf you are unfamiliar with Flamelink, please visit our [flamelink.io](https://www.flamelink.io/) website for more info on features, pricing and more.",
   "private": true,
-  "author": {
-    "name": "Flamelink",
-    "email": "feedback@flamelink.io",
-    "url": "http://flamelink.io"
-  },
+  "author": "Flamelink <feedback@flamelink.io> (http://flamelink.io)",
   "homepage": "https://github.com/flamelink/flamelink-js-sdk#readme",
   "license": "MIT",
   "keywords": [
@@ -67,7 +63,7 @@
   },
   "husky": {
     "hooks": {
-      "pre-commit": "npm run generate-readme && lint-staged"
+      "pre-commit": "npm run generate-readme ** git add README.md && lint-staged"
     }
   },
   "changelog": {

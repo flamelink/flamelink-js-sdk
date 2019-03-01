@@ -7,13 +7,13 @@ import gzipPlugin from 'rollup-plugin-gzip'
 import { compress } from 'brotli'
 import pkg from './package.json'
 
-import appPkg from './src/app/package.json'
-import contentPkg from './src/content/package.json'
-import navigationPkg from './src/navigation/package.json'
-import schemasPkg from './src/schemas/package.json'
-import settingsPkg from './src/settings/package.json'
-import storagePkg from './src/storage/package.json'
-import usersPkg from './src/users/package.json'
+import appPkg from './app/package.json'
+import contentPkg from './content/package.json'
+import navigationPkg from './navigation/package.json'
+import schemasPkg from './schemas/package.json'
+import settingsPkg from './settings/package.json'
+import storagePkg from './storage/package.json'
+import usersPkg from './users/package.json'
 
 const LIBRARY_NAME = 'flamelink'
 
@@ -64,7 +64,7 @@ export default [
   {
     input: 'src/index.cdn.ts',
     output: {
-      file: 'dist/flamelink.js',
+      file: 'flamelink.js',
       format: 'umd',
       name: LIBRARY_NAME,
       esModule: false,
@@ -103,10 +103,10 @@ export default [
   ...moduleNames.map(moduleName => ({
     input:
       moduleName === 'app'
-        ? `src/${moduleName}/index.ts`
-        : `src/${moduleName}/index.cdn.ts`,
+        ? `${moduleName}/index.ts`
+        : `${moduleName}/index.cdn.ts`,
     output: {
-      file: `dist/flamelink-${moduleName}.js`,
+      file: `flamelink-${moduleName}.js`,
       format: 'umd',
       name: LIBRARY_NAME,
       sourcemap: true,
@@ -138,14 +138,14 @@ export default [
     const modulePkg = modulePkgs[moduleName]
 
     return {
-      input: `src/${moduleName}/index.ts`,
+      input: `${moduleName}/index.ts`,
       output: [
         {
-          file: modulePkg.module,
+          file: resolve(moduleName, modulePkg.module),
           format: 'esm'
         },
         {
-          file: modulePkg.main,
+          file: resolve(moduleName, modulePkg.main),
           format: 'cjs'
         }
       ]

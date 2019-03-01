@@ -101,10 +101,10 @@ In a CommonJS environment:
 ```javascript
 var flamelink = require('flamelink/app')
 require('flamelink/settings')
-require('flamelink/schemas')
 require('flamelink/content')
 require('flamelink/storage')
 require('flamelink/navigation')
+require('flamelink/users')
 ```
 
 or using ES Modules:
@@ -112,10 +112,10 @@ or using ES Modules:
 ```javascript
 import flamelink from 'flamelink/app'
 import 'flamelink/settings'
-import 'flamelink/schemas'
 import 'flamelink/content'
 import 'flamelink/storage'
 import 'flamelink/navigation'
+import 'flamelink/users'
 ```
 
 ### Creating your Flamelink app instance

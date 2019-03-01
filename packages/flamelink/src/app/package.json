@@ -1,5 +1,0 @@
-{
-  "name": "flamelink/app",
-  "main": "dist/app/index.js",
-  "module": "dist/app/index.mjs"
-}

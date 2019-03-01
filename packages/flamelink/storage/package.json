@@ -1,0 +1,6 @@
+{
+  "name": "flamelink/storage",
+  "main": "dist/index.js",
+  "module": "dist/index.mjs",
+  "typings": "../public.d.ts"
+}
