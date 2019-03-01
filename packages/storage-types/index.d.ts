@@ -1,10 +1,4 @@
-import {
-  FlamelinkContext,
-  OptionsForRTDB,
-  OptionsForCF,
-  SubscriptionCallback,
-  UnsubscribeMethod
-} from '@flamelink/sdk-app-types'
+import App from '@flamelink/sdk-app-types'
 
 type StringOrNumber = string | number
 
@@ -16,26 +10,26 @@ export interface ImageSize {
   path?: string
 }
 
-interface GetFileArgsForRTDB extends OptionsForRTDB {
+interface GetFileArgsForRTDB extends App.RTDB.Options {
   fileId: string
 }
 
-interface GetMetadataArgsForRTDB extends OptionsForRTDB {
+interface GetMetadataArgsForRTDB extends App.RTDB.Options {
   fileId: string
 }
 
-interface UpdateMetadataArgsForRTDB extends OptionsForRTDB {
+interface UpdateMetadataArgsForRTDB extends App.RTDB.Options {
   fileId: string
   updates: any
 }
 
-interface GetFilesArgsForRTDB extends OptionsForRTDB {
+interface GetFilesArgsForRTDB extends App.RTDB.Options {
   folderId?: string
   folderName?: string
   mediaType?: 'files' | 'images'
 }
 
-interface GetURLArgsForRTDB extends OptionsForRTDB {
+interface GetURLArgsForRTDB extends App.RTDB.Options {
   fileId: string
   size?: ImageSize
 }
@@ -59,37 +53,37 @@ export interface FolderObject {
   __meta__?: any
 }
 
-interface SubscribeArgsForRTDB extends OptionsForRTDB {
+interface SubscribeArgsForRTDB extends App.RTDB.Options {
   storageKey?: string
-  callback: SubscriptionCallback
+  callback: App.SubscriptionCallback
 }
 
-interface GetFileArgsForCF extends OptionsForCF {
+interface GetFileArgsForCF extends App.CF.Options {
   fileId: string
 }
 
-interface GetMetadataArgsForCF extends OptionsForCF {
+interface GetMetadataArgsForCF extends App.CF.Options {
   fileId: string
 }
 
-interface UpdateMetadataArgsForCF extends OptionsForCF {
+interface UpdateMetadataArgsForCF extends App.CF.Options {
   fileId: string
   updates: any
 }
 
-interface GetFilesArgsForCF extends OptionsForCF {
+interface GetFilesArgsForCF extends App.CF.Options {
   folderId?: string
   folderName?: string
   mediaType?: 'files' | 'images'
 }
 
-interface GetURLArgsForCF extends OptionsForCF {
+interface GetURLArgsForCF extends App.CF.Options {
   fileId: string
   size?: ImageSize
 }
 
-interface SubscribeArgsForCF extends OptionsForCF {
-  callback: SubscriptionCallback
+interface SubscribeArgsForCF extends App.CF.Options {
+  callback: App.SubscriptionCallback
 }
 
 interface UploadOptions {
@@ -129,15 +123,17 @@ export interface StoragePublicApi {
 
   subscribeRaw?(
     args: SubscribeArgsForRTDB | SubscribeArgsForCF
-  ): UnsubscribeMethod
+  ): App.UnsubscribeMethod
 
-  subscribe?(args: SubscribeArgsForRTDB | SubscribeArgsForCF): UnsubscribeMethod
+  subscribe?(
+    args: SubscribeArgsForRTDB | SubscribeArgsForCF
+  ): App.UnsubscribeMethod
 
   upload(fileData: any, options: UploadOptions): PromiseLike<any>
 
-  getFoldersRaw(options?: OptionsForRTDB | OptionsForCF): Promise<any>
+  getFoldersRaw(options?: App.RTDB.Options | App.CF.Options): Promise<any>
 
-  getFolders(options?: OptionsForRTDB | OptionsForCF): Promise<any>
+  getFolders(options?: App.RTDB.Options | App.CF.Options): Promise<any>
 
   getFileRaw(args: GetFileArgsForRTDB | GetFileArgsForCF): Promise<any>
 
@@ -160,6 +156,4 @@ export interface StoragePublicApi {
   [key: string]: any
 }
 
-export type FlamelinkStorageFactory = (
-  context: FlamelinkContext
-) => StoragePublicApi
+export type FlamelinkStorageFactory = (context: App.Context) => StoragePublicApi

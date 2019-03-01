@@ -1,15 +1,9 @@
-import {
-  FlamelinkContext,
-  OptionsForRTDB,
-  OptionsForCF,
-  SubscriptionCallback,
-  UnsubscribeMethod
-} from '@flamelink/sdk-app-types'
+import App from '@flamelink/sdk-app-types'
 
 // eslint-disable-next-line no-redeclare
 declare namespace Content {
   namespace RTDB {
-    interface Get extends OptionsForRTDB {
+    interface Get extends App.RTDB.Options {
       schemaKey?: string
       entryId?: string
     }
@@ -20,28 +14,28 @@ declare namespace Content {
     }
 
     interface Subscribe extends Get {
-      callback: SubscriptionCallback
+      callback: App.SubscriptionCallback
     }
 
-    interface Add extends OptionsForRTDB {
+    interface Add extends App.RTDB.Options {
       schemaKey: string
       data: any
     }
 
-    interface Update extends OptionsForRTDB {
+    interface Update extends App.RTDB.Options {
       schemaKey: string
       entryId: string
       data: any
     }
 
-    interface Remove extends OptionsForRTDB {
+    interface Remove extends App.RTDB.Options {
       schemaKey: string
       entryId?: string
     }
   }
 
   namespace CF {
-    interface Get extends OptionsForCF {
+    interface Get extends App.CF.Options {
       schemaKey?: string
       entryId?: string
     }
@@ -53,21 +47,21 @@ declare namespace Content {
 
     interface Subscribe extends Get {
       changeType?: string
-      callback: SubscriptionCallback
+      callback: App.SubscriptionCallback
     }
 
-    interface Add extends OptionsForCF {
+    interface Add extends App.CF.Options {
       schemaKey: string
       data: any
     }
 
-    interface Update extends OptionsForCF {
+    interface Update extends App.CF.Options {
       schemaKey: string
       entryId: string
       data: any
     }
 
-    interface Remove extends OptionsForCF {
+    interface Remove extends App.CF.Options {
       schemaKey: string
       entryId?: string
     }
@@ -88,11 +82,11 @@ declare namespace Content {
     getByField(options: RTDB.GetByField): Promise<any>
     getByField(options: CF.GetByField): Promise<any>
 
-    subscribeRaw(options: RTDB.Subscribe): UnsubscribeMethod
-    subscribeRaw(options: CF.Subscribe): UnsubscribeMethod
+    subscribeRaw(options: RTDB.Subscribe): App.UnsubscribeMethod
+    subscribeRaw(options: CF.Subscribe): App.UnsubscribeMethod
 
-    subscribe(options?: RTDB.Subscribe): UnsubscribeMethod
-    subscribe(options?: CF.Subscribe): UnsubscribeMethod
+    subscribe(options?: RTDB.Subscribe): App.UnsubscribeMethod
+    subscribe(options?: CF.Subscribe): App.UnsubscribeMethod
 
     add(options: RTDB.Add): Promise<any>
     add(options: CF.Add): Promise<any>
@@ -104,7 +98,7 @@ declare namespace Content {
     remove(options: CF.Remove): Promise<any>
   }
 
-  export type FlamelinkFactory = (context: FlamelinkContext) => Content.Api
+  export type FlamelinkFactory = (context: App.Context) => Content.Api
 }
 
 export = Content

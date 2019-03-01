@@ -1,37 +1,31 @@
-import {
-  FlamelinkContext,
-  OptionsForRTDB,
-  OptionsForCF,
-  SubscriptionCallback,
-  UnsubscribeMethod
-} from '@flamelink/sdk-app-types'
+import App from '@flamelink/sdk-app-types'
 
-interface GetArgsForRTDB extends OptionsForRTDB {
+interface GetArgsForRTDB extends App.RTDB.Options {
   schemaKey?: string
 }
 
-interface UpsertArgsForRTDB extends OptionsForRTDB {
+interface UpsertArgsForRTDB extends App.RTDB.Options {
   schemaKey: string
   data: any
 }
 
-interface SubscribeArgsForRTDB extends OptionsForRTDB {
+interface SubscribeArgsForRTDB extends App.RTDB.Options {
   schemaKey?: string
-  callback: SubscriptionCallback
+  callback: App.SubscriptionCallback
 }
 
-interface GetArgsForCF extends OptionsForCF {
+interface GetArgsForCF extends App.CF.Options {
   schemaKey?: string
 }
 
-interface UpsertArgsForCF extends OptionsForCF {
+interface UpsertArgsForCF extends App.CF.Options {
   schemaKey: string
   data: any
 }
 
-interface SubscribeArgsForCF extends OptionsForCF {
+interface SubscribeArgsForCF extends App.CF.Options {
   schemaKey?: string
-  callback: SubscriptionCallback
+  callback: App.SubscriptionCallback
 }
 
 export interface SchemasPublicApi {
@@ -47,13 +41,15 @@ export interface SchemasPublicApi {
 
   subscribeRaw(
     args: SubscribeArgsForRTDB | SubscribeArgsForCF
-  ): UnsubscribeMethod
+  ): App.UnsubscribeMethod
 
-  subscribe(args: SubscribeArgsForRTDB | SubscribeArgsForCF): UnsubscribeMethod
+  subscribe(
+    args: SubscribeArgsForRTDB | SubscribeArgsForCF
+  ): App.UnsubscribeMethod
 
   subscribeFields(
     args: SubscribeArgsForRTDB | SubscribeArgsForCF
-  ): UnsubscribeMethod
+  ): App.UnsubscribeMethod
 
   add(args: UpsertArgsForRTDB | UpsertArgsForCF): Promise<any>
 
@@ -62,6 +58,4 @@ export interface SchemasPublicApi {
   remove(args: GetArgsForRTDB | GetArgsForCF): Promise<any>
 }
 
-export type FlamelinkSchemasFactory = (
-  context: FlamelinkContext
-) => SchemasPublicApi
+export type FlamelinkSchemasFactory = (context: App.Context) => SchemasPublicApi

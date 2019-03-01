@@ -1,11 +1,8 @@
-import { ModuleName, FlamelinkContext } from '@flamelink/sdk-app-types'
+import App from '@flamelink/sdk-app-types'
 import { logError } from '@flamelink/sdk-utils'
 import get from 'lodash/get'
 
-export const getModule = (
-  moduleName: ModuleName,
-  context: FlamelinkContext
-) => {
+export const getModule = (moduleName: App.ModuleName, context: App.Context) => {
   if (context.modules[moduleName]) {
     return context.modules[moduleName]
   }
@@ -31,7 +28,7 @@ export const getModule = (
  * @param context Current Flamelink app context
  * @returns {Void}
  */
-export const ensureValidContext = (context: FlamelinkContext) => {
+export const ensureValidContext = (context: App.Context) => {
   if (!context.firebaseApp) {
     throw new Error(
       '[FLAMELINK]: Please provide a "firebaseApp" Firebase app instance when initializing your Flamelink app'

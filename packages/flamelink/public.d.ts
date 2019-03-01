@@ -2,7 +2,7 @@
 // Project: flamelink-js-sdk
 // Definitions by: JP Erasmus <jp@flamelink.io>
 
-import * as AppTypes from '@flamelink/sdk-app-types'
+import App from '@flamelink/sdk-app-types'
 import Content from '@flamelink/sdk-content-types'
 import * as Schema from '@flamelink/sdk-schemas-types'
 import * as Storage from '@flamelink/sdk-storage-types'
@@ -14,7 +14,7 @@ declare function Flamelink(config: Flamelink.Config): Flamelink.App
 
 // eslint-disable-next-line no-redeclare
 declare namespace Flamelink {
-  export type Config = AppTypes.FlamelinkConfig
+  export type Config = App.Config
 
   export interface App {
     content: Content.Api

@@ -3,7 +3,7 @@ import set from 'lodash/set'
 import keys from 'lodash/keys'
 import castArray from 'lodash/castArray'
 import flamelink from '@flamelink/sdk-app'
-import { UnsubscribeMethod } from '@flamelink/sdk-app-types'
+import App from '@flamelink/sdk-app-types'
 import {
   FlamelinkSchemasFactory,
   SchemasPublicApi
@@ -107,7 +107,7 @@ const factory: FlamelinkSchemasFactory = context => {
         (err: Error) => callback(err, null)
       )
 
-      const unsubscribe: UnsubscribeMethod = () =>
+      const unsubscribe: App.UnsubscribeMethod = () =>
         filteredRef.off(options.event || 'value')
       return unsubscribe
     },

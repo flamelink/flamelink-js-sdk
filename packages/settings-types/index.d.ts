@@ -1,24 +1,18 @@
-import {
-  FlamelinkContext,
-  OptionsForRTDB,
-  OptionsForCF,
-  SubscriptionCallback,
-  UnsubscribeMethod
-} from '@flamelink/sdk-app-types'
+import App from '@flamelink/sdk-app-types'
 
-interface GetArgsForRTDB extends OptionsForRTDB {
+interface GetArgsForRTDB extends App.RTDB.Options {
   settingsKey?: string
 }
 
-interface SubscribeArgsForRTDB extends OptionsForRTDB {
+interface SubscribeArgsForRTDB extends App.RTDB.Options {
   settingsKey?: string
-  callback: SubscriptionCallback
+  callback: App.SubscriptionCallback
 }
 
-interface GetArgsForCF extends OptionsForCF {}
+interface GetArgsForCF extends App.CF.Options {}
 
-interface SubscribeArgsForCF extends OptionsForCF {
-  callback: SubscriptionCallback
+interface SubscribeArgsForCF extends App.CF.Options {
+  callback: App.SubscriptionCallback
 }
 
 export interface SettingsPublicApi {
@@ -44,23 +38,25 @@ export interface SettingsPublicApi {
 
   subscribeRaw(
     args: SubscribeArgsForRTDB | SubscribeArgsForCF
-  ): UnsubscribeMethod
+  ): App.UnsubscribeMethod
 
-  subscribe(args: SubscribeArgsForRTDB | SubscribeArgsForCF): UnsubscribeMethod
+  subscribe(
+    args: SubscribeArgsForRTDB | SubscribeArgsForCF
+  ): App.UnsubscribeMethod
 
   subscribeGlobals(
     args: SubscribeArgsForRTDB | SubscribeArgsForCF
-  ): UnsubscribeMethod
+  ): App.UnsubscribeMethod
 
   subscribeImageSizes(
     args: SubscribeArgsForRTDB | SubscribeArgsForCF
-  ): UnsubscribeMethod
+  ): App.UnsubscribeMethod
 
   subscribeDefaultPermissionsGroup(
     args: SubscribeArgsForRTDB | SubscribeArgsForCF
-  ): UnsubscribeMethod
+  ): App.UnsubscribeMethod
 }
 
 export type FlamelinkSettingsFactory = (
-  context: FlamelinkContext
+  context: App.Context
 ) => SettingsPublicApi

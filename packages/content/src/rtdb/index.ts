@@ -2,7 +2,7 @@ import get from 'lodash/get'
 import keys from 'lodash/keys'
 import compose from 'compose-then'
 import flamelink from '@flamelink/sdk-app'
-import { UnsubscribeMethod } from '@flamelink/sdk-app-types'
+import App from '@flamelink/sdk-app-types'
 import { FlamelinkFactory, Api, RTDB } from '@flamelink/sdk-content-types'
 import {
   applyOptionsForRTDB,
@@ -108,7 +108,7 @@ const factory: FlamelinkFactory = context => {
         (err: Error) => callback(err, null)
       )
 
-      const unsubscribe: UnsubscribeMethod = () =>
+      const unsubscribe: App.UnsubscribeMethod = () =>
         filteredRef.off(options.event || 'value')
       return unsubscribe
     },
