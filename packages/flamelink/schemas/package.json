@@ -1,0 +1,6 @@
+{
+  "name": "flamelink/schemas",
+  "main": "dist/index.js",
+  "module": "dist/index.mjs",
+  "typings": "../public.d.ts"
+}

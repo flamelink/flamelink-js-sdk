@@ -1,6 +1,9 @@
 {
   "name": "@flamelink/sdk-content",
-  "version": "0.0.1",
+  "version": "1.0.0-alpha.1",
+  "config": {
+    "access": "public"
+  },
   "description": "Content module for Flamelink JavaScript SDK",
   "keywords": [
     "flamelink",
@@ -8,7 +11,7 @@
     "javascript"
   ],
   "author": "Flamelink <feedback@flamelink.io> (https://flamelink.io)",
-  "homepage": "https://flamelink.github.io/flamelink/",
+  "homepage": "https://flamelink.github.io/flamelink-js-sdk/",
   "license": "MIT",
   "main": "dist/cjs/index.js",
   "browser": "dist/cjs/index.js",
@@ -16,17 +19,17 @@
   "typings": "dist/index.d.ts",
   "directories": {
     "lib": "src",
-    "test": "__tests__"
+    "test": "src/__tests__"
   },
   "files": [
     "dist"
   ],
   "dependencies": {
-    "@flamelink/sdk-utils": "^0.0.1",
-    "@flamelink/sdk-content-types": "^0.0.1",
-    "@flamelink/sdk-app-types": "^0.0.1",
-    "@flamelink/sdk-app": "^0.0.1",
-    "@flamelink/sdk-schemas": "^0.0.1"
+    "@flamelink/sdk-utils": "1.0.0-alpha.1",
+    "@flamelink/sdk-content-types": "1.0.0-alpha.1",
+    "@flamelink/sdk-app-types": "1.0.0-alpha.1",
+    "@flamelink/sdk-app": "1.0.0-alpha.1",
+    "@flamelink/sdk-schemas": "1.0.0-alpha.1"
   },
   "scripts": {
     "prebuild": "rimraf dist",

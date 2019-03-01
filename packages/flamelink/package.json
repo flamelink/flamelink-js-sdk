@@ -1,9 +1,9 @@
 {
   "name": "flamelink",
-  "version": "1.0.0-wip",
-  "description": "Javascript SDK for integrating with Flamelink CMS",
+  "version": "1.0.0-alpha.1",
+  "description": "Universal Javascript SDK for integrating with your Flamelink CMS",
   "author": "Flamelink <feedback@flamelink.io> (https://flamelink.io)",
-  "homepage": "https://flamelink.github.io/flamelink/",
+  "homepage": "https://flamelink.github.io/flamelink-js-sdk/",
   "license": "MIT",
   "keywords": [
     "flamelink",
@@ -20,7 +20,19 @@
     "real-time"
   ],
   "files": [
-    "dist"
+    "app",
+    "content",
+    "dist",
+    "navigation",
+    "schemas",
+    "settings",
+    "storage",
+    "users",
+    "/public.d.ts",
+    "/flamelink*.js",
+    "/flamelink*.br",
+    "/flamelink*.gz",
+    "/flamelink*.map"
   ],
   "engines": {
     "node": ">=6.0.0"
@@ -28,20 +40,20 @@
   "main": "dist/index.node.cjs.js",
   "browser": "dist/index.cjs.js",
   "module": "dist/index.esm.js",
-  "typings": "dist/index.d.ts",
+  "typings": "public.d.ts",
   "dependencies": {
-    "@flamelink/sdk-app-types": "^0.0.1",
-    "@flamelink/sdk-app": "^0.0.1",
-    "@flamelink/sdk-schemas": "^0.0.1",
-    "@flamelink/sdk-content": "^0.0.1",
-    "@flamelink/sdk-settings": "^0.0.1",
-    "@flamelink/sdk-storage": "^0.0.1",
-    "@flamelink/sdk-navigation": "^0.0.1",
-    "@flamelink/sdk-users": "^0.0.1",
+    "@flamelink/sdk-app-types": "1.0.0-alpha.1",
+    "@flamelink/sdk-app": "1.0.0-alpha.1",
+    "@flamelink/sdk-schemas": "1.0.0-alpha.1",
+    "@flamelink/sdk-content": "1.0.0-alpha.1",
+    "@flamelink/sdk-settings": "1.0.0-alpha.1",
+    "@flamelink/sdk-storage": "1.0.0-alpha.1",
+    "@flamelink/sdk-navigation": "1.0.0-alpha.1",
+    "@flamelink/sdk-users": "1.0.0-alpha.1",
     "compose-then": "^1.0.1"
   },
   "scripts": {
-    "prebuild": "rimraf dist",
+    "prebuild": "rimraf dist **/dist flamelink-* flamelink.*",
     "build": "rollup -c",
     "dev": "rollup -c -w",
     "test": "jest"
