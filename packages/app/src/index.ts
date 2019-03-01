@@ -1,4 +1,3 @@
-// TODO: Move the necessary types to the `@flamelink/sdk-app-types/private.d.ts` file
 import {
   ModuleName,
   FirebaseService,

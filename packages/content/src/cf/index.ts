@@ -3,10 +3,7 @@ import chunk from 'lodash/chunk'
 import castArray from 'lodash/castArray'
 import compose from 'compose-then'
 import flamelink from '@flamelink/sdk-app'
-import {
-  FlamelinkContentFactory,
-  ContentPublicApi
-} from '@flamelink/sdk-content-types'
+import { FlamelinkFactory, Api, CF } from '@flamelink/sdk-content-types'
 import {
   applyOptionsForCF,
   pluckResultFields,
@@ -21,8 +18,8 @@ import { CF_BATCH_WRITE_LIMIT } from '../constants'
 
 const CONTENT_COLLECTION = 'fl_content'
 
-const factory: FlamelinkContentFactory = context => {
-  const api: ContentPublicApi = {
+const factory: FlamelinkFactory = context => {
+  const api: Api = {
     ref(ref) {
       const firestoreService = flamelink._ensureService('firestore', context)
       const [schemaKey, entryId] = castArray(ref)
@@ -36,13 +33,13 @@ const factory: FlamelinkContentFactory = context => {
       return entryId ? baseRef.where('_fl_meta_.fl_id', '==', entryId) : baseRef
     },
 
-    getRaw({ schemaKey, entryId, ...options }) {
+    getRaw({ schemaKey, entryId, ...options }: CF.Get) {
       return applyOptionsForCF(api.ref([schemaKey, entryId]), options).get({
         source: options.source || 'default'
       })
     },
 
-    async get({ schemaKey, entryId, ...options } = {}) {
+    async get({ schemaKey, entryId, ...options }: CF.Get = {}) {
       const pluckFields = pluckResultFields(options.fields)
       const firestoreService = flamelink._ensureService('firestore', context)
       const processRefs = populateEntriesForCF(firestoreService, options)
@@ -67,7 +64,13 @@ const factory: FlamelinkContentFactory = context => {
       return entryId || isSingleType ? result[0] : result
     },
 
-    async getByField({ schemaKey, field, value, filters, ...options }) {
+    async getByField({
+      schemaKey,
+      field,
+      value,
+      filters,
+      ...options
+    }: CF.GetByField) {
       const pluckFields = pluckResultFields(options.fields)
       const content = await api.get({
         schemaKey,
@@ -82,7 +85,7 @@ const factory: FlamelinkContentFactory = context => {
       return content.map((contentEntry: any) => pluckFields(contentEntry))
     },
 
-    subscribeRaw({ schemaKey, entryId, callback, ...options }) {
+    subscribeRaw({ schemaKey, entryId, callback, ...options }: CF.Subscribe) {
       const filtered = applyOptionsForCF(api.ref([schemaKey, entryId]), options)
 
       const args = []
@@ -101,7 +104,13 @@ const factory: FlamelinkContentFactory = context => {
       return filtered.onSnapshot(...args)
     },
 
-    subscribe({ schemaKey, entryId, callback, changeType, ...options }) {
+    subscribe({
+      schemaKey,
+      entryId,
+      callback,
+      changeType,
+      ...options
+    }: CF.Subscribe) {
       const pluckFields = pluckResultFields(options.fields)
       const firestoreService = flamelink._ensureService('firestore', context)
       const processRefs = populateEntriesForCF(firestoreService, options)
@@ -148,7 +157,7 @@ const factory: FlamelinkContentFactory = context => {
       })
     },
 
-    async add({ schemaKey, entryId, data }) {
+    async add({ schemaKey, entryId, data }: CF.Add) {
       if (!schemaKey) {
         throw new FlamelinkError(
           `Please provide the content entry's "schemaKey"`
@@ -203,7 +212,7 @@ const factory: FlamelinkContentFactory = context => {
       return docRef.set(payload)
     },
 
-    async update({ schemaKey, entryId, data }) {
+    async update({ schemaKey, entryId, data }: CF.Update) {
       if (!schemaKey || !entryId || typeof data !== 'object') {
         throw new FlamelinkError(
           '"update" called with the incorrect arguments. Check the docs for details.'
@@ -235,7 +244,7 @@ const factory: FlamelinkContentFactory = context => {
       return await content[0].ref.update(payload)
     },
 
-    async remove({ schemaKey, entryId }) {
+    async remove({ schemaKey, entryId }: CF.Remove) {
       const snapshot = await api.getRaw({ schemaKey, entryId })
 
       if (snapshot.empty) {
