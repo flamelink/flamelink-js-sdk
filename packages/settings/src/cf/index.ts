@@ -1,37 +1,34 @@
 import flamelink from '@flamelink/sdk-app'
-import {
-  FlamelinkSettingsFactory,
-  SettingsPublicApi
-} from '@flamelink/sdk-settings-types'
+import { FlamelinkFactory, Api, CF } from '@flamelink/sdk-settings-types'
 import { applyOptionsForCF, pluckResultFields } from '@flamelink/sdk-utils'
 
 const SETTINGS_COLLECTION = 'fl_settings'
 
-const factory: FlamelinkSettingsFactory = context => {
-  const api: SettingsPublicApi = {
-    ref(document) {
+const factory: FlamelinkFactory = context => {
+  const api: Api = {
+    ref(settingsKey) {
       const firestoreService = flamelink._ensureService('firestore', context)
 
-      return document
-        ? firestoreService.collection(SETTINGS_COLLECTION).doc(document)
+      return settingsKey
+        ? firestoreService.collection(SETTINGS_COLLECTION).doc(settingsKey)
         : firestoreService.collection(SETTINGS_COLLECTION)
       // .where('_fl_meta_.env', '==', context.env)
       // .where('_fl_meta_.locale', '==', context.locale)
     },
 
-    getRaw({ document, ...options } = {}) {
-      return applyOptionsForCF(api.ref(document), options).get({
+    getRaw({ settingsKey, ...options }: CF.Get = {}) {
+      return applyOptionsForCF(api.ref(settingsKey), options).get({
         source: options.source || 'default'
       })
     },
 
-    async get({ document, ...options } = {}) {
+    async get({ settingsKey, ...options }: CF.Get = {}) {
       const pluckFields = pluckResultFields(options.fields)
-      const snapshot = await api.getRaw({ document, ...options })
+      const snapshot = await api.getRaw({ settingsKey, ...options })
 
-      if (document) {
-        const docData = await pluckFields({ [document]: snapshot.data() })
-        return docData[document]
+      if (settingsKey) {
+        const docData = await pluckFields({ [settingsKey]: snapshot.data() })
+        return docData[settingsKey]
       }
 
       if (snapshot.empty) {
@@ -63,31 +60,31 @@ const factory: FlamelinkSettingsFactory = context => {
       return context.locale
     },
 
-    async getGlobals(options = {}) {
+    async getGlobals(options: CF.Get = {}) {
       return api.get({
         ...options,
-        document: 'globals'
+        settingsKey: 'globals'
       })
     },
 
-    async getImageSizes(options = {}) {
+    async getImageSizes(options: CF.Get = {}) {
       return api.get({
         ...options,
-        document: 'general',
+        settingsKey: 'general',
         fields: ['imageSizes']
       })
     },
 
-    async getDefaultPermissionsGroup(options = {}) {
+    async getDefaultPermissionsGroup(options: CF.Get = {}) {
       return api.get({
         ...options,
-        document: 'general',
+        settingsKey: 'general',
         fields: ['defaultPermissionsGroup']
       })
     },
 
-    subscribeRaw({ document, callback, ...options }) {
-      const filtered = applyOptionsForCF(api.ref(document), options)
+    subscribeRaw({ settingsKey, callback, ...options }: CF.Subscribe) {
+      const filtered = applyOptionsForCF(api.ref(settingsKey), options)
 
       const args = []
 
@@ -105,20 +102,22 @@ const factory: FlamelinkSettingsFactory = context => {
       return filtered.onSnapshot(...args)
     },
 
-    subscribe({ document, callback, changeType, ...options }) {
+    subscribe({ settingsKey, callback, changeType, ...options }: CF.Subscribe) {
       const pluckFields = pluckResultFields(options.fields)
 
       return api.subscribeRaw({
-        document,
+        settingsKey,
         ...options,
         async callback(err, snapshot) {
           if (err) {
             return callback(err, null)
           }
 
-          if (document) {
-            const docData = await pluckFields({ [document]: snapshot.data() })
-            return callback(null, docData[document])
+          if (settingsKey) {
+            const docData = await pluckFields({
+              [settingsKey]: snapshot.data()
+            })
+            return callback(null, docData[settingsKey])
           }
 
           if (snapshot.empty) {
@@ -146,22 +145,22 @@ const factory: FlamelinkSettingsFactory = context => {
       })
     },
 
-    subscribeGlobals(options) {
-      return api.subscribe({ ...options, document: 'globals' })
+    subscribeGlobals(options: CF.Subscribe) {
+      return api.subscribe({ ...options, settingsKey: 'globals' })
     },
 
-    subscribeImageSizes(options) {
+    subscribeImageSizes(options: CF.Subscribe) {
       return api.subscribe({
         ...options,
-        document: 'general',
+        settingsKey: 'general',
         fields: ['imageSizes']
       })
     },
 
-    subscribeDefaultPermissionsGroup(options) {
+    subscribeDefaultPermissionsGroup(options: CF.Subscribe) {
       return api.subscribe({
         ...options,
-        document: 'general',
+        settingsKey: 'general',
         fields: ['defaultPermissionsGroup']
       })
     }

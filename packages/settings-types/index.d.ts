@@ -1,62 +1,72 @@
 import App from '@flamelink/sdk-app-types'
 
-interface GetArgsForRTDB extends App.RTDB.Options {
-  settingsKey?: string
+// eslint-disable-next-line no-redeclare
+declare namespace Settings {
+  namespace RTDB {
+    interface Get extends App.RTDB.Options {
+      settingsKey?: string
+    }
+
+    interface Subscribe extends Get {
+      callback: App.SubscriptionCallback
+    }
+  }
+
+  namespace CF {
+    interface Get extends App.CF.Options {
+      settingsKey?: string
+    }
+
+    interface Subscribe extends Get {
+      changeType?: string
+      callback: App.SubscriptionCallback
+    }
+  }
+
+  export interface Api {
+    ref?(reference: string): any
+
+    getRaw(options: RTDB.Get): Promise<any>
+    getRaw(options: CF.Get): Promise<any>
+
+    get(options?: RTDB.Get): Promise<any>
+    get(options?: CF.Get): Promise<any>
+
+    setEnvironment(env: string): Promise<string>
+
+    getEnvironment(): Promise<string>
+
+    setLocale(locale: string): Promise<string>
+
+    getLocale(): Promise<string>
+
+    getGlobals(): Promise<any>
+
+    getImageSizes(): Promise<any>
+
+    getDefaultPermissionsGroup(): Promise<any>
+
+    subscribeRaw(options: RTDB.Subscribe): App.UnsubscribeMethod
+    subscribeRaw(options: CF.Subscribe): App.UnsubscribeMethod
+
+    subscribe(options?: RTDB.Subscribe): App.UnsubscribeMethod
+    subscribe(options?: CF.Subscribe): App.UnsubscribeMethod
+
+    subscribeGlobals(options?: RTDB.Subscribe): App.UnsubscribeMethod
+    subscribeGlobals(options?: CF.Subscribe): App.UnsubscribeMethod
+
+    subscribeImageSizes(options?: RTDB.Subscribe): App.UnsubscribeMethod
+    subscribeImageSizes(options?: CF.Subscribe): App.UnsubscribeMethod
+
+    subscribeDefaultPermissionsGroup(
+      options?: RTDB.Subscribe
+    ): App.UnsubscribeMethod
+    subscribeDefaultPermissionsGroup(
+      options?: CF.Subscribe
+    ): App.UnsubscribeMethod
+  }
+
+  export type FlamelinkFactory = (context: App.Context) => Settings.Api
 }
 
-interface SubscribeArgsForRTDB extends App.RTDB.Options {
-  settingsKey?: string
-  callback: App.SubscriptionCallback
-}
-
-interface GetArgsForCF extends App.CF.Options {}
-
-interface SubscribeArgsForCF extends App.CF.Options {
-  callback: App.SubscriptionCallback
-}
-
-export interface SettingsPublicApi {
-  ref?(referenceKey: string): any
-
-  getRaw?(args: GetArgsForRTDB | GetArgsForCF): Promise<any>
-
-  get?(args: GetArgsForRTDB | GetArgsForCF): Promise<any>
-
-  setEnvironment(env: string): Promise<string>
-
-  getEnvironment(): Promise<string>
-
-  setLocale(locale: string): Promise<string>
-
-  getLocale(): Promise<string>
-
-  getGlobals(): Promise<any>
-
-  getImageSizes(): Promise<any>
-
-  getDefaultPermissionsGroup(): Promise<any>
-
-  subscribeRaw(
-    args: SubscribeArgsForRTDB | SubscribeArgsForCF
-  ): App.UnsubscribeMethod
-
-  subscribe(
-    args: SubscribeArgsForRTDB | SubscribeArgsForCF
-  ): App.UnsubscribeMethod
-
-  subscribeGlobals(
-    args: SubscribeArgsForRTDB | SubscribeArgsForCF
-  ): App.UnsubscribeMethod
-
-  subscribeImageSizes(
-    args: SubscribeArgsForRTDB | SubscribeArgsForCF
-  ): App.UnsubscribeMethod
-
-  subscribeDefaultPermissionsGroup(
-    args: SubscribeArgsForRTDB | SubscribeArgsForCF
-  ): App.UnsubscribeMethod
-}
-
-export type FlamelinkSettingsFactory = (
-  context: App.Context
-) => SettingsPublicApi
+export = Settings

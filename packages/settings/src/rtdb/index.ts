@@ -1,9 +1,6 @@
 import flamelink from '@flamelink/sdk-app'
 import App from '@flamelink/sdk-app-types'
-import {
-  FlamelinkSettingsFactory,
-  SettingsPublicApi
-} from '@flamelink/sdk-settings-types'
+import { FlamelinkFactory, Api, RTDB } from '@flamelink/sdk-settings-types'
 import {
   applyOptionsForRTDB,
   pluckResultFields,
@@ -12,20 +9,20 @@ import {
 } from '@flamelink/sdk-utils'
 import { getSettingsRefPath } from './helpers'
 
-const factory: FlamelinkSettingsFactory = context => {
-  const api: SettingsPublicApi = {
+const factory: FlamelinkFactory = context => {
+  const api: Api = {
     ref(ref) {
       const dbService = flamelink._ensureService('database', context)
       return dbService.ref(getSettingsRefPath(ref))
     },
 
-    getRaw({ settingsKey, ...options }) {
+    getRaw({ settingsKey, ...options }: RTDB.Get) {
       return applyOptionsForRTDB(api.ref(settingsKey), options).once(
         options.event || 'value'
       )
     },
 
-    async get({ settingsKey, ...options }) {
+    async get({ settingsKey, ...options }: RTDB.Get) {
       const pluckFields = pluckResultFields(options.fields)
       const snapshot = await api.getRaw({ settingsKey, ...options })
       const value =
@@ -55,11 +52,11 @@ const factory: FlamelinkSettingsFactory = context => {
       return context.locale
     },
 
-    async getGlobals(options = {}) {
+    async getGlobals(options: RTDB.Get = {}) {
       return api.get({ ...options, needsWrap: true, settingsKey: 'globals' })
     },
 
-    async getImageSizes(options = {}) {
+    async getImageSizes(options: RTDB.Get = {}) {
       return api.get({ ...options, settingsKey: 'general/imageSizes' })
     },
 
@@ -70,7 +67,7 @@ const factory: FlamelinkSettingsFactory = context => {
       })
     },
 
-    subscribeRaw({ settingsKey, callback, ...options }) {
+    subscribeRaw({ settingsKey, callback, ...options }: RTDB.Subscribe) {
       const filteredRef = applyOptionsForRTDB(api.ref(settingsKey), options)
 
       filteredRef.on(
@@ -84,7 +81,7 @@ const factory: FlamelinkSettingsFactory = context => {
       return unsubscribe
     },
 
-    subscribe({ settingsKey, callback, ...options }) {
+    subscribe({ settingsKey, callback, ...options }: RTDB.Subscribe) {
       const pluckFields = pluckResultFields(options.fields)
 
       return api.subscribeRaw({
@@ -111,15 +108,15 @@ const factory: FlamelinkSettingsFactory = context => {
       })
     },
 
-    subscribeGlobals(options) {
+    subscribeGlobals(options: RTDB.Subscribe) {
       return api.subscribe({ ...options, settingsKey: 'globals' })
     },
 
-    subscribeImageSizes(options) {
+    subscribeImageSizes(options: RTDB.Subscribe) {
       return api.subscribe({ ...options, settingsKey: 'general/imageSizes' })
     },
 
-    subscribeDefaultPermissionsGroup(options) {
+    subscribeDefaultPermissionsGroup(options: RTDB.Subscribe) {
       return api.subscribe({
         ...options,
         settingsKey: 'general/defaultPermissionsGroup'
