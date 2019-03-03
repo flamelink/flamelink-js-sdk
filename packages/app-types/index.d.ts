@@ -139,7 +139,6 @@ declare namespace App {
     }
 
     interface Options extends OrderByOptions, FilterOptions {
-      document?: string
       changeType?: string
       fields?: string[]
       [x: string]: any
