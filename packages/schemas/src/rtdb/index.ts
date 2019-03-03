@@ -4,10 +4,7 @@ import keys from 'lodash/keys'
 import castArray from 'lodash/castArray'
 import flamelink from '@flamelink/sdk-app'
 import App from '@flamelink/sdk-app-types'
-import {
-  FlamelinkSchemasFactory,
-  SchemasPublicApi
-} from '@flamelink/sdk-schemas-types'
+import { FlamelinkFactory, Api, RTDB } from '@flamelink/sdk-schemas-types'
 import {
   applyOptionsForRTDB,
   pluckResultFields,
@@ -21,21 +18,21 @@ import {
 } from '@flamelink/sdk-utils'
 import { getSchemasRefPath } from './helpers'
 
-const factory: FlamelinkSchemasFactory = context => {
-  const api: SchemasPublicApi = {
+const factory: FlamelinkFactory = context => {
+  const api: Api = {
     ref(schemaKey) {
       const dbService = flamelink._ensureService('database', context)
       context.emitter.emit('schema:ref', { schemaKey })
       return dbService.ref(getSchemasRefPath(schemaKey, context.env))
     },
 
-    getRaw({ schemaKey, ...options }) {
+    getRaw({ schemaKey, ...options }: RTDB.Get) {
       return applyOptionsForRTDB(api.ref(schemaKey), options).once(
         options.event || 'value'
       )
     },
 
-    async get({ schemaKey, ...options } = {}) {
+    async get({ schemaKey, ...options }: RTDB.Get = {}) {
       const pluckFields = pluckResultFields(options.fields)
 
       let result = get(
@@ -56,14 +53,14 @@ const factory: FlamelinkSchemasFactory = context => {
       return await pluckFields(schemaKey ? unwrap(schemaKey, result) : result)
     },
 
-    getFieldsRaw({ schemaKey, ...options }) {
+    getFieldsRaw({ schemaKey, ...options }: RTDB.Get) {
       return applyOptionsForRTDB(
         api.ref(schemaKey ? `${schemaKey}/fields` : ''),
         options
       ).once(options.event || 'value')
     },
 
-    async getFields({ schemaKey, ...options }) {
+    async getFields({ schemaKey, ...options }: RTDB.Get) {
       const pluckFields = pluckResultFields(options.fields)
 
       const schemaCache = get(
@@ -98,7 +95,7 @@ const factory: FlamelinkSchemasFactory = context => {
       )
     },
 
-    subscribeRaw({ schemaKey, callback, ...options }) {
+    subscribeRaw({ schemaKey, callback, ...options }: RTDB.Subscribe) {
       const filteredRef = applyOptionsForRTDB(api.ref(schemaKey), options)
 
       filteredRef.on(
@@ -112,7 +109,7 @@ const factory: FlamelinkSchemasFactory = context => {
       return unsubscribe
     },
 
-    subscribe({ schemaKey, callback, ...options }) {
+    subscribe({ schemaKey, callback, ...options }: RTDB.Subscribe) {
       const pluckFields = pluckResultFields(options.fields)
 
       return api.subscribeRaw({
@@ -133,7 +130,12 @@ const factory: FlamelinkSchemasFactory = context => {
       })
     },
 
-    subscribeFields({ schemaKey, fields, callback, ...options }) {
+    subscribeFields({
+      schemaKey,
+      fields,
+      callback,
+      ...options
+    }: RTDB.Subscribe) {
       const pluckFields = pluckResultFields(fields)
 
       return api.subscribeRaw({
@@ -166,7 +168,7 @@ const factory: FlamelinkSchemasFactory = context => {
       })
     },
 
-    add({ schemaKey, data }) {
+    add({ schemaKey, data }: RTDB.Add) {
       const payload =
         typeof data === 'object'
           ? Object.assign({}, data, {
@@ -195,7 +197,7 @@ const factory: FlamelinkSchemasFactory = context => {
       return api.ref(schemaKey).set(payload)
     },
 
-    update({ schemaKey, data }) {
+    update({ schemaKey, data }: RTDB.Update) {
       if (
         typeof schemaKey !== 'string' ||
         (typeof data !== 'object' && data !== null)
@@ -217,7 +219,7 @@ const factory: FlamelinkSchemasFactory = context => {
       return api.ref(schemaKey).update(payload)
     },
 
-    remove({ schemaKey }) {
+    remove({ schemaKey }: RTDB.Remove) {
       if (!schemaKey) {
         throw new FlamelinkError(
           '"remove" called with the incorrect arguments. Check the docs for details.'
