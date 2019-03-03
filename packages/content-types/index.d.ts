@@ -73,7 +73,31 @@ declare namespace Content {
     getRaw(options: RTDB.Get): Promise<any>
     getRaw(options: CF.Get): Promise<any>
 
+    /**
+     * Get the result for a content query once. Method does not subscribe
+     * to content changes. See the "app.content.subscribe()" method for
+     * real-time changes.
+     * @async
+     * @param {Object} options - Options to customize query.
+     * @param {string} [schemaKey] - The schema key/ID for which the content should be retrieved
+     * @param {string} [entryId] - The entry ID for which the content should be retrieved. Requires `schemaKey` to be set.
+     * @param {string[]} [fields] - An array of fields to be plucked from the results.
+     * @param {string} [event=value] - RTDB only option to specify the type of Firebase child event to query.
+     * @param {string} [changeType] - CF only option to specify the type of Firestore child event to query.
+     * @param {boolean} [orderByKey] - RTDB only option to indicate whether the result should be ordered by the node key.
+     * @param {boolean} [orderByValue] - RTDB only option to indicate whether the result should be ordered by the node's value.
+     * @param {string} [orderByChild] - RTDB only option to indicate which child field should be used to order the results by.
+     * @param {number} [limitToFirst] - RTDB only option to limit the results to given number of entries from the start.
+     * @param {number} [limitToLast] - RTDB only option to limit the results to given number of entries from the end.
+     * @param {string|number} [startAt] - RTDB only option to filter results from.
+     * @param {string|number} [endAt] - RTDB only option to filter results to.
+     * @param {string|number} [equalTo] - RTDB only option to filter results by value. Goes with `orderByChild` option.
+     * @returns {Promise} Promise resolves to result object or array. Will return `null` for no results.
+     */
     get(options?: RTDB.Get): Promise<any>
+    /**
+     * @see Content.Api.get
+     */
     get(options?: CF.Get): Promise<any>
 
     getByFieldRaw?(options: RTDB.GetByField): Promise<any>
