@@ -1,9 +1,11 @@
-import { FlamelinkUsersFactory } from '@flamelink/sdk-users-types'
+import { FlamelinkFactory, Api } from '@flamelink/sdk-users-types'
 
-const factory: FlamelinkUsersFactory = context => {
-  return {
+const factory: FlamelinkFactory = function(context) {
+  const api: Api = {
     get: () => {}
   }
+
+  return api
 }
 
 export default factory
