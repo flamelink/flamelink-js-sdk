@@ -3,10 +3,7 @@ import set from 'lodash/set'
 import chunk from 'lodash/chunk'
 import castArray from 'lodash/castArray'
 import flamelink from '@flamelink/sdk-app'
-import {
-  FlamelinkSchemasFactory,
-  SchemasPublicApi
-} from '@flamelink/sdk-schemas-types'
+import { FlamelinkFactory, Api, CF } from '@flamelink/sdk-schemas-types'
 import {
   applyOptionsForCF,
   pluckResultFields,
@@ -22,8 +19,8 @@ import { CF_BATCH_WRITE_LIMIT } from '../constants'
 
 const SCHEMAS_COLLECTION = 'fl_schemas'
 
-const factory: FlamelinkSchemasFactory = context => {
-  const api: SchemasPublicApi = {
+const factory: FlamelinkFactory = context => {
+  const api: Api = {
     ref(schemaKey) {
       const firestoreService = flamelink._ensureService('firestore', context)
       context.emitter.emit('schema:ref', { schemaKey })
@@ -37,13 +34,13 @@ const factory: FlamelinkSchemasFactory = context => {
         : baseRef
     },
 
-    getRaw({ schemaKey, ...options }) {
+    getRaw({ schemaKey, ...options }: CF.Get) {
       return applyOptionsForCF(api.ref(schemaKey), options).get({
         source: options.source || 'default'
       })
     },
 
-    async get({ schemaKey, ...options } = {}) {
+    async get({ schemaKey, ...options }: CF.Get = {}) {
       const pluckFields = pluckResultFields(options.fields)
 
       let schemas: any[] = get(context, `cache.schemas[${context.env}]`, [])
@@ -75,7 +72,7 @@ const factory: FlamelinkSchemasFactory = context => {
       return schemaKey ? plucked[0] : plucked
     },
 
-    async getFields({ schemaKey, fields, ...options }) {
+    async getFields({ schemaKey, fields, ...options }: CF.Get) {
       const pluckFields = pluckResultFields(fields)
       const schemas = await api.get({ schemaKey, ...options })
 
@@ -90,7 +87,7 @@ const factory: FlamelinkSchemasFactory = context => {
       return schemas.map((schema: any) => pluckFields(schema.fields))
     },
 
-    subscribeRaw({ schemaKey, callback, ...options }) {
+    subscribeRaw({ schemaKey, callback, ...options }: CF.Subscribe) {
       const filtered = applyOptionsForCF(api.ref(schemaKey), options)
 
       const args = []
@@ -109,7 +106,7 @@ const factory: FlamelinkSchemasFactory = context => {
       return filtered.onSnapshot(...args)
     },
 
-    subscribe({ schemaKey, callback, changeType, ...options }) {
+    subscribe({ schemaKey, callback, changeType, ...options }: CF.Subscribe) {
       const pluckFields = pluckResultFields(options.fields)
 
       return api.subscribeRaw({
@@ -146,7 +143,13 @@ const factory: FlamelinkSchemasFactory = context => {
       })
     },
 
-    subscribeFields({ schemaKey, fields, callback, changeType, ...options }) {
+    subscribeFields({
+      schemaKey,
+      fields,
+      callback,
+      changeType,
+      ...options
+    }: CF.Subscribe) {
       const pluckFields = pluckResultFields(fields)
 
       return api.subscribeRaw({
@@ -184,7 +187,7 @@ const factory: FlamelinkSchemasFactory = context => {
       })
     },
 
-    add({ schemaKey, data }) {
+    add({ schemaKey, data }: CF.Add) {
       if (!schemaKey) {
         throw new FlamelinkError(`Please provide the schema's "schemaKey"`)
       }
@@ -225,7 +228,7 @@ const factory: FlamelinkSchemasFactory = context => {
       return docRef.set(payload)
     },
 
-    async update({ schemaKey, data }) {
+    async update({ schemaKey, data }: CF.Update) {
       if (typeof schemaKey !== 'string' || typeof data !== 'object') {
         throw new FlamelinkError(
           '"update" called with the incorrect arguments. Check the docs for details.'
@@ -257,7 +260,7 @@ const factory: FlamelinkSchemasFactory = context => {
       return await schemas[0].ref.update(payload)
     },
 
-    async remove({ schemaKey }) {
+    async remove({ schemaKey }: CF.Remove) {
       const snapshot = await api.getRaw({ schemaKey })
 
       if (snapshot.empty) {

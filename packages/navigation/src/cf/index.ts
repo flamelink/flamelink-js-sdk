@@ -1,10 +1,7 @@
 import chunk from 'lodash/chunk'
 import castArray from 'lodash/castArray'
 import flamelink from '@flamelink/sdk-app'
-import {
-  FlamelinkNavigationFactory,
-  NavigationPublicApi
-} from '@flamelink/sdk-navigation-types'
+import { FlamelinkFactory, Api, CF } from '@flamelink/sdk-navigation-types'
 import {
   applyOptionsForCF,
   pluckResultFields,
@@ -21,8 +18,8 @@ const NAVIGATION_COLLECTION = 'fl_navigation'
 
 const REQUIRED_FIELDS_FOR_STRUCTURING = ['uuid', 'parentIndex', 'children']
 
-const factory: FlamelinkNavigationFactory = context => {
-  const api: NavigationPublicApi = {
+const factory: FlamelinkFactory = context => {
+  const api: Api = {
     ref(navigationKey) {
       const firestoreService = flamelink._ensureService('firestore', context)
 
@@ -36,13 +33,13 @@ const factory: FlamelinkNavigationFactory = context => {
         : baseRef
     },
 
-    getRaw({ navigationKey, ...options }) {
+    getRaw({ navigationKey, ...options }: CF.Get) {
       return applyOptionsForCF(api.ref(navigationKey), options).get({
         source: options.source || 'default'
       })
     },
 
-    async get({ navigationKey, ...options } = {}) {
+    async get({ navigationKey, ...options }: CF.Get = {}) {
       const fieldsToPluck =
         Array.isArray(options.fields) && options.structure
           ? new Set(REQUIRED_FIELDS_FOR_STRUCTURING.concat(options.fields))
@@ -61,7 +58,7 @@ const factory: FlamelinkNavigationFactory = context => {
       return navigationKey ? plucked[0] : plucked
     },
 
-    async getItems({ navigationKey, fields, structure, ...options }) {
+    async getItems({ navigationKey, fields, structure, ...options }: CF.Get) {
       const fieldsToPluck = Array.isArray(fields)
         ? new Set(REQUIRED_FIELDS_FOR_STRUCTURING.concat(fields))
         : fields
@@ -83,7 +80,7 @@ const factory: FlamelinkNavigationFactory = context => {
         .map((nav: any) => structureItems(options, nav))
     },
 
-    subscribeRaw({ navigationKey, callback, ...options }) {
+    subscribeRaw({ navigationKey, callback, ...options }: CF.Subscribe) {
       const filtered = applyOptionsForCF(api.ref(navigationKey), options)
 
       const args = []
@@ -102,7 +99,12 @@ const factory: FlamelinkNavigationFactory = context => {
       return filtered.onSnapshot(...args)
     },
 
-    subscribe({ navigationKey, callback, changeType, ...options }) {
+    subscribe({
+      navigationKey,
+      callback,
+      changeType,
+      ...options
+    }: CF.Subscribe) {
       const fieldsToPluck =
         Array.isArray(options.fields) && options.structure
           ? new Set(REQUIRED_FIELDS_FOR_STRUCTURING.concat(options.fields))
@@ -146,7 +148,7 @@ const factory: FlamelinkNavigationFactory = context => {
       })
     },
 
-    add({ navigationKey, data }) {
+    add({ navigationKey, data }: CF.Add) {
       if (!navigationKey) {
         throw new FlamelinkError(
           `Please provide the navigation's "navigationKey"`
@@ -177,7 +179,7 @@ const factory: FlamelinkNavigationFactory = context => {
       return docRef.set(payload)
     },
 
-    async update({ navigationKey, data }) {
+    async update({ navigationKey, data }: CF.Update) {
       if (typeof navigationKey !== 'string' || typeof data !== 'object') {
         throw new FlamelinkError(
           '"update" called with the incorrect arguments. Check the docs for details.'
@@ -209,7 +211,7 @@ const factory: FlamelinkNavigationFactory = context => {
       return await navigation[0].ref.update(payload)
     },
 
-    async remove({ navigationKey }) {
+    async remove({ navigationKey }: CF.Remove) {
       const snapshot = await api.getRaw({ navigationKey })
 
       if (snapshot.empty) {

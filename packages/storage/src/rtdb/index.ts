@@ -8,9 +8,9 @@ import resizeImage from 'browser-image-resizer'
 import flamelink from '@flamelink/sdk-app'
 import App from '@flamelink/sdk-app-types'
 import {
-  FlamelinkStorageFactory,
-  StoragePublicApi,
-  GetFilesArgsForRTDB,
+  FlamelinkFactory,
+  Api,
+  RTDB,
   ImageSize,
   FolderObject,
   FileObject
@@ -26,7 +26,7 @@ import {
   wrap,
   unwrap
 } from '@flamelink/sdk-utils'
-import { getFolderRefPath, getFileRefPath, getMediaRefPath } from './helpers'
+import { getFolderRefPath, getFileRefPath } from './helpers'
 import {
   filterFilesByFolderId,
   getScreenResolution,
@@ -35,8 +35,8 @@ import {
 } from '../helpers'
 import { DEFAULT_REQUIRED_IMAGE_SIZE } from '../constants'
 
-const factory: FlamelinkStorageFactory = function(context) {
-  const api: StoragePublicApi = {
+const factory: FlamelinkFactory = function(context) {
+  const api: Api = {
     async _getFolderId({ folderName = '' }) {
       if (!folderName) {
         return null
@@ -100,7 +100,7 @@ const factory: FlamelinkStorageFactory = function(context) {
       )
     },
 
-    ref(filename, { ...options }) {
+    ref(filename, { ...options }: ImageSize) {
       if (context.isNodeEnvironment && !context.usesAdminApp) {
         throw new FlamelinkError(
           `
@@ -145,56 +145,13 @@ Instructions here: https://flamelink.github.io/flamelink-js-sdk/#/getting-starte
       return dbService.ref(getFileRefPath(fileId))
     },
 
-    mediaRef(storageKey) {
-      const dbService = flamelink._ensureService('database', context)
-      return dbService.ref(getMediaRefPath(storageKey))
-    },
-
-    subscribeRaw({ storageKey, callback, ...options }) {
-      const filteredRef = applyOptionsForRTDB(api.mediaRef(storageKey), options)
-
-      filteredRef.on(
-        options.event || 'value',
-        (snapshot: any) => callback(null, snapshot),
-        (err: Error) => callback(err, null)
-      )
-
-      const unsubscribe: App.UnsubscribeMethod = () =>
-        filteredRef.off(options.event || 'value')
-      return unsubscribe
-    },
-
-    subscribe({ storageKey, callback, ...options }) {
-      const pluckFields = pluckResultFields(options.fields)
-
-      return api.subscribeRaw({
-        storageKey,
-        ...options,
-        async callback(err, snapshot) {
-          if (err) {
-            return callback(err, null)
-          }
-
-          const value = storageKey
-            ? wrap(storageKey, snapshot.val())
-            : snapshot.val()
-          const result = await pluckFields(value)
-
-          return callback(
-            null,
-            storageKey ? unwrap(storageKey, result) : result
-          )
-        }
-      })
-    },
-
-    async getFoldersRaw({ ...options }) {
+    async getFoldersRaw({ ...options }: App.RTDB.Options) {
       return applyOptionsForRTDB(api.folderRef(), options).once(
         options.event || 'value'
       )
     },
 
-    async getFolders({ ...options }) {
+    async getFolders({ ...options }: App.RTDB.Options) {
       const pluckFields = pluckResultFields(options.fields)
       const structureItems = formatStructure(options.structure, {
         idProperty: 'id',
@@ -208,7 +165,7 @@ Instructions here: https://flamelink.github.io/flamelink-js-sdk/#/getting-starte
       )(snapshot.val())
     },
 
-    async getFileRaw({ fileId, ...options }) {
+    async getFileRaw({ fileId, ...options }: RTDB.GetFile) {
       if (!fileId) {
         throw new FlamelinkError(
           '"storage.getFileRaw()" should be called with at least the file ID'
@@ -220,7 +177,7 @@ Instructions here: https://flamelink.github.io/flamelink-js-sdk/#/getting-starte
       )
     },
 
-    async getFile({ fileId, ...options }) {
+    async getFile({ fileId, ...options }: RTDB.GetFile) {
       if (!fileId) {
         throw new FlamelinkError(
           '"storage.getFile()" should be called with at least the file ID'
@@ -236,14 +193,14 @@ Instructions here: https://flamelink.github.io/flamelink-js-sdk/#/getting-starte
       )(snapshot.val())
     },
 
-    async getFilesRaw({ ...options }) {
+    async getFilesRaw({ ...options }: RTDB.GetFiles) {
       return applyOptionsForRTDB(api.fileRef(), options).once(
         options.event || 'value'
       )
     },
 
-    async getFiles({ ...options }) {
-      const defaultOptions: GetFilesArgsForRTDB = {}
+    async getFiles({ ...options }: RTDB.GetFiles) {
+      const defaultOptions: RTDB.GetFiles = {}
       const opts = Object.assign(
         defaultOptions,
         options,
@@ -264,7 +221,7 @@ Instructions here: https://flamelink.github.io/flamelink-js-sdk/#/getting-starte
       )(snapshot.val())
     },
 
-    async getURL({ fileId, ...options }) {
+    async getURL({ fileId, ...options }: RTDB.GetURL) {
       if (!fileId) {
         throw new FlamelinkError(
           '"storage.getURL()" should be called with at least the file ID'
@@ -346,7 +303,7 @@ Instructions here: https://flamelink.github.io/flamelink-js-sdk/#/getting-starte
       return fileRef.getDownloadURL()
     },
 
-    async getMetadata({ fileId, ...options }) {
+    async getMetadata({ fileId, ...options }: RTDB.GetMetadata) {
       if (!fileId) {
         throw new FlamelinkError(
           '"storage.getMetadata()" should be called with at least the file ID'
@@ -364,7 +321,7 @@ Instructions here: https://flamelink.github.io/flamelink-js-sdk/#/getting-starte
       return api.ref(filename).getMetadata()
     },
 
-    async updateMetadata({ fileId, updates }) {
+    async updateMetadata({ fileId, updates }: RTDB.UpdateMetadata) {
       if (!fileId || !updates) {
         throw new FlamelinkError(
           '"storage.updateMetadata()" should be called with the "fileID" and the "updates" object'
@@ -382,7 +339,7 @@ Instructions here: https://flamelink.github.io/flamelink-js-sdk/#/getting-starte
       return api.ref(filename).updateMetadata(updates)
     },
 
-    async deleteFile({ fileId, ...options }) {
+    async deleteFile({ fileId, ...options }: RTDB.GetFile) {
       if (context.usesAdminApp) {
         throw new FlamelinkError(
           '"storage.deleteFile()" is not currently supported for server-side use.'

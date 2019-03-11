@@ -3,10 +3,7 @@ import keys from 'lodash/keys'
 import castArray from 'lodash/castArray'
 import flamelink from '@flamelink/sdk-app'
 import App from '@flamelink/sdk-app-types'
-import {
-  FlamelinkNavigationFactory,
-  NavigationPublicApi
-} from '@flamelink/sdk-navigation-types'
+import { FlamelinkFactory, Api, RTDB } from '@flamelink/sdk-navigation-types'
 import {
   applyOptionsForRTDB,
   pluckResultFields,
@@ -19,8 +16,8 @@ import {
 import { getNavigationRefPath } from './helpers'
 import { structureItems } from '../helpers'
 
-const factory: FlamelinkNavigationFactory = context => {
-  const api: NavigationPublicApi = {
+const factory: FlamelinkFactory = context => {
+  const api: Api = {
     ref(navigationRef) {
       const dbService = flamelink._ensureService('database', context)
       return dbService.ref(
@@ -28,13 +25,13 @@ const factory: FlamelinkNavigationFactory = context => {
       )
     },
 
-    getRaw({ navigationKey, ...options }) {
+    getRaw({ navigationKey, ...options }: RTDB.Get) {
       return applyOptionsForRTDB(api.ref(navigationKey), options).once(
         options.event || 'value'
       )
     },
 
-    async get({ navigationKey, ...options } = {}) {
+    async get({ navigationKey, ...options }: RTDB.Get = {}) {
       const pluckFields = pluckResultFields(options.fields)
 
       const snapshot = await api.getRaw({ navigationKey, ...options })
@@ -65,7 +62,7 @@ const factory: FlamelinkNavigationFactory = context => {
       }, {})
     },
 
-    getItemsRaw({ navigationKey, ...options }) {
+    getItemsRaw({ navigationKey, ...options }: RTDB.Get) {
       if (!navigationKey) {
         throw new FlamelinkError(
           '"getItems" method requires a navigation reference'
@@ -78,7 +75,7 @@ const factory: FlamelinkNavigationFactory = context => {
       ).once(options.event || 'value')
     },
 
-    async getItems({ navigationKey, ...options } = {}) {
+    async getItems({ navigationKey, ...options }: RTDB.Get = {}) {
       const pluckFields = pluckResultFields(options.fields)
       const snapshot = await api.getItemsRaw({ navigationKey, ...options })
 
@@ -90,7 +87,7 @@ const factory: FlamelinkNavigationFactory = context => {
       )(snapshot.val())
     },
 
-    subscribeRaw({ navigationKey, callback, ...options }) {
+    subscribeRaw({ navigationKey, callback, ...options }: RTDB.Subscribe) {
       const filteredRef = applyOptionsForRTDB(api.ref(navigationKey), options)
 
       filteredRef.on(
@@ -104,7 +101,7 @@ const factory: FlamelinkNavigationFactory = context => {
       return unsubscribe
     },
 
-    subscribe({ navigationKey, callback, ...options }) {
+    subscribe({ navigationKey, callback, ...options }: RTDB.Subscribe) {
       try {
         const pluckFields = pluckResultFields(options.fields)
 
@@ -153,7 +150,7 @@ const factory: FlamelinkNavigationFactory = context => {
       }
     },
 
-    add({ navigationKey, data }) {
+    add({ navigationKey, data }: RTDB.Add) {
       const payload =
         typeof data === 'object'
           ? Object.assign({}, data, {
@@ -170,7 +167,7 @@ const factory: FlamelinkNavigationFactory = context => {
       return api.ref(navigationKey).set(payload)
     },
 
-    update({ navigationKey, data }) {
+    update({ navigationKey, data }: RTDB.Update) {
       if (
         typeof navigationKey !== 'string' ||
         (typeof data !== 'object' && data !== null)
@@ -192,7 +189,7 @@ const factory: FlamelinkNavigationFactory = context => {
       return api.ref(navigationKey).update(payload)
     },
 
-    remove({ navigationKey }) {
+    remove({ navigationKey }: RTDB.Remove) {
       if (!navigationKey) {
         throw new FlamelinkError(
           '"remove" called with the incorrect arguments. Check the docs for details.'

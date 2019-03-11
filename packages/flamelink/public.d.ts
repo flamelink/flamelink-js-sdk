@@ -4,11 +4,11 @@
 
 import App from '@flamelink/sdk-app-types'
 import Content from '@flamelink/sdk-content-types'
-import * as Schema from '@flamelink/sdk-schemas-types'
-import * as Storage from '@flamelink/sdk-storage-types'
-import * as Navigation from '@flamelink/sdk-navigation-types'
-import * as Settings from '@flamelink/sdk-settings-types'
-import * as Users from '@flamelink/sdk-users-types'
+import Schemas from '@flamelink/sdk-schemas-types'
+import Storage from '@flamelink/sdk-storage-types'
+import Navigation from '@flamelink/sdk-navigation-types'
+import Settings from '@flamelink/sdk-settings-types'
+import Users from '@flamelink/sdk-users-types'
 
 declare function Flamelink(config: Flamelink.Config): Flamelink.App
 
@@ -18,11 +18,11 @@ declare namespace Flamelink {
 
   export interface App {
     content: Content.Api
-    schemas: Schema.SchemasPublicApi
-    storage: Storage.StoragePublicApi
-    nav: Navigation.NavigationPublicApi
-    settings: Settings.SettingsPublicApi
-    users: Users.UsersPublicApi
+    schemas: Schemas.Api
+    storage: Storage.Api
+    nav: Navigation.Api
+    settings: Settings.Api
+    users: Users.Api
   }
 
   // export const version: string
