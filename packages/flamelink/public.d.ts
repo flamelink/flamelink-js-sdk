@@ -5,7 +5,7 @@
 import App from '@flamelink/sdk-app-types'
 import Content from '@flamelink/sdk-content-types'
 import Schemas from '@flamelink/sdk-schemas-types'
-import * as Storage from '@flamelink/sdk-storage-types'
+import Storage from '@flamelink/sdk-storage-types'
 import Navigation from '@flamelink/sdk-navigation-types'
 import Settings from '@flamelink/sdk-settings-types'
 import * as Users from '@flamelink/sdk-users-types'
@@ -19,7 +19,7 @@ declare namespace Flamelink {
   export interface App {
     content: Content.Api
     schemas: Schemas.Api
-    storage: Storage.StoragePublicApi
+    storage: Storage.Api
     nav: Navigation.Api
     settings: Settings.Api
     users: Users.UsersPublicApi

@@ -1,15 +1,15 @@
 import compose from 'compose-then'
-import values from 'lodash/values'
 import isPlainObject from 'lodash/isPlainObject'
 import find from 'lodash/find'
 import get from 'lodash/get'
 import set from 'lodash/set'
 import resizeImage from 'browser-image-resizer'
 import flamelink from '@flamelink/sdk-app'
+import App from '@flamelink/sdk-app-types'
 import {
-  FlamelinkStorageFactory,
-  StoragePublicApi,
-  GetFilesArgsForCF,
+  FlamelinkFactory,
+  Api,
+  CF,
   ImageSize,
   FolderObject,
   FileObject
@@ -35,8 +35,8 @@ import { DEFAULT_REQUIRED_IMAGE_SIZE } from '../constants'
 const FILES_COLLECTION = 'fl_files'
 const FOLDERS_COLLECTION = 'fl_folders'
 
-const factory: FlamelinkStorageFactory = function(context) {
-  const api: StoragePublicApi = {
+const factory: FlamelinkFactory = function(context) {
+  const api: Api = {
     async _getFolderId({ folderName = '' }) {
       if (!folderName) {
         return null
@@ -99,7 +99,7 @@ const factory: FlamelinkStorageFactory = function(context) {
       )
     },
 
-    ref(filename, { ...options }) {
+    ref(filename, { ...options }: ImageSize = {}) {
       if (context.isNodeEnvironment && !context.usesAdminApp) {
         throw new FlamelinkError(
           `
@@ -147,13 +147,13 @@ Instructions here: https://flamelink.github.io/flamelink-js-sdk/#/getting-starte
         : firestoreService.collection(FILES_COLLECTION)
     },
 
-    async getFoldersRaw({ ...options }) {
+    async getFoldersRaw({ ...options }: App.CF.Options) {
       return applyOptionsForCF(api.folderRef(), options).get({
         source: options.source || 'default'
       })
     },
 
-    async getFolders({ ...options }) {
+    async getFolders({ ...options }: App.CF.Options) {
       const pluckFields = pluckResultFields(options.fields)
       const structureItems = formatStructure(options.structure, {
         idProperty: 'id',
@@ -180,7 +180,7 @@ Instructions here: https://flamelink.github.io/flamelink-js-sdk/#/getting-starte
       )(folders)
     },
 
-    async getFileRaw({ fileId, ...options }) {
+    async getFileRaw({ fileId, ...options }: CF.Get) {
       if (!fileId) {
         throw new FlamelinkError(
           '"storage.getFileRaw()" should be called with at least the file ID',
@@ -193,7 +193,7 @@ Instructions here: https://flamelink.github.io/flamelink-js-sdk/#/getting-starte
       })
     },
 
-    async getFile({ fileId, ...options }) {
+    async getFile({ fileId, ...options }: CF.GetFile) {
       if (!fileId) {
         throw new FlamelinkError(
           '"storage.getFile()" should be called with at least the file ID',
@@ -211,14 +211,14 @@ Instructions here: https://flamelink.github.io/flamelink-js-sdk/#/getting-starte
       return docData[fileId]
     },
 
-    async getFilesRaw({ ...options }) {
+    async getFilesRaw({ ...options }: CF.GetFiles) {
       return applyOptionsForCF(api.fileRef(), options).get({
         source: options.source || 'default'
       })
     },
 
-    async getFiles({ ...options }) {
-      const defaultOptions: GetFilesArgsForCF = {}
+    async getFiles({ ...options }: CF.GetFiles) {
+      const defaultOptions: CF.GetFiles = {}
       const opts = Object.assign(
         defaultOptions,
         options,
@@ -253,7 +253,7 @@ Instructions here: https://flamelink.github.io/flamelink-js-sdk/#/getting-starte
       )(files)
     },
 
-    async getURL({ fileId, ...options }) {
+    async getURL({ fileId, ...options }: CF.GetURL) {
       if (!fileId) {
         throw new FlamelinkError(
           '"storage.getURL()" should be called with at least the file ID',
@@ -336,7 +336,7 @@ Instructions here: https://flamelink.github.io/flamelink-js-sdk/#/getting-starte
       return fileRef.getDownloadURL()
     },
 
-    async getMetadata({ fileId, ...options }) {
+    async getMetadata({ fileId, ...options }: CF.GetMetadata) {
       if (!fileId) {
         throw new FlamelinkError(
           '"storage.getMetadata()" should be called with at least the file ID'
@@ -354,7 +354,7 @@ Instructions here: https://flamelink.github.io/flamelink-js-sdk/#/getting-starte
       return api.ref(filename).getMetadata()
     },
 
-    async updateMetadata({ fileId, updates }) {
+    async updateMetadata({ fileId, updates }: CF.UpdateMetadata) {
       if (!fileId || !updates) {
         throw new FlamelinkError(
           '"storage.updateMetadata()" should be called with the "fileID" and the "updates" object'
@@ -372,7 +372,7 @@ Instructions here: https://flamelink.github.io/flamelink-js-sdk/#/getting-starte
       return api.ref(filename).updateMetadata(updates)
     },
 
-    async deleteFile({ fileId, ...options }) {
+    async deleteFile({ fileId, ...options }: CF.GetFile) {
       if (context.usesAdminApp) {
         throw new FlamelinkError(
           '"storage.deleteFile()" is not currently supported for server-side use.'
