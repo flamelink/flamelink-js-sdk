@@ -135,7 +135,9 @@ const factory: FlamelinkFactory = context => {
               firstName: data.firstName || '',
               id: uid,
               lastName: data.lastName || '',
-              permissions: api._getPermissionsRef(data.permissions)
+              ...(data.permissions
+                ? { permissions: api._getPermissionsRef(data.permissions) }
+                : {})
             })
           : data
 

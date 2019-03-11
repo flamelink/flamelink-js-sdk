@@ -52,7 +52,7 @@ declare namespace Users {
   }
 
   export interface Api {
-    _getPermissionsRef(permission?: string): any
+    _getPermissionsRef?(permission?: string): any
 
     ref(uid?: string): any
 
