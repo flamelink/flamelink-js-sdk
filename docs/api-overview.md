@@ -70,6 +70,63 @@ app.content.subscribe({
 
 ---
 
+## Media files, Relational Data and References
+
+All relational data, including images and other files are stored as ID's in the Real-time database and as document references in the Cloud Firestore database. To expand these ID's into the entry objects that they represent Flamelink makes a `populate` option available.
+
+In the simplest case, you can set `populate: true` and all relational fields will be populated into their relevant objects. This is great, but you might want more control over which fields you want to populate so that you do not make unnecessary requests to your database. For these cases, you can specify the exact fields to populate.
+
+?> **HOT TIP:** When specifying a media field to be populated for you, it will replace the file ID for you with an object containing all the file's data including a `url` property which is the URL to your file in the storage bucket.
+
+A basic example that only populates a field called `category` for each `blogPosts` entry:
+
+```javascript
+app.content.get({
+  schemaKey: 'blogPosts',
+  populate: [ 'category' ]
+});
+```
+
+There is also an alternative, more flexible option, to pass through an array of **objects** instead of **strings**. The important thing is to set the `field` attribute to the name of the field that should be populated.
+
+This option allows you to apply other options and filters like the `fields` option above to each populated entry, as well as allow infinitely nested relationships.
+
+As an example, the following code snippet will find all your blog posts and then populate the `category` relational field along with the `banner-image` media field, but only return the `id`, `name`, `icon` and `section` for each category assigned to each blog post. Additionally, each `category` might be related to a `section`, so populate that as well.
+
+```javascript
+app.content.get({
+  schemaKey: 'blogPosts',
+  populate: [
+    {
+      field: 'category',
+      fields: [ 'id', 'name', 'icon', 'section' ],
+      populate: [ 'section' ]
+    },
+    {
+      field: 'banner-image'
+    }
+  ]
+});
+```
+
+!> **For advanced use:** It is also possible to populate fields for `repeater` and `field group` fields by specifying the `subFields` to populate.
+
+```javascript
+app.content.get({
+  schemaKey: 'blogPosts',
+  populate: [
+    {
+      field: 'some-repeater-field',
+      subFields: [ 'field-inside-repeater-field' ]
+    }
+  ]
+});
+```
+
+?> **Tip:** The array of __strings__ *vs* array of __objects__ syntax can be mixed and matched if you want.
+
+---
+
 ## Sorting, Filtering and Ordering data
 
 Where appropriate, [Firebase's](https://firebase.google.com/docs/database/web/lists-of-data#sorting_and_filtering_data) and [Firestore's](https://firebase.google.com/docs/firestore/query-data/queries#simple_queries) filtering and ordering query options are made available to the different API methods. Since Cloud Firestore's querying functionality is way more powerful than that of the Real-time database, there are different limitations and options for each.
