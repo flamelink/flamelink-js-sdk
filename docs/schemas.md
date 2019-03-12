@@ -1,3 +1,5 @@
+# Schemas
+
 > All the methods that you would need to work with the "Schemas" Flamelink data is available on the `app.schemas` namespace.
 
 ---
@@ -41,7 +43,7 @@ app.schemas
 ### Input parameters
 
 | Type   | Variable    | Required | Description                                            |
-| ------ | ----------- | -------- | ------------------------------------------------------ |
+|--------|-------------|----------|--------------------------------------------------------|
 | String | `schemaKey` | optional | The schema database key/reference you want to retrieve |
 | Object | `options`   | optional | Additional options                                     |
 
@@ -127,7 +129,7 @@ app.schemas
 ### Input parameters
 
 | Type   | Variable    | Required | Description                                            |
-| ------ | ----------- | -------- | ------------------------------------------------------ |
+|--------|-------------|----------|--------------------------------------------------------|
 | String | `schemaKey` | optional | The schema database key/reference you want to retrieve |
 | Object | `options`   | optional | Additional options                                     |
 
@@ -223,7 +225,7 @@ getSchemaObservable('product-categories').subscribe()
 Parameters should be passed in the order of the following table. If an optional parameter, like the `options` are left out, the following parameter just moves in its place.
 
 | Type     | Variable    | Required | Description                                                           |
-| -------- | ----------- | -------- | --------------------------------------------------------------------- |
+|----------|-------------|----------|-----------------------------------------------------------------------|
 | String   | `schemaKey` | optional | The schema database key or reference you want to retrieve             |
 | Object   | `options`   | optional | Additional options                                                    |
 | Function | `callback`  | required | Function called once when subscribed and when subscribed data changes |
@@ -299,7 +301,7 @@ app.schemas.unsubscribe()
 All parameters are optional and calling this method without options will unsubscribe from all callbacks.
 
 | Type   | Variable    | Required | Description                                                    |
-| ------ | ----------- | -------- | -------------------------------------------------------------- |
+|--------|-------------|----------|----------------------------------------------------------------|
 | String | `schemaKey` | optional | The schema key or reference to unsubscribe from                |
 | String | `event`     | optional | The child event to unsubscribe from (see allowed child events) |
 
@@ -328,7 +330,7 @@ app.schemas.set('product-categories', { id: 'product-categories', title: 'Produc
 ### Input parameters
 
 | Type   | Variable    | Required | Description                                                |
-| ------ | ----------- | -------- | ---------------------------------------------------------- |
+|--------|-------------|----------|------------------------------------------------------------|
 | String | `schemaKey` | required | The schema key or reference for the schema you want to set |
 | Object | `payload`   | required | Payload object to set at the given schema reference        |
 
@@ -357,7 +359,7 @@ app.schemas.update('product-categories', { id: 'product-categories', title: 'Pro
 ### Input parameters
 
 | Type   | Variable    | Required | Description                                                   |
-| ------ | ----------- | -------- | ------------------------------------------------------------- |
+|--------|-------------|----------|---------------------------------------------------------------|
 | String | `schemaKey` | required | The schema key or reference for the schema you want to update |
 | Object | `updates`   | required | Payload object to update at the given schema's reference      |
 
@@ -385,75 +387,12 @@ app.schemas
 ### Input parameters
 
 | Type   | Variable    | Required | Description                           |
-| ------ | ----------- | -------- | ------------------------------------- |
+|--------|-------------|----------|---------------------------------------|
 | String | `schemaKey` | required | The schema key or reference to remove |
 
 ### Return value
 
 A `Promise` that resolves when the schema is removed or will reject with an error if the request fails.
-
----
-
-## .transaction()
-
-> **FIRE RISK WARNING:** This is a more advanced API method, that for most use cases will not be necessary. Only use it if you know what you are doing. If you mess this up, you might break your CMS. It is strongly advised to use backups.
-
-If you need to update a schema whose data could be corrupted by concurrent changes, Firebase allows us to perform a "transaction" update that updates data based on the existing data/state.
-
-> Read more about transactions in the [Firebase docs](https://firebase.google.com/docs/reference/js/firebase.database.Reference#transaction).
-
-```javascript
-app.schemas.transaction(
-  'product-categories',
-  function updateFn(schema) {
-    // Take in the existing state (schema) and return the new state
-    return schema
-  },
-  function callback() {
-    // Transaction finished
-  }
-)
-```
-
-### Input parameters
-
-| Type     | Variable    | Required | Description                                                            |
-| -------- | ----------- | -------- | ---------------------------------------------------------------------- |
-| String   | `schemaKey` | required | The schema key or reference for the schema you want to update          |
-| Function | `updateFn`  | required | The update function that will be called with the existing schema state |
-| Function | `callback`  | optional | The callback function that will be called when transaction finishes    |
-
-### Return value
-
-This method has no return value. Use the optional `callback` function to determine when the transaction succeeded.
-
----
-
-## .ref()
-
-> **FIRE RISK WARNING:** This is a more advanced API method, that for most use cases will not be necessary.
-
-To retrieve a context aware (environment and locale) reference to any node/location within your "Schemas" data.
-
-```javascript
-app.schemas.ref('your-reference')
-  .then(reference => console.log('The reference:', reference)
-  .catch(error => console.error('Something went wrong while retrieving the reference. Details:', error);
-```
-
-### Input parameters
-
-The `.ref()` method takes a single parameter
-
-| Type   | Variable    | Required | Description                         |
-| ------ | ----------- | -------- | ----------------------------------- |
-| String | `reference` | optional | The reference you want to retrieve. |
-
-?> **Tip:** Leave the `reference` out or set to `null` to get a reference to all the schemas
-
-### Return value
-
-A `Promise` that resolves to the reference `{Object}` on success or will reject with an error if the request fails.
 
 ---
 
