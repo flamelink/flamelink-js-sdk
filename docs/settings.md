@@ -1,3 +1,5 @@
+# Settings
+
 > All the methods that you would need to work with the Flamelink "Settings" are available on the `app.settings` namespace.
 
 ---
@@ -115,9 +117,9 @@ app.settings.getGlobals()
 
 ### Input parameters
 
-| Type   | Variable    | Required | Description                                            |
-| ------ | ----------- | -------- | ------------------------------------------------------ |
-| Object | `options`   | optional | Additional options                                     |
+| Type   | Variable  | Required | Description        |
+|--------|-----------|----------|--------------------|
+| Object | `options` | optional | Additional options |
 
 #### Available Options
 
@@ -167,9 +169,9 @@ app.settings.getImageSizes()
 
 ### Input parameters
 
-| Type   | Variable    | Required | Description                                            |
-| ------ | ----------- | -------- | ------------------------------------------------------ |
-| Object | `options`   | optional | Additional options                                     |
+| Type   | Variable  | Required | Description        |
+|--------|-----------|----------|--------------------|
+| Object | `options` | optional | Additional options |
 
 #### Available Options
 
@@ -219,9 +221,9 @@ app.settings.getDefaultPermissionsGroup()
 
 ### Input parameters
 
-| Type   | Variable    | Required | Description                                            |
-| ------ | ----------- | -------- | ------------------------------------------------------ |
-| Object | `options`   | optional | Additional options                                     |
+| Type   | Variable  | Required | Description        |
+|--------|-----------|----------|--------------------|
+| Object | `options` | optional | Additional options |
 
 #### Available Options
 

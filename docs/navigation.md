@@ -1,3 +1,5 @@
+# Navigation
+
 > All the methods that you would need to work with the "Navigation" Flamelink data is available on the `app.nav` namespace.
 
 ---
@@ -366,65 +368,6 @@ A `Promise` that resolves when the entry is removed or will reject with an error
 
 ---
 
-## .transaction()
-
-> **FIRE RISK WARNING:** This is a more advanced API method, that for most use cases will not be necessary.
-
-If you need to update a navigation entry whose data could be corrupted by concurrent changes, Firebase allows us to perform a "transaction" update that updates data based on the existing data/state.
-
-> Read more about transactions in the [Firebase docs](https://firebase.google.com/docs/reference/js/firebase.database.Reference#transaction).
-
-```javascript
-app.nav.transaction(
-  'main-menu',
-  function updateFn(menu) {
-    // Take in the existing state (menu) and return the new state
-    return menu
-  },
-  function callback() {
-    // Transaction finished
-  }
-)
-```
-
-### Input parameters
-
-| Type     | Variable       | Required | Description                                                           |
-|----------|----------------|----------|-----------------------------------------------------------------------|
-| String   | `navReference` | required | The navigation entry you want to update                               |
-| Function | `updateFn`     | required | The update function that will be called with the existing entry state |
-| Function | `callback`     | optional | The callback function that will be called when transaction finishes   |
-
-### Return value
-
-This method has no return value. Use the optional `callback` function to determine when the transaction succeeded.
-
----
-
-## .ref()
-
-> **FIRE RISK WARNING:** This is a more advanced API method, that for most use cases will not be necessary.
-
-To retrieve a context aware (environment and locale) reference to any node/location within your "Navigation" data.
-
-```javascript
-app.nav.ref('your-reference')
-  .then(reference => console.log('The reference:', reference)
-  .catch(error => console.error('Something went wrong while retrieving the reference. Details:', error);
-```
-
-### Input parameters
-
-The `.ref()` method takes a single parameter
-
-- `{String}` `ref`: The reference you want to retrieve.
-
-### Return value
-
-A `Promise` that resolves to the reference `{Object}` on success or will reject with an error if the request fails.
-
----
-
-Next up: [Schemas](/schemas)
+Next up: [Users](/users)
 
 > 🔥🔥🔥 **Now we’re cooking with Fire…** 🔥🔥🔥

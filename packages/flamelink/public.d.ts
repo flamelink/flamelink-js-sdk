@@ -10,10 +10,10 @@ import Navigation from '@flamelink/sdk-navigation-types'
 import Settings from '@flamelink/sdk-settings-types'
 import Users from '@flamelink/sdk-users-types'
 
-declare function Flamelink(config: Flamelink.Config): Flamelink.App
+declare function flamelink(config: flamelink.Config): flamelink.App
 
 // eslint-disable-next-line no-redeclare
-declare namespace Flamelink {
+declare namespace flamelink {
   export type Config = App.Config
 
   export interface App {
@@ -33,4 +33,4 @@ declare namespace Flamelink {
 export as namespace flamelink
 
 // Export for build systems (module loaders)
-export = Flamelink
+export = flamelink

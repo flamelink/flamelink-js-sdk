@@ -109,8 +109,8 @@ declare namespace Content {
     subscribeRaw(options: RTDB.Subscribe): App.UnsubscribeMethod
     subscribeRaw(options: CF.Subscribe): App.UnsubscribeMethod
 
-    subscribe(options?: RTDB.Subscribe): App.UnsubscribeMethod
-    subscribe(options?: CF.Subscribe): App.UnsubscribeMethod
+    subscribe(options: RTDB.Subscribe): App.UnsubscribeMethod
+    subscribe(options: CF.Subscribe): App.UnsubscribeMethod
 
     add(options: RTDB.Add): Promise<any>
     add(options: CF.Add): Promise<any>

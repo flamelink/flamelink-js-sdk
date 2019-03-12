@@ -1,3 +1,5 @@
+# Storage
+
 ?> All storage functionality is only available when used inside a browser on the client side and not for server side use. Firebase Storage is not included in the server side module.
 
 > All the methods that you would need to work with the "Storage"/"Media" Flamelink data is available on the `app.storage` namespace.
@@ -10,7 +12,7 @@
 
 To upload files to your Flamelink project and storage bucket.
 
-!> Uploading files server-side (from NodeJS) is currently not supported.
+!> Uploading files server-side (from Node.js) is currently not supported.
 
 You can upload files in any of the following formats: [File](https://developer.mozilla.org/en-US/docs/Web/API/File), [Blob](https://developer.mozilla.org/en-US/docs/Web/API/Blob), [byte arrays](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Uint8Array) or from a String.
 
