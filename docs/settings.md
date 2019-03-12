@@ -31,7 +31,7 @@ app.settings.setEnvironment('staging')
   .catch(error => console.error('Something went wrong while setting the environment. Details:', error);
 ```
 
-### Input parameters
+### Option properties
 
 The `.setEnvironment()` method takes a single parameter
 
@@ -53,7 +53,7 @@ app.settings.getEnvironment()
   .catch(error => console.error('Something went wrong while retrieving the environment. Details:', error);
 ```
 
-### Input parameters
+### Option properties
 
 The `.getEnvironment()` method takes no parameters
 
@@ -73,7 +73,7 @@ app.settings.setLocale('en-GB')
   .catch(error => console.error('Something went wrong while setting the locale. Details:', error);
 ```
 
-### Input parameters
+### Option properties
 
 The `.setLocale()` method takes a single parameter
 
@@ -95,7 +95,7 @@ app.settings.getLocale()
   .catch(error => console.error('Something went wrong while retrieving the locale. Details:', error);
 ```
 
-### Input parameters
+### Option properties
 
 The `.getLocale()` method takes no parameters
 
@@ -107,7 +107,7 @@ A `Promise` that resolves to the currently set locale `{String}` on success.
 
 ## .getGlobals()
 
-To retrieve the global meta data for your project, you can do so with the `getGlobals()` method:
+To retrieve the global metadata for your project, you can do so with the `getGlobals()` method:
 
 ```javascript
 app.settings.getGlobals()
@@ -115,11 +115,13 @@ app.settings.getGlobals()
   .catch(error => console.error('Something went wrong while retrieving the data. Details:', error);
 ```
 
-### Input parameters
+### Option properties
 
-| Type   | Variable  | Required | Description        |
+| Type   | Property  | Required | Description        |
 |--------|-----------|----------|--------------------|
 | Object | `options` | optional | Additional options |
+
+See the [API overview](/api-overview?id=fields) for details regarding some of these options.
 
 #### Available Options
 
@@ -167,11 +169,13 @@ app.settings.getImageSizes()
   .catch(error => console.error('Something went wrong while retrieving the image sizes. Details:', error);
 ```
 
-### Input parameters
+### Option properties
 
-| Type   | Variable  | Required | Description        |
+| Type   | Property  | Required | Description        |
 |--------|-----------|----------|--------------------|
 | Object | `options` | optional | Additional options |
+
+See the [API overview](/api-overview?id=fields) for details regarding some of these options.
 
 #### Available Options
 
@@ -219,11 +223,13 @@ app.settings.getDefaultPermissionsGroup()
   .catch(error => console.error('Something went wrong while retrieving the permissions group. Details:', error);
 ```
 
-### Input parameters
+### Option properties
 
-| Type   | Variable  | Required | Description        |
+| Type   | Property  | Required | Description        |
 |--------|-----------|----------|--------------------|
 | Object | `options` | optional | Additional options |
+
+See the [API overview](/api-overview?id=fields) for details regarding some of these options.
 
 #### Available Options
 

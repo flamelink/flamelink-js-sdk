@@ -40,12 +40,14 @@ app.schemas
   )
 ```
 
-### Input parameters
+### Option properties
 
-| Type   | Variable    | Required | Description                                            |
+| Type   | Property    | Required | Description                                            |
 |--------|-------------|----------|--------------------------------------------------------|
 | String | `schemaKey` | optional | The schema database key/reference you want to retrieve |
 | Object | `options`   | optional | Additional options                                     |
+
+See the [API overview](/api-overview?id=fields) for details regarding some of these options.
 
 ?> **Tip:** Leave the schema key out or set to `null` to retrieve all schemas
 
@@ -126,12 +128,14 @@ app.schemas
   )
 ```
 
-### Input parameters
+### Option properties
 
-| Type   | Variable    | Required | Description                                            |
+| Type   | Property    | Required | Description                                            |
 |--------|-------------|----------|--------------------------------------------------------|
 | String | `schemaKey` | optional | The schema database key/reference you want to retrieve |
 | Object | `options`   | optional | Additional options                                     |
+
+See the [API overview](/api-overview?id=fields) for details regarding some of these options.
 
 ?> **Tip:** Leave the schema key out or set to `null` to retrieve all schemas
 
@@ -220,15 +224,17 @@ const getSchemaObservable = Rx.Observable.bindCallback(app.schemas.subscribe)
 getSchemaObservable('product-categories').subscribe()
 ```
 
-### Input parameters
+### Option properties
 
 Parameters should be passed in the order of the following table. If an optional parameter, like the `options` are left out, the following parameter just moves in its place.
 
-| Type     | Variable    | Required | Description                                                           |
+| Type     | Property    | Required | Description                                                           |
 |----------|-------------|----------|-----------------------------------------------------------------------|
 | String   | `schemaKey` | optional | The schema database key or reference you want to retrieve             |
 | Object   | `options`   | optional | Additional options                                                    |
 | Function | `callback`  | required | Function called once when subscribed and when subscribed data changes |
+
+See the [API overview](/api-overview?id=fields) for details regarding some of these options.
 
 #### Available Options
 
@@ -296,14 +302,16 @@ _To unsubscribe from all events for the schemas:_
 app.schemas.unsubscribe()
 ```
 
-### Input parameters
+### Option properties
 
 All parameters are optional and calling this method without options will unsubscribe from all callbacks.
 
-| Type   | Variable    | Required | Description                                                    |
+| Type   | Property    | Required | Description                                                    |
 |--------|-------------|----------|----------------------------------------------------------------|
 | String | `schemaKey` | optional | The schema key or reference to unsubscribe from                |
 | String | `event`     | optional | The child event to unsubscribe from (see allowed child events) |
+
+See the [API overview](/api-overview?id=fields) for details regarding some of these options.
 
 ### Return value
 
@@ -325,14 +333,16 @@ app.schemas.set('product-categories', { id: 'product-categories', title: 'Produc
   .catch(() => console.error('Something went wrong while setting the schema data.'));
 ```
 
-?> It is important to note that this method will set the entry's `id` as well as the `createdBy` and `createdDate` meta data for you.
+?> It is important to note that this method will set the entry's `id` as well as the `createdBy` and `createdDate` metadata for you.
 
-### Input parameters
+### Option properties
 
-| Type   | Variable    | Required | Description                                                |
+| Type   | Property    | Required | Description                                                |
 |--------|-------------|----------|------------------------------------------------------------|
 | String | `schemaKey` | required | The schema key or reference for the schema you want to set |
 | Object | `payload`   | required | Payload object to set at the given schema reference        |
+
+See the [API overview](/api-overview?id=fields) for details regarding some of these options.
 
 ### Return value
 
@@ -354,14 +364,16 @@ app.schemas.update('product-categories', { id: 'product-categories', title: 'Pro
   .catch(() => console.error('Something went wrong while updating the schema.'));
 ```
 
-?> It is important to note that this method will set the entry's `id` as well as the `lastModifiedBy` and `lastModifiedDate` meta data for you.
+?> It is important to note that this method will set the entry's `id` as well as the `lastModifiedBy` and `lastModifiedDate` metadata for you.
 
-### Input parameters
+### Option properties
 
-| Type   | Variable    | Required | Description                                                   |
+| Type   | Property    | Required | Description                                                   |
 |--------|-------------|----------|---------------------------------------------------------------|
 | String | `schemaKey` | required | The schema key or reference for the schema you want to update |
 | Object | `updates`   | required | Payload object to update at the given schema's reference      |
+
+See the [API overview](/api-overview?id=fields) for details regarding some of these options.
 
 ### Return value
 
@@ -384,11 +396,13 @@ app.schemas
 
 ?> **Tip:** A schema can also be removed by passing `null` as the payload to the `app.schemas.set()` or `app.schemas.update()` methods. Be careful!
 
-### Input parameters
+### Option properties
 
-| Type   | Variable    | Required | Description                           |
+| Type   | Property    | Required | Description                           |
 |--------|-------------|----------|---------------------------------------|
 | String | `schemaKey` | required | The schema key or reference to remove |
+
+See the [API overview](/api-overview?id=fields) for details regarding some of these options.
 
 ### Return value
 

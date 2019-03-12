@@ -61,14 +61,16 @@ app.storage
   .catch(error => console.error('Upload failed. Details:', error))
 ```
 
-?> It is important to note that this method will set the file's `id` as well as the `createdBy` and `createdDate` meta data for you.
+?> It is important to note that this method will set the file's `id` as well as the `createdBy` and `createdDate` metadata for you.
 
-### Input parameters
+### Option properties
 
-| Type                              | Variable   | Required | Description                                       |
+| Type                              | Property   | Required | Description                                       |
 |-----------------------------------|------------|----------|---------------------------------------------------|
 | File / Blob / Uint8Array / String | `fileData` | required | The file content to upload to the storage bucket. |
 | Object                            | `options`  | optional | Additional options                                |
+
+See the [API overview](/api-overview?id=fields) for details regarding some of these options.
 
 #### Available Options
 
@@ -254,13 +256,15 @@ app.storage
   )
 ```
 
-### Input parameters
+### Option properties
 
 This method only takes a single optional argument.
 
-| Type   | Variable  | Required | Description                         |
+| Type   | Property  | Required | Description                         |
 |--------|-----------|----------|-------------------------------------|
 | Object | `options` | optional | Order, filter and structure options |
+
+See the [API overview](/api-overview?id=fields) for details regarding some of these options.
 
 #### Available Options
 
@@ -302,13 +306,15 @@ app.storage
   )
 ```
 
-### Input parameters
+### Option properties
 
 This method only takes a single optional argument. Used without any parameters will return all your files.
 
-| Type   | Variable  | Required | Description                         |
+| Type   | Property  | Required | Description                         |
 |--------|-----------|----------|-------------------------------------|
 | Object | `options` | optional | Order, filter and structure options |
+
+See the [API overview](/api-overview?id=fields) for details regarding some of these options.
 
 #### Available Options
 
@@ -376,14 +382,16 @@ app.storage
   )
 ```
 
-### Input parameters
+### Option properties
 
 This method has one required parameter, which is the file ID and also an optional `options` argument.
 
-| Type   | Variable  | Required | Description                                          |
+| Type   | Property  | Required | Description                                          |
 |--------|-----------|----------|------------------------------------------------------|
 | String | `fileId`  | required | The file ID you want to retrieve the file object for |
 | Object | `options` | optional | Optional options                                     |
+
+See the [API overview](/api-overview?id=fields) for details regarding some of these options.
 
 #### Available Options
 
@@ -425,14 +433,16 @@ app.storage
   )
 ```
 
-### Input parameters
+### Option properties
 
 This method has one required parameter, which is the file ID and also an optional `options` argument.
 
-| Type   | Variable  | Required | Description                                  |
+| Type   | Property  | Required | Description                                  |
 |--------|-----------|----------|----------------------------------------------|
 | String | `fileId`  | required | The file ID you want to retrieve the URL for |
 | Object | `options` | optional | Optional options                             |
+
+See the [API overview](/api-overview?id=fields) for details regarding some of these options.
 
 #### Available Options
 
@@ -492,13 +502,15 @@ app.storage
   )
 ```
 
-### Input parameters
+### Option properties
 
 This method takes only one required parameter, the `fileId` for the file you want to delete.
 
-| Type   | Variable | Required | Description                                 |
+| Type   | Property | Required | Description                                 |
 |--------|----------|----------|---------------------------------------------|
 | String | `fileId` | required | The file ID for the file you want to delete |
+
+See the [API overview](/api-overview?id=fields) for details regarding some of these options.
 
 #### Available Options
 
@@ -526,13 +538,15 @@ app.storage
   )
 ```
 
-### Input parameters
+### Option properties
 
 This method takes only one required parameter, the `fileId` for the file you want to retrieve the metadata.
 
-| Type   | Variable | Required | Description                                                |
+| Type   | Property | Required | Description                                                |
 |--------|----------|----------|------------------------------------------------------------|
 | String | `fileId` | required | The file ID for the file you want to retrieve the metadata |
+
+See the [API overview](/api-overview?id=fields) for details regarding some of these options.
 
 #### Available Options
 
@@ -562,14 +576,16 @@ app.storage
 
 > For a full list of all the available metadata properties that can be set, see [here](https://firebase.google.com/docs/storage/web/file-metadata#file_metadata_properties)
 
-### Input parameters
+### Option properties
 
 This method takes two required parameters:
 
-| Type   | Variable  | Required | Description                                              |
+| Type   | Property  | Required | Description                                              |
 |--------|-----------|----------|----------------------------------------------------------|
 | String | `fileId`  | required | The file ID for the file you want to update the metadata |
 | Object | `payload` | required | The metadata properties you want to update               |
+
+See the [API overview](/api-overview?id=fields) for details regarding some of these options.
 
 ?> **HOT TIP:** To delete the metadata for a specific property, set it's value to `null`
 
@@ -601,14 +617,16 @@ app.storage.ref('gs://your-storage-bucket/flamelink/image.jpg')
   .catch(error => console.error('Something went wrong while retrieving the reference. Details:', error);
 ```
 
-### Input parameters
+### Option properties
 
 The `.ref()` method takes a two parameters
 
-| Type   | Variable                 | Required | Description                                                                                          |
+| Type   | Property                 | Required | Description                                                                                          |
 |--------|--------------------------|----------|------------------------------------------------------------------------------------------------------|
 | String | `filename` or `filepath` | required | Either the filename for which you want to retrieve a reference or a full URL to your storage bucket. |
 | Object | `options`                | optional | Optional options. Currently only applies if you pass through a `filename` and not a `filepath`.      |
+
+See the [API overview](/api-overview?id=fields) for details regarding some of these options.
 
 #### Available Options
 
