@@ -163,7 +163,7 @@ A `Promise` that resolves to the reference `{Object}` on success or will reject 
 
 ## .subscribe()
 
-This method is similar to the `app.content.get()` method except that where the `.get()` method returns a `Promise` resolving to the once-off value, this method subscribes to either a single content entry or all the entries for real-time updates. A callback method should be passed as the last argument which will be called each time the data changes in your Firebase db.
+This method is similar to the `app.content.get()` method except that where the `.get()` method returns a `Promise` resolving to the once-off value, this method subscribes to either a single content entry or all the entries for real-time updates. A callback method should be supplied which will be called each time the data changes in your Firebase db.
 
 If you are looking for retrieving data once, take a look at the [`app.content.get()`](/content?id=get) method above.
 
