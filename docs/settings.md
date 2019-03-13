@@ -1,22 +1,17 @@
 # Settings
 
-> All the methods that you would need to work with the Flamelink "Settings" are available on the `app.settings` namespace.
+> All the methods that you would need to work with the Flamelink "Settings" module are available on the `app.settings` namespace.
 
 ---
-
-!> Support for multiple environments and locales are currently in development. Once these exciting features are released, you will be able to set up multiple languages and streams for your development. This will allow you to have different data for "production", "staging", "development", etc.
 
 On initialization of your Flamelink app instance, you should specify the environment you want to connect to, as well as the default locale. If no environment is specified, the default environment will be `"production"` and the locale will be `"en-US"`.
 
 ```javascript
-import * as firebase from 'firebase';
-import flamelink from 'flamelink';
-
 const app = flamelink({
   ... other config ...
   env: 'production',
   locale: 'en-US'
-});
+})
 ```
 
 ---
@@ -110,47 +105,20 @@ A `Promise` that resolves to the currently set locale `{String}` on success.
 To retrieve the global metadata for your project, you can do so with the `getGlobals()` method:
 
 ```javascript
-app.settings.getGlobals()
-  .then(globals => console.log(`Your project's global data: "${globals}"`)
-  .catch(error => console.error('Something went wrong while retrieving the data. Details:', error);
+const globals = await app.settings.getGlobals()
+console.log(`Your project's global data: "${globals}"`)
 ```
 
 ### Option properties
 
-| Type   | Property  | Required | Description        |
-|--------|-----------|----------|--------------------|
-| Object | `options` | optional | Additional options |
-
 See the [API overview](/api-overview?id=fields) for details regarding some of these options.
 
-#### Available Options
+#### .getGlobals() examples
 
-The following options can be specified when retrieving your globals:
-
-##### Fields
-
-- `fields` **{Array}** - A list of fields to be plucked from the globals object.
-
-*Example*
-
-To retrieve only the `tagline` property.
+_To retrieve only the `tagline` property_
 
 ```javascript
-app.settings.getGlobals({ fields: [ 'tagline' ] })
-```
-
-##### Event
-
-- `event` **{String}** - The Firebase child event to retrieve data for. By default, the event is `value`, which is used for retrieving the entire globals object.
-
-*Example*
-
-The allowed child event options are: `value`, `child_added`, `child_changed`, `child_removed` and `child_moved`.
-
-> To read more about these events, see the [Firebase docs](https://firebase.google.com/docs/database/web/lists-of-data#listen_for_child_events).
-
-```javascript
-app.settings.getGlobals({ event: 'child_changed' })
+app.settings.getGlobals({ fields: ['tagline'] })
 ```
 
 ### Return value
@@ -159,52 +127,72 @@ A `Promise` that resolves to the globals `{Object}` on success or will reject wi
 
 ---
 
+## .subscribeGlobals()
+
+This method is similar to the `app.settings.getGlobals()` method except that where the `.getGlobals()` method returns a `Promise` resolving to the once-off value, this method subscribes to the entries for real-time updates. A callback method should be supplied which will be called each time the data changes in your Firebase db.
+
+*To subscribe to globals:*
+
+```javascript
+const unsubscribe = app.settings.subscribeGlobals({
+  callback(error, globals) {
+    if (error) {
+      return console.error('Something went wrong while retrieving all the globals. Details:', error);
+    }
+    console.log('Globals:', globals);
+  }
+})
+
+// later when you want to unsubscribe
+unsubscribe()
+```
+
+### Option properties
+
+| Type         | Property   | Required | Description                                                           |
+|--------------|------------|----------|-----------------------------------------------------------------------|
+| `{function}` | `callback` | required | Function called once when subscribed and when subscribed data changes |
+
+See the [API overview](/api-overview?id=fields) for details regarding some of these options.
+
+### .subscribeGlobals() examples
+
+*To retrieve all of your blog posts, but only the `tagline`, `siteTitle` and `adminEmail` property for each individual post.*
+
+```javascript
+app.settings.subscribeGlobals({
+  fields: [ 'tagline', 'siteTitle', 'adminEmail' ],
+  callback: function(error, globals) {
+    // Handle callback
+  }
+});
+```
+
+### Return value
+
+This method returns its own `unsubscribe` method. Call this method to unsubscribe and remove the event listeners when they are no longer necessary to avoid memory leaks in your application.
+
+---
+
 ## .getImageSizes()
 
 To retrieve the list of different image sizes that are generated when an image is uploaded, you can do so with the `getImageSizes()` method:
 
 ```javascript
-app.settings.getImageSizes()
-  .then(imageSizes => console.log(`Your image sizes are set as "${imageSizes}"`)
-  .catch(error => console.error('Something went wrong while retrieving the image sizes. Details:', error);
+const imageSizes = await app.settings.getImageSizes()
+console.log(`Your image sizes are set as "${imageSizes}"`)
 ```
 
 ### Option properties
 
-| Type   | Property  | Required | Description        |
-|--------|-----------|----------|--------------------|
-| Object | `options` | optional | Additional options |
-
 See the [API overview](/api-overview?id=fields) for details regarding some of these options.
 
-#### Available Options
+#### .getImageSizes() examples
 
-The following options can be specified when retrieving your image sizes:
-
-##### Fields
-
-- `fields` **{Array}** - A list of fields to be plucked from each image size.
-
-*Example*
-
-To retrieve only the `width` property.
+_To retrieve only the `width` property._
 
 ```javascript
-app.settings.getImageSizes({ fields: [ 'width' ] })
-```
-
-##### Event
-
-- `event` **{String}** - The Firebase child event to retrieve data for. By default, the event is `value`, which is used for retrieving the entire image sizes array.
-
-*Example*
-
-The allowed child event options are: `value`, `child_added`, `child_changed`, `child_removed` and `child_moved`.
-
-> To read more about these events, see the [Firebase docs](https://firebase.google.com/docs/database/web/lists-of-data#listen_for_child_events).
-
-```javascript
-app.settings.getImageSizes({ event: 'child_changed' })
+app.settings.getImageSizes({ fields: ['width'] })
 ```
 
 ### Return value
@@ -218,36 +206,13 @@ A `Promise` that resolves to the image sizes `{Array}` on success or will reject
 To retrieve the ID of the default Permissions Group, you can do so with the `getDefaultPermissionsGroup()` method:
 
 ```javascript
-app.settings.getDefaultPermissionsGroup()
-  .then(permissionsGroup => console.log(`Your default permissions groups is: "${permissionsGroup}"`)
-  .catch(error => console.error('Something went wrong while retrieving the permissions group. Details:', error);
+const permissionsGroup = await app.settings.getDefaultPermissionsGroup()
+console.log(`Your default permissions groups is: "${permissionsGroup}"`)
 ```
 
 ### Option properties
 
-| Type   | Property  | Required | Description        |
-|--------|-----------|----------|--------------------|
-| Object | `options` | optional | Additional options |
-
 See the [API overview](/api-overview?id=fields) for details regarding some of these options.
-
-#### Available Options
-
-The following options can be specified:
-
-##### Event
-
-- `event` **{String}** - The Firebase child event to retrieve data for. By default, the event is `value`, which is used for retrieving the permissions group.
-
-*Example*
-
-The allowed child event options are: `value`, `child_added`, `child_changed`, `child_removed` and `child_moved`.
-
-> To read more about these events, see the [Firebase docs](https://firebase.google.com/docs/database/web/lists-of-data#listen_for_child_events).
-
-```javascript
-app.settings.getDefaultPermissionsGroup({ event: 'child_changed' })
-```
 
 ### Return value
 

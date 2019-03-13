@@ -190,7 +190,7 @@ await app.nav.add({
   navigationKey: 'mainMenu',
   data: { title: 'Main Menu', items: [] }
 })
-console.log('Setting the menu succeeded')
+console.log('Adding the menu succeeded')
 ```
 
 ?> It is important to note that this method will set the entry's `createdBy` and `createdDate` metadata for you.

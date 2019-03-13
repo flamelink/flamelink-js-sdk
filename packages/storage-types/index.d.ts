@@ -63,7 +63,7 @@ declare namespace Storage {
 
     interface UpdateMetadata extends App.RTDB.Options {
       fileId: string
-      updates: any
+      data: any
     }
   }
 
@@ -92,7 +92,7 @@ declare namespace Storage {
 
     interface UpdateMetadata extends App.CF.Options {
       fileId: string
-      updates: any
+      data: any
     }
   }
 

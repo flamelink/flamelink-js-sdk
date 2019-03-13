@@ -1,8 +1,6 @@
 # Storage
 
-?> All storage functionality is only available when used inside a browser on the client side and not for server side use. Firebase Storage is not included in the server side module.
-
-> All the methods that you would need to work with the "Storage"/"Media" Flamelink data is available on the `app.storage` namespace.
+> All the methods that you need to work with the "Storage" Flamelink module is available on the `app.storage` namespace.
 
 !> Note that in order to use the Storage functionality, you need to specify your `storageBucket` key when [instantiating the Flamelink app](/getting-started?id=creating-your-flamelink-app-instance) (or via the Firebase app if used to instantiate Flamelink)
 
@@ -12,9 +10,9 @@
 
 To upload files to your Flamelink project and storage bucket.
 
-!> Uploading files server-side (from Node.js) is currently not supported.
-
 You can upload files in any of the following formats: [File](https://developer.mozilla.org/en-US/docs/Web/API/File), [Blob](https://developer.mozilla.org/en-US/docs/Web/API/Blob), [byte arrays](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Uint8Array) or from a String.
+
+!> This method is one of the few that does not use a single options object as argument, so make sure you specify the correct arguments.
 
 When using a String, you can use one of the following 4 string encoding types: raw string (default), `base64`, `base64url` or `data_url`.
 
@@ -22,9 +20,10 @@ _Upload a File or Blob:_
 
 ```javascript
 const file = ... // get file from the File or Blob API
-app.storage.upload(file)
-  .then(uploadTask => console.log('Upload success!', uploadTask))
-  .catch(error => console.error('Upload failed. Details:', error));
+
+const uploadTask = await app.storage.upload(file)
+
+console.log('Upload success!', uploadTask)
 ```
 
 _Upload a Byte Array:_
@@ -45,30 +44,26 @@ const bytes = new Uint8Array([
   0x64,
   0x21
 ])
-app.storage
-  .upload(bytes)
-  .then(uploadTask => console.log('Upload success!', uploadTask))
-  .catch(error => console.error('Upload failed. Details:', error))
+const uploadTask = await app.storage.upload(bytes)
+console.log('Upload success!', uploadTask)
 ```
 
 _Upload a String:_
 
 ```javascript
 const string = 'This is a raw string of text to upload.'
-app.storage
-  .upload(string)
-  .then(uploadTask => console.log('Upload success!', uploadTask))
-  .catch(error => console.error('Upload failed. Details:', error))
+const uploadTask = await app.storage.upload(string)
+console.log('Upload success!', uploadTask)
 ```
 
 ?> It is important to note that this method will set the file's `id` as well as the `createdBy` and `createdDate` metadata for you.
 
 ### Option properties
 
-| Type                              | Property   | Required | Description                                       |
-|-----------------------------------|------------|----------|---------------------------------------------------|
-| File / Blob / Uint8Array / String | `fileData` | required | The file content to upload to the storage bucket. |
-| Object                            | `options`  | optional | Additional options                                |
+| Type                                  | Property   | Required | Description                                       |
+|---------------------------------------|------------|----------|---------------------------------------------------|
+| `{File / Blob / Uint8Array / String}` | `fileData` | required | The file content to upload to the storage bucket. |
+| `{object}`                            | `options`  | optional | Additional options                                |
 
 See the [API overview](/api-overview?id=fields) for details regarding some of these options.
 
@@ -76,7 +71,7 @@ See the [API overview](/api-overview?id=fields) for details regarding some of th
 
 The following options can be specified when uploading a file:
 
-##### String Type
+##### `{string}` Type
 
 - `stringEncoding` **{String}** - The encoding used to encode the given string.
 
@@ -245,38 +240,23 @@ The response object will include the `flamelinkFileId` and `flamelinkFolderId` i
 To retrieve a list of all the media folders in the CMS.
 
 ```javascript
-app.storage
-  .getFolders()
-  .then(folders => console.log('Media folders:', folders))
-  .catch(error =>
-    console.error(
-      'Something went wrong while retrieving the folders. Details:',
-      error
-    )
-  )
+const folders = await app.storage.getFolders()
+console.log('Media folders:', folders)
 ```
 
 ### Option properties
 
 This method only takes a single optional argument.
 
-| Type   | Property  | Required | Description                         |
-|--------|-----------|----------|-------------------------------------|
-| Object | `options` | optional | Order, filter and structure options |
+| Type       | Property    | Required | Description                                                                 |
+|------------|-------------|----------|-----------------------------------------------------------------------------|
+| `{string}` | `structure` | optional | Should the folders be returned as a list or `nested` in a `tree` structure. |
 
 See the [API overview](/api-overview?id=fields) for details regarding some of these options.
 
-#### Available Options
+#### .getFolders() examples
 
-All the standard order, filter and fields options are available, but they are not particularly useful here.
-
-##### Structure
-
-- `structure` **{String}** - Should the folders be returned as a list or nested in a tree structure.
-
-_Example_
-
-To retrieve your folders in a nested structure, specify either `nested` or `tree` as the `structure` option
+*To retrieve your folders in a nested structure, specify either `nested` or `tree` as the `structure` option*
 
 ```javascript
 app.storage.getFolders({ structure: 'nested' })
@@ -295,38 +275,26 @@ A `Promise` that resolves to the `{Array}` of folder objects on success or will 
 Use to retrieve all the files in the CMS.
 
 ```javascript
-app.storage
-  .getFiles()
-  .then(files => console.log('Files:', files))
-  .catch(error =>
-    console.error(
-      'Something went wrong while retrieving the files. Details:',
-      error
-    )
-  )
+const files = await app.storage.getFiles()
+console.log('Files:', files)
 ```
 
 ### Option properties
 
 This method only takes a single optional argument. Used without any parameters will return all your files.
 
-| Type   | Property  | Required | Description                         |
-|--------|-----------|----------|-------------------------------------|
-| Object | `options` | optional | Order, filter and structure options |
+| Type       | Property     | Required | Description                                 |
+|------------|--------------|----------|---------------------------------------------|
+| `{string}` | `folderId`   | optional | The folder ID for which to retrieve files   |
+| `{string}` | `folderName` | optional | The folder name for which to retrieve files |
+| `{string}` | `mediaType`  | optional | Can be either `'files'` or `'images'`       |
+
 
 See the [API overview](/api-overview?id=fields) for details regarding some of these options.
 
-#### Available Options
+##### .getFiles examples
 
-All the standard order, filter and fields options are available, but they are not particularly useful here.
-
-Some of the more useful options are:
-
-##### Folder ID
-
-- `folderId` **{String}** - To retrieve all the files for a specific folder given the Folder ID. (By default all files will be returned)
-
-_Example_
+*To retrieve all the files for a specific folder given the Folder ID. (By default all files will be returned)*
 
 ```javascript
 app.storage.getFiles({
@@ -334,13 +302,9 @@ app.storage.getFiles({
 })
 ```
 
-##### Folder Name
-
-- `folderName` **{String}** - To retrieve all the files for a specific folder given the Folder Name. (By default all files will be returned)
+*To retrieve all the files for a specific folder given the Folder Name. (By default all files will be returned)*
 
 This is a convenient alternative to the `folderId` option above, for when you know the folder's name, but not necessarily the ID it has in the database.
-
-_Example_
 
 ```javascript
 app.storage.getFiles({
@@ -348,13 +312,7 @@ app.storage.getFiles({
 })
 ```
 
-##### Media Type
-
-- `mediaType` **{String}** - Can be either `"files"` or `"images"`.
-
-_Example_
-
-To retrieve all the files for a specific media type
+*To retrieve all the files for a specific media type*
 
 ```javascript
 app.storage.getFiles({ mediaType: 'images' })
@@ -371,44 +329,29 @@ A `Promise` that resolves to the `{Array}` of folder objects on success or will 
 Use to retrieve a single file from the CMS.
 
 ```javascript
-app.storage
-  .getFile('1505670341980')
-  .then(file => console.log('File:', file))
-  .catch(error =>
-    console.error(
-      'Something went wrong while retrieving the file. Details:',
-      error
-    )
-  )
+const file = await app.storage.getFile({ fileId: '1505670341980' })
+console.log('File:', file)
 ```
 
 ### Option properties
 
 This method has one required parameter, which is the file ID and also an optional `options` argument.
 
-| Type   | Property  | Required | Description                                          |
-|--------|-----------|----------|------------------------------------------------------|
-| String | `fileId`  | required | The file ID you want to retrieve the file object for |
-| Object | `options` | optional | Optional options                                     |
+| Type       | Property | Required | Description                                          |
+|------------|----------|----------|------------------------------------------------------|
+| `{string}` | `fileId` | required | The file ID you want to retrieve the file object for |
 
 See the [API overview](/api-overview?id=fields) for details regarding some of these options.
 
-#### Available Options
+##### .getFile() examples
 
-All the standard order, filter and fields options are available.
-
-The most useful option is probably the `fields` option:
-
-##### Fields
-
-- `fields` **{Array}** - A list of fields to be plucked from the file object.
-
-_Example_
-
-To retrieve only the `id`, `file` and `type` property for the file.
+*To retrieve only the `id`, `file` and `type` property for the file.*
 
 ```javascript
-app.storage.getFile('1505670341980', { fields: ['id', 'file', 'type'] })
+app.storage.getFile({
+  fileId: '1505670341980',
+  fields: ['id', 'file', 'type']
+})
 ```
 
 ### Return value
@@ -422,42 +365,31 @@ A `Promise` that resolves to the file `{Object}` on success or will reject with 
 A convenience method to quickly retrieve the URL of a single file.
 
 ```javascript
-app.storage
-  .getURL('1505670341980')
-  .then(url => console.log('File URL:', url))
-  .catch(error =>
-    console.error(
-      'Something went wrong while retrieving the file URL. Details:',
-      error
-    )
-  )
+const url = await app.storage.getURL({ fileId: '1505670341980' })
+console.log('File URL:', url)
 ```
 
 ### Option properties
 
 This method has one required parameter, which is the file ID and also an optional `options` argument.
 
-| Type   | Property  | Required | Description                                  |
-|--------|-----------|----------|----------------------------------------------|
-| String | `fileId`  | required | The file ID you want to retrieve the URL for |
-| Object | `options` | optional | Optional options                             |
+| Type       | Property | Required | Description                                              |
+|------------|----------|----------|----------------------------------------------------------|
+| `{string}` | `fileId` | required | The file ID you want to retrieve the URL for             |
+| `{object}` | `size`   | optional | The specific size image you want to retrieve the URL for |
 
 See the [API overview](/api-overview?id=fields) for details regarding some of these options.
 
-#### Available Options
 
-The only available option currently is:
+#### .getURL() examples
 
-##### Size
+*To retrieve a sized image with a width of `1024`, height of `9999` and a quality of `1` for the given file ID.*
 
-- `size` **{Object}** - The size of the image you want to retrieve.
-
-_Example_
-
-To retrieve a sized image with a width of `1024`, height of `9999` and a quality of `1` for the given file ID. If the given size exists for the particular image, it will be returned, otherwise the first available size bigger than the given size, ultimately falling back to the original image if nothing exists.
+?> If the given size exists for the particular image, it will be returned, otherwise the first available size bigger than the given size, ultimately falling back to the original image if nothing exists.
 
 ```javascript
-app.storage.getURL('1505670341980', {
+app.storage.getURL({
+  fileId: '1505670341980',
   size: {
     width: 1024,
     height: 9999,
@@ -469,14 +401,15 @@ app.storage.getURL('1505670341980', {
 Alternatively, if you know what the sized path is for the image, you can specify that (you can find the sized path by looking in your Firebase Storage bucket under `flamelink > media > sized`:
 
 ```javascript
-app.storage.getURL('1505670341980', {
+app.storage.getURL({
+  fileId: '1505670341980',
   size: {
     path: '1024_9999_75'
   }
 })
 ```
 
-?> **HOT TIP:** Use `size: 'device'` to find a size closest to your device's viewport
+?> **HOT TIP:** Use `size: 'device'` to find a size closest to your device's viewport - only available when used from within a browser environment
 
 ### Return value
 
@@ -491,30 +424,19 @@ Delete a file from the Cloud Storage Bucket as well as from the Firebase real-ti
 > If different sizes were generated when the image was first uploaded, those will also be deleted for you.
 
 ```javascript
-app.storage
-  .deleteFile('1505670341980')
-  .then(() => console.log('File successfully deleted!'))
-  .catch(error =>
-    console.error(
-      'Something went wrong while deleting the file. Details:',
-      error
-    )
-  )
+await app.storage.deleteFile({ fileId: '1505670341980' })
+console.log('File successfully deleted!')
 ```
 
 ### Option properties
 
 This method takes only one required parameter, the `fileId` for the file you want to delete.
 
-| Type   | Property | Required | Description                                 |
-|--------|----------|----------|---------------------------------------------|
-| String | `fileId` | required | The file ID for the file you want to delete |
+| Type       | Property | Required | Description                                 |
+|------------|----------|----------|---------------------------------------------|
+| `{string}` | `fileId` | required | The file ID for the file you want to delete |
 
 See the [API overview](/api-overview?id=fields) for details regarding some of these options.
-
-#### Available Options
-
-There are currently no options.
 
 ### Return value
 
@@ -527,30 +449,19 @@ A `Promise` that resolves on success or will reject with an error if the request
 To retrieve the metadata for a file in the Cloud Storage Bucket.
 
 ```javascript
-app.storage
-  .getMetadata('1505670341980')
-  .then(metadata => console.log('File metadata:', metadata))
-  .catch(error =>
-    console.error(
-      'Something went wrong while retrieving the file metadata. Details:',
-      error
-    )
-  )
+const metadata = await app.storage.getMetadata({ fileId: '1505670341980' })
+console.log('File metadata:', metadata)
 ```
 
 ### Option properties
 
 This method takes only one required parameter, the `fileId` for the file you want to retrieve the metadata.
 
-| Type   | Property | Required | Description                                                |
-|--------|----------|----------|------------------------------------------------------------|
-| String | `fileId` | required | The file ID for the file you want to retrieve the metadata |
+| Type       | Property | Required | Description                                                |
+|------------|----------|----------|------------------------------------------------------------|
+| `{string}` | `fileId` | required | The file ID for the file you want to retrieve the metadata |
 
 See the [API overview](/api-overview?id=fields) for details regarding some of these options.
-
-#### Available Options
-
-There are currently no options.
 
 ### Return value
 
@@ -563,15 +474,11 @@ A `Promise` that resolves to the metadata `{Object}` on success or will reject w
 To update the metadata for a file in the Cloud Storage Bucket.
 
 ```javascript
-app.storage
-  .updateMetadata('1505670341980', { contentLanguage: 'en' })
-  .then(metadata => console.log('Updated file metadata:', metadata))
-  .catch(error =>
-    console.error(
-      'Something went wrong while updating the file metadata. Details:',
-      error
-    )
-  )
+await app.storage.updateMetadata({
+  fileId: '1505670341980',
+  data: { contentLanguage: 'en' }
+})
+console.log('Updated file metadata:')
 ```
 
 > For a full list of all the available metadata properties that can be set, see [here](https://firebase.google.com/docs/storage/web/file-metadata#file_metadata_properties)
@@ -580,75 +487,18 @@ app.storage
 
 This method takes two required parameters:
 
-| Type   | Property  | Required | Description                                              |
-|--------|-----------|----------|----------------------------------------------------------|
-| String | `fileId`  | required | The file ID for the file you want to update the metadata |
-| Object | `payload` | required | The metadata properties you want to update               |
+| Type       | Property | Required | Description                                              |
+|------------|----------|----------|----------------------------------------------------------|
+| `{string}` | `fileId` | required | The file ID for the file you want to update the metadata |
+| `{object}` | `data`   | required | The metadata properties you want to update               |
 
 See the [API overview](/api-overview?id=fields) for details regarding some of these options.
 
-?> **HOT TIP:** To delete the metadata for a specific property, set it's value to `null`
+?> **HOT TIP:** For the RTDB - to delete the metadata for a specific property, set it's value to `null`
 
 ### Return value
 
 A `Promise` that resolves to the updated metadata `{Object}` on success or will reject with an error if the request fails.
-
----
-
-## .ref()
-
-> **FIRE RISK WARNING:** This is a more advanced API method, that for most use cases will not be necessary.
-
-To retrieve a context aware (folder structure) reference to any node/location within your Storage bucket.
-
-_Reference to given image within your bucket_
-
-```javascript
-app.storage.ref('image.jpg')
-  .then(reference => console.log('The reference:', reference)
-  .catch(error => console.error('Something went wrong while retrieving the reference. Details:', error);
-```
-
-_Reference to given URL within your bucket_
-
-```javascript
-app.storage.ref('gs://your-storage-bucket/flamelink/image.jpg')
-  .then(reference => console.log('The reference:', reference)
-  .catch(error => console.error('Something went wrong while retrieving the reference. Details:', error);
-```
-
-### Option properties
-
-The `.ref()` method takes a two parameters
-
-| Type   | Property                 | Required | Description                                                                                          |
-|--------|--------------------------|----------|------------------------------------------------------------------------------------------------------|
-| String | `filename` or `filepath` | required | Either the filename for which you want to retrieve a reference or a full URL to your storage bucket. |
-| Object | `options`                | optional | Optional options. Currently only applies if you pass through a `filename` and not a `filepath`.      |
-
-See the [API overview](/api-overview?id=fields) for details regarding some of these options.
-
-#### Available Options
-
-The following options can be specified when getting a reference:
-
-##### Width
-
-- `width` **{String}** - The width of the image (if resized and not a reference to the original image)
-
-_Example_
-
-Retrieve a reference to the resized image with a width of 1024px.
-
-```javascript
-app.storage.ref('image.jpg', {
-  width: '1024'
-})
-```
-
-### Return value
-
-A `Promise` that resolves to the reference `{Object}` on success or will reject with an error if the request fails.
 
 ---
 

@@ -248,8 +248,12 @@ app.content.subscribe({
 *To retrieve all of your blog posts and populate the `category` property for each individual post.*
 
 ```javascript
-app.content.subscribe('blogPosts', { populate: [ 'category' ] }, function(error, blogPosts) {
-  // Handle callback
+app.content.subscribe({
+  schemaKey: 'blogPosts',
+  populate: [ 'category' ],
+  callback: function(error, blogPosts) {
+    // Handle callback
+  }
 })
 ```
 
