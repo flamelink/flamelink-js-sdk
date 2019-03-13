@@ -321,10 +321,10 @@ Instructions here: https://flamelink.github.io/flamelink-js-sdk/#/getting-starte
       return api.ref(filename).getMetadata()
     },
 
-    async updateMetadata({ fileId, updates }: RTDB.UpdateMetadata) {
-      if (!fileId || !updates) {
+    async updateMetadata({ fileId, data }: RTDB.UpdateMetadata) {
+      if (!fileId || !data) {
         throw new FlamelinkError(
-          '"storage.updateMetadata()" should be called with the "fileID" and the "updates" object'
+          '"storage.updateMetadata()" should be called with the "fileID" and the "data" object'
         )
       }
 
@@ -336,7 +336,7 @@ Instructions here: https://flamelink.github.io/flamelink-js-sdk/#/getting-starte
 
       const { file: filename } = file
 
-      return api.ref(filename).updateMetadata(updates)
+      return api.ref(filename).updateMetadata(data)
     },
 
     async deleteFile({ fileId, ...options }: RTDB.GetFile) {

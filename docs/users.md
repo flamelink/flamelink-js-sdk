@@ -215,6 +215,6 @@ A `Promise` that resolves when the entry is removed or will reject with an error
 
 ---
 
-Next up: [Users](/users)
+Next up: [Storage](/storage)
 
 > 🔥🔥🔥 **Now we’re cooking with Fire…** 🔥🔥🔥
