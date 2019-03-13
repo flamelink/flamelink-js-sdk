@@ -8,6 +8,7 @@
 <!-- BADGES/ -->
 
 <span class="badge-badge"><a href="https://lernajs.io/" title="Maintained by Lerna"><img src="https://img.shields.io/badge/maintained%20with-lerna-cc00ff.svg" alt="Lerna" /></a></span>
+<span class="badge-badge"><a href="https://conventionalcommits.org" title="Conventional Commits"><img src="https://img.shields.io/badge/Conventional%20Commits-1.0.0-yellow.svg" alt="Conventional Commits" /></a></span>
 <span class="badge-npmversion"><a href="https://npmjs.org/package/flamelink" title="View this project on NPM"><img src="https://img.shields.io/npm/v/flamelink.svg" alt="NPM version" /></a></span>
 <span class="badge-npmdownloads"><a href="https://npmjs.org/package/flamelink" title="View this project on NPM"><img src="https://img.shields.io/npm/dm/flamelink.svg" alt="NPM downloads" /></a></span>
 <span class="badge-badge"><a href="https://circleci.com/gh/flamelink/flamelink-js-sdk.svg?style=svg&circle-token=dd64f26e069cdd05f52cf304304e0d97ee967b07" title="CircleCI"><img src="https://circleci.com/gh/flamelink/flamelink-js-sdk.svg?style=svg&circle-token=dd64f26e069cdd05f52cf304304e0d97ee967b07" alt="CircleCI" /></a></span>

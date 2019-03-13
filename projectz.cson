@@ -28,6 +28,7 @@
     "badges": {
       "list": [
         ['badge', {image: 'https://img.shields.io/badge/maintained%20with-lerna-cc00ff.svg', alt: 'Lerna', url: 'https://lernajs.io/', title: 'Maintained by Lerna'}],
+        ['badge', {image: 'https://img.shields.io/badge/Conventional%20Commits-1.0.0-yellow.svg', alt: 'Conventional Commits', url: 'https://conventionalcommits.org', title: 'Conventional Commits'}],
         "npmversion",
         "npmdownloads",
         ['badge', {image: 'https://circleci.com/gh/flamelink/flamelink-js-sdk.svg?style=svg&circle-token=dd64f26e069cdd05f52cf304304e0d97ee967b07', alt: 'CircleCI', url: 'https://circleci.com/gh/flamelink/flamelink-js-sdk.svg?style=svg&circle-token=dd64f26e069cdd05f52cf304304e0d97ee967b07', title: 'CircleCI'}],
