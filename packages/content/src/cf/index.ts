@@ -141,7 +141,7 @@ const factory: FlamelinkFactory = context => {
           }
 
           if (snapshot.empty) {
-            return callback(null, [])
+            return callback(null, null)
           }
 
           const content: any = {}

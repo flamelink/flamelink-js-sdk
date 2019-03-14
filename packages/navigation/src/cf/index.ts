@@ -1,5 +1,8 @@
+import keys from 'lodash/keys'
+import get from 'lodash/get'
 import chunk from 'lodash/chunk'
 import castArray from 'lodash/castArray'
+import compose from 'compose-then'
 import flamelink from '@flamelink/sdk-app'
 import { FlamelinkFactory, Api, CF } from '@flamelink/sdk-navigation-types'
 import {
@@ -49,13 +52,22 @@ const factory: FlamelinkFactory = context => {
 
       const snapshot = await api.getRaw({ navigationKey, ...options })
 
-      const navigation: any[] = []
-      snapshot.forEach((doc: any) => navigation.push(doc.data()))
+      const navigation: any = {}
+      snapshot.forEach((doc: any) => {
+        const data = doc.data()
+        navigation[get(data, '_fl_meta_.fl_id', doc.id)] = data
+      })
 
-      const plucked = pluckFields(navigation).map((nav: any) =>
-        structureItems(options, nav)
-      )
-      return navigationKey ? plucked[0] : plucked
+      const structureNavItems = structureItems(options)
+
+      const plucked = keys(navigation).reduce((acc: any, key: string) => {
+        const nav: any = navigation[key]
+        return Object.assign(acc, {
+          [key]: structureNavItems(pluckFields(nav))
+        })
+      }, {})
+
+      return navigationKey ? plucked[navigationKey] : plucked
     },
 
     async getItems({ navigationKey, fields, structure, ...options }: CF.Get) {
@@ -121,15 +133,16 @@ const factory: FlamelinkFactory = context => {
           }
 
           if (snapshot.empty) {
-            return callback(null, [])
+            return callback(null, null)
           }
 
-          const navigation: any[] = []
+          const navigation: any = {}
 
           if (changeType) {
             snapshot.docChanges().forEach((change: any) => {
               if (change.type === changeType) {
-                navigation.push(change.doc.data())
+                const data = change.doc.data()
+                navigation[get(data, '_fl_meta_.fl_id', change.doc.id)] = data
               }
             })
 
@@ -137,13 +150,30 @@ const factory: FlamelinkFactory = context => {
               return
             }
           } else {
-            snapshot.forEach((doc: any) => navigation.push(doc.data()))
+            snapshot.forEach((doc: any) => {
+              const data = doc.data()
+              navigation[get(data, '_fl_meta_.fl_id', doc.id)] = data
+            })
           }
 
-          const plucked = pluckFields(navigation).map((nav: any) =>
-            structureItems(options, nav)
+          const structureNavItems = structureItems(options)
+
+          const plucked = await keys(navigation).reduce((chain, key) => {
+            const nav: any = navigation[key]
+            return chain.then(async (acc: any) =>
+              Object.assign(acc, {
+                [key]: await compose(
+                  pluckFields,
+                  structureNavItems
+                )(nav)
+              })
+            )
+          }, Promise.resolve({}))
+
+          return callback(
+            null,
+            navigationKey ? plucked[navigationKey] : plucked
           )
-          return callback(null, navigationKey ? plucked[0] : plucked)
         }
       })
     },
