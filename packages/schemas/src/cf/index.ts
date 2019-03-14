@@ -131,7 +131,7 @@ const factory: FlamelinkFactory = context => {
           }
 
           if (snapshot.empty) {
-            return callback(null, [])
+            return callback(null, null)
           }
 
           const schemas: any = {}
@@ -181,12 +181,16 @@ const factory: FlamelinkFactory = context => {
             return callback(null, [])
           }
 
-          const schemaFields: any[] = []
+          const schemaFields: any = {}
 
           if (changeType) {
             snapshot.docChanges().forEach((change: any) => {
               if (change.type === changeType) {
-                schemaFields.push(pluckFields(change.doc.data().fields))
+                const data = change.doc.data()
+                schemaFields[get(data, '_fl_meta_.fl_id', change.doc.id)] = get(
+                  data,
+                  'fields'
+                )
               }
             })
 
@@ -194,12 +198,19 @@ const factory: FlamelinkFactory = context => {
               return
             }
           } else {
-            snapshot.forEach((doc: any) =>
-              schemaFields.push(pluckFields(doc.data().fields))
-            )
+            snapshot.forEach((doc: any) => {
+              const data = doc.data()
+              schemaFields[get(data, '_fl_meta_.fl_id', doc.id)] = get(
+                data,
+                'fields'
+              )
+            })
           }
 
-          return callback(null, schemaKey ? schemaFields[0] : schemaFields)
+          return callback(
+            null,
+            schemaKey ? schemaFields[schemaKey] : schemaFields
+          )
         }
       })
     },
