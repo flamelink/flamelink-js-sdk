@@ -470,16 +470,31 @@ export const processReferencesForCF = curry(
 )
 
 export const populateEntriesForCF = curry(
-  async (firestoreService: any, options: App.CF.Options, entries: any[]) => {
-    if (!Array.isArray(entries)) {
-      return []
+  async (firestoreService: any, options: App.CF.Options, entries: any) => {
+    if (Array.isArray(entries)) {
+      return Promise.all(
+        entries.map(async entry =>
+          processReferencesForCF(firestoreService, options, entry)
+        )
+      )
     }
 
-    return Promise.all(
-      entries.map(async entry =>
-        processReferencesForCF(firestoreService, options, entry)
-      )
-    )
+    if (isPlainObject(entries)) {
+      return await keys(entries).reduce((chain, key) => {
+        const entry = entries[key]
+        return chain.then(async acc =>
+          Object.assign(acc, {
+            [key]: await processReferencesForCF(
+              firestoreService,
+              options,
+              entry
+            )
+          })
+        )
+      }, Promise.resolve({}))
+    }
+
+    return entries
   }
 )
 
