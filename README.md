@@ -119,21 +119,32 @@ import 'flamelink/navigation'
 import 'flamelink/users'
 ```
 
+or using TypeScript:
+
+```javascript
+import * as flamelink from 'flamelink/app'
+import 'flamelink/settings'
+import 'flamelink/content'
+import 'flamelink/storage'
+import 'flamelink/navigation'
+import 'flamelink/users'
+```
+
 ### Creating your Flamelink app instance
 
 Create your `flamelink` app instance by passing in an existing `firebaseApp` instance along with any other `flamelink` config options:
 
 ```javascript
-import * as firebase from 'firebase'
-import flamelink from 'flamelink' // This imports everything as an example - it is better to import only what you need
+import * as firebase from 'firebase' // This imports everything - just as an example
+import flamelink from 'flamelink' // This imports everything - just as an example - it is better to import only what you need
 
 const firebaseConfig = {
-  apiKey: '<your-api-key>', // required
-  authDomain: '<your-auth-domain>', // required
-  databaseURL: '<your-database-url>', // required
-  projectId: '<your-project-id>', // required
-  storageBucket: '<your-storage-bucket-code>', // required
-  messagingSenderId: '<your-messenger-id>' // optional
+  apiKey: '<your-api-key>',
+  authDomain: '<your-auth-domain>',
+  databaseURL: '<your-database-url>',
+  projectId: '<your-project-id>',
+  storageBucket: '<your-storage-bucket-code>',
+  messagingSenderId: '<your-messenger-id>'
 }
 
 const firebaseApp = firebase.initializeApp(firebaseConfig)
@@ -143,7 +154,7 @@ const app = flamelink({
   dbType: 'rtdb', // can be either 'rtdb' or 'cf' for Realtime DB or Cloud Firestore
   env: 'production', // optional, default shown
   locale: 'en-US', // optional, default shown
-  precache: true // optional, default shown. Currently precaches "schemas" for better performance
+  precache: true // optional, default shown. Currently it only precaches "schemas" for better performance
 })
 ```
 
@@ -157,8 +168,8 @@ const flamelink = require('flamelink')
 const serviceAccount = require('path/to/serviceAccountKey.json')
 
 const firebaseConfig = {
-  credential: admin.credential.cert(serviceAccount), // required
-  databaseURL: '<your-database-url>', // required
+  credential: admin.credential.cert(serviceAccount),
+  databaseURL: '<your-database-url>',
   storageBucket: '<your-storage-bucket-code>' // required if you want to use any Storage Bucket functionality
 }
 
