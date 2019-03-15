@@ -1,3 +1,4 @@
+import get from 'lodash/get'
 import flamelink from '@flamelink/sdk-app'
 import { FlamelinkFactory, Api, CF } from '@flamelink/sdk-settings-types'
 import { applyOptionsForCF, pluckResultFields } from '@flamelink/sdk-utils'
@@ -12,8 +13,6 @@ const factory: FlamelinkFactory = context => {
       return settingsKey
         ? firestoreService.collection(SETTINGS_COLLECTION).doc(settingsKey)
         : firestoreService.collection(SETTINGS_COLLECTION)
-      // .where('_fl_meta_.env', '==', context.env)
-      // .where('_fl_meta_.locale', '==', context.locale)
     },
 
     getRaw({ settingsKey, ...options }: CF.Get = {}) {
@@ -35,8 +34,12 @@ const factory: FlamelinkFactory = context => {
         return []
       }
 
-      const entries: any[] = []
-      snapshot.forEach((doc: any) => entries.push(doc.data()))
+      const entries: any = {}
+
+      snapshot.forEach((doc: any) => {
+        const data = doc.data()
+        entries[get(data, '_fl_meta_.fl_id', doc.id)] = data
+      })
 
       return pluckFields(entries)
     },
@@ -68,19 +71,21 @@ const factory: FlamelinkFactory = context => {
     },
 
     async getImageSizes(options: CF.Get = {}) {
-      return api.get({
+      const generalSettings = await api.get({
         ...options,
-        settingsKey: 'general',
-        fields: ['imageSizes']
+        settingsKey: 'general'
       })
+
+      return get(generalSettings, 'imageSizes')
     },
 
     async getDefaultPermissionsGroup(options: CF.Get = {}) {
-      return api.get({
+      const generalSettings = await api.get({
         ...options,
-        settingsKey: 'general',
-        fields: ['defaultPermissionsGroup']
+        settingsKey: 'general'
       })
+
+      return get(generalSettings, 'defaultPermissionsGroup')
     },
 
     subscribeRaw({ settingsKey, callback, ...options }: CF.Subscribe) {
@@ -124,12 +129,13 @@ const factory: FlamelinkFactory = context => {
             return callback(null, [])
           }
 
-          const entries: any[] = []
+          const entries: any = {}
 
           if (changeType) {
             snapshot.docChanges().forEach((change: any) => {
               if (change.type === changeType) {
-                entries.push(change.doc.data())
+                const data = change.doc.data()
+                entries[get(data, '_fl_meta_.fl_id', change.doc.id)] = data
               }
             })
 
@@ -137,7 +143,10 @@ const factory: FlamelinkFactory = context => {
               return
             }
           } else {
-            snapshot.forEach((doc: any) => entries.push(doc.data()))
+            snapshot.forEach((doc: any) => {
+              const data = doc.data()
+              entries[get(data, '_fl_meta_.fl_id', doc.id)] = data
+            })
           }
 
           return callback(null, pluckFields(entries))

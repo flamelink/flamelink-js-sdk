@@ -3,6 +3,7 @@ import isPlainObject from 'lodash/isPlainObject'
 import find from 'lodash/find'
 import get from 'lodash/get'
 import set from 'lodash/set'
+import values from 'lodash/values'
 import resizeImage from 'browser-image-resizer'
 import flamelink from '@flamelink/sdk-app'
 import App from '@flamelink/sdk-app-types'
@@ -30,11 +31,13 @@ import {
   getStorageRefPath,
   setImagePathByClosestSize
 } from '../helpers'
-import { DEFAULT_REQUIRED_IMAGE_SIZE } from '../constants'
+import {
+  DEFAULT_REQUIRED_IMAGE_SIZE,
+  FOLDER_REQUIRED_FIELDS_FOR_STRUCTURING
+} from '../constants'
 
 const FILES_COLLECTION = 'fl_files'
 const FOLDERS_COLLECTION = 'fl_folders'
-
 const factory: FlamelinkFactory = function(context) {
   const api: Api = {
     async _getFolderId({ folderName = '' }) {
@@ -153,30 +156,58 @@ Instructions here: https://flamelink.github.io/flamelink-js-sdk/#/getting-starte
       })
     },
 
-    async getFolders({ ...options }: App.CF.Options) {
-      const pluckFields = pluckResultFields(options.fields)
-      const structureItems = formatStructure(options.structure, {
-        idProperty: 'id',
-        parentProperty: 'parentId'
-      })
-      const firestoreService = flamelink._ensureService('firestore', context)
-      const processRefs = processReferencesForCF(firestoreService, options)
+    async getFolders({ fields, structure, ...options }: App.CF.Options) {
+      const fieldsToPluck = Array.isArray(fields)
+        ? Array.from(
+            new Set(FOLDER_REQUIRED_FIELDS_FOR_STRUCTURING.concat(fields))
+          )
+        : fields
+      const pluckFields = pluckResultFields(fieldsToPluck)
       const snapshot = await api.getFoldersRaw(options)
 
       if (snapshot.empty) {
-        return []
+        return null
       }
+
+      if (structure !== 'nested' && structure !== 'tree') {
+        const foldersData: FolderObject[] = []
+        snapshot.forEach((doc: any) => foldersData.push(doc.data()))
+
+        const folders = await foldersData.reduce(
+          (chain: Promise<any>, folder: FolderObject) =>
+            chain.then(async (acc: object) => {
+              return Object.assign(acc, pluckFields({ [folder.id]: folder }))
+            }),
+          Promise.resolve({})
+        )
+
+        return folders
+      }
+
+      const firestoreService = flamelink._ensureService('firestore', context)
+      const processRefs = processReferencesForCF(firestoreService, options)
+      const structureItems = formatStructure(structure, {
+        idProperty: 'id',
+        parentProperty: 'parentId.id'
+      })
 
       const folderPromises: any[] = []
       snapshot.forEach(async (doc: any) =>
         folderPromises.push(processRefs(doc.data()))
       )
 
-      const folders = await Promise.all(folderPromises)
+      const folders = await folderPromises.reduce(
+        (chain: Promise<any>, folderPromise: Promise<FolderObject>) =>
+          chain.then(async (acc: object) => {
+            const folder = await folderPromise
+            return Object.assign(acc, pluckFields({ [folder.id]: folder }))
+          }),
+        Promise.resolve({})
+      )
 
       return compose(
-        pluckFields,
-        structureItems
+        structureItems,
+        values // turn into array of folders
       )(folders)
     },
 
@@ -208,6 +239,7 @@ Instructions here: https://flamelink.github.io/flamelink-js-sdk/#/getting-starte
       const docData = await pluckFields({
         [fileId]: await processRefs(snapshot.data())
       })
+
       return docData[fileId]
     },
 
@@ -237,15 +269,22 @@ Instructions here: https://flamelink.github.io/flamelink-js-sdk/#/getting-starte
       const snapshot = await api.getFilesRaw(opts)
 
       if (snapshot.empty) {
-        return []
+        return null
       }
 
-      const filePromises: any[] = []
+      const filePromises: Promise<any>[] = []
       snapshot.forEach(async (doc: any) =>
         filePromises.push(processRefs(doc.data()))
       )
 
-      const files = await Promise.all(filePromises)
+      const files = await filePromises.reduce(
+        (chain: Promise<any>, filePromise: Promise<any>) =>
+          chain.then(async (acc: any) => {
+            const file = await filePromise
+            return Object.assign(acc, { [file.id]: file })
+          }),
+        Promise.resolve({})
+      )
 
       return compose(
         pluckFields,

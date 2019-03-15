@@ -1,4 +1,6 @@
 import get from 'lodash/get'
+import keys from 'lodash/keys'
+import values from 'lodash/values'
 import chunk from 'lodash/chunk'
 import castArray from 'lodash/castArray'
 import compose from 'compose-then'
@@ -24,11 +26,14 @@ const factory: FlamelinkFactory = context => {
       const firestoreService = flamelink._ensureService('firestore', context)
       const [schemaKey, entryId] = castArray(ref)
 
-      const baseRef = firestoreService
+      let baseRef = firestoreService
         .collection(CONTENT_COLLECTION)
         .where('_fl_meta_.env', '==', context.env)
         .where('_fl_meta_.locale', '==', context.locale)
-        .where('_fl_meta_.schema', '==', schemaKey)
+
+      if (schemaKey) {
+        baseRef = baseRef.where('_fl_meta_.schema', '==', schemaKey)
+      }
 
       return entryId ? baseRef.where('_fl_meta_.fl_id', '==', entryId) : baseRef
     },
@@ -41,27 +46,35 @@ const factory: FlamelinkFactory = context => {
 
     async get({ schemaKey, entryId, ...options }: CF.Get = {}) {
       const pluckFields = pluckResultFields(options.fields)
-      const firestoreService = flamelink._ensureService('firestore', context)
-      const processRefs = populateEntriesForCF(firestoreService, options)
 
       const snapshot = await api.getRaw({ schemaKey, entryId, ...options })
 
       if (snapshot.empty) {
-        return []
+        return null
       }
+
+      const firestoreService = flamelink._ensureService('firestore', context)
+      const processRefs = populateEntriesForCF(firestoreService, options)
 
       const schema = await get(context, 'modules.schemas').get({ schemaKey })
       const isSingleType = get(schema, 'type') === 'single'
 
-      const content: any[] = []
-      snapshot.forEach((doc: any) => content.push(doc.data()))
+      const content: any = {}
+      snapshot.forEach((doc: any) => {
+        const data = doc.data()
+        content[get(data, '_fl_meta_.fl_id', doc.id)] = data
+      })
 
       const result = await compose(
         processRefs,
         pluckFields
       )(content)
 
-      return entryId || isSingleType ? result[0] : result
+      if (isSingleType) {
+        return values(result)[0]
+      }
+
+      return entryId ? result[entryId] : result
     },
 
     async getByField({
@@ -75,14 +88,17 @@ const factory: FlamelinkFactory = context => {
       const content = await api.get({
         schemaKey,
         ...options,
-        filters: (filters || []).concat([field, '==', value])
+        filters: (filters || []).concat([[field, '==', value]])
       })
 
       if (!content) {
         return content
       }
 
-      return content.map((contentEntry: any) => pluckFields(contentEntry))
+      return keys(content).reduce((acc: object, key: string) => {
+        const contentEntry: any = content[key]
+        return Object.assign(acc, { [key]: pluckFields(contentEntry) })
+      }, {})
     },
 
     subscribeRaw({ schemaKey, entryId, callback, ...options }: CF.Subscribe) {
@@ -125,15 +141,16 @@ const factory: FlamelinkFactory = context => {
           }
 
           if (snapshot.empty) {
-            return callback(null, [])
+            return callback(null, null)
           }
 
-          const content: any[] = []
+          const content: any = {}
 
           if (changeType) {
             snapshot.docChanges().forEach((change: any) => {
               if (change.type === changeType) {
-                content.push(change.doc.data())
+                const data = change.doc.data()
+                content[get(data, '_fl_meta_.fl_id', change.doc.id)] = data
               }
             })
 
@@ -141,7 +158,10 @@ const factory: FlamelinkFactory = context => {
               return
             }
           } else {
-            snapshot.forEach((doc: any) => content.push(doc.data()))
+            snapshot.forEach((doc: any) => {
+              const data = doc.data()
+              content[get(data, '_fl_meta_.fl_id', doc.id)] = data
+            })
           }
 
           const result = await compose(
@@ -149,10 +169,19 @@ const factory: FlamelinkFactory = context => {
             pluckFields
           )(content)
 
-          const isSingleType =
-            !result[1] && get(result[0], '_fl_meta_.schemaType') === 'single'
+          // Handle content for single type schemas
+          if (schemaKey && !entryId) {
+            const schemaValues = values(result)
 
-          return callback(null, entryId || isSingleType ? result[0] : result)
+            if (
+              schemaValues.length === 1 &&
+              get(schemaValues[0], '_fl_meta_.schemaType') === 'single'
+            ) {
+              return callback(null, schemaValues[0])
+            }
+          }
+
+          return callback(null, entryId ? result[entryId] : result)
         }
       })
     },

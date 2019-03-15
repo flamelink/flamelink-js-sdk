@@ -319,26 +319,34 @@ export const formatStructure = curry(
     }
 
     if (structure === 'nested' || structure === 'tree') {
-      const mapChildren = (levelItems: any[], previousId = 0): any[] =>
+      const DEFAULT_PARENT_ID = 0
+
+      const mapChildren = (
+        levelItems: any[],
+        previousId = DEFAULT_PARENT_ID
+      ): any[] =>
         levelItems
           .map(item => ({
             ...item,
             children: formattedItems.filter(
-              innerItem => innerItem[parentProperty] === item[idProperty]
+              innerItem =>
+                get(innerItem, parentProperty) === get(item, idProperty)
             )
           }))
-          .filter(item => item[parentProperty] === previousId)
+          .filter(
+            item => get(item, parentProperty, DEFAULT_PARENT_ID) === previousId
+          )
           .map(item => {
             if (item.children.length === 0) {
               return item
             }
             return {
               ...item,
-              children: mapChildren(item.children, item[idProperty])
+              children: mapChildren(item.children, get(item, idProperty))
             }
           })
 
-      return mapChildren(formattedItems, 0)
+      return mapChildren(formattedItems, DEFAULT_PARENT_ID)
     }
 
     return formattedItems
@@ -470,16 +478,31 @@ export const processReferencesForCF = curry(
 )
 
 export const populateEntriesForCF = curry(
-  async (firestoreService: any, options: App.CF.Options, entries: any[]) => {
-    if (!Array.isArray(entries)) {
-      return []
+  async (firestoreService: any, options: App.CF.Options, entries: any) => {
+    if (Array.isArray(entries)) {
+      return Promise.all(
+        entries.map(async entry =>
+          processReferencesForCF(firestoreService, options, entry)
+        )
+      )
     }
 
-    return Promise.all(
-      entries.map(async entry =>
-        processReferencesForCF(firestoreService, options, entry)
-      )
-    )
+    if (isPlainObject(entries)) {
+      return await keys(entries).reduce((chain, key) => {
+        const entry = entries[key]
+        return chain.then(async acc =>
+          Object.assign(acc, {
+            [key]: await processReferencesForCF(
+              firestoreService,
+              options,
+              entry
+            )
+          })
+        )
+      }, Promise.resolve({}))
+    }
+
+    return entries
   }
 )
 

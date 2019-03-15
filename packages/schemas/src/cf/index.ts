@@ -1,5 +1,6 @@
 import get from 'lodash/get'
 import set from 'lodash/set'
+import keys from 'lodash/keys'
 import chunk from 'lodash/chunk'
 import castArray from 'lodash/castArray'
 import flamelink from '@flamelink/sdk-app'
@@ -13,7 +14,9 @@ import {
   FlamelinkError,
   createQueue,
   getTimestamp,
-  getCurrentUser
+  getCurrentUser,
+  wrap,
+  unwrap
 } from '@flamelink/sdk-utils'
 import { CF_BATCH_WRITE_LIMIT } from '../constants'
 
@@ -43,33 +46,37 @@ const factory: FlamelinkFactory = context => {
     async get({ schemaKey, ...options }: CF.Get = {}) {
       const pluckFields = pluckResultFields(options.fields)
 
-      let schemas: any[] = get(context, `cache.schemas[${context.env}]`, [])
+      let schemas = get(
+        context,
+        `cache.schemas[${context.env}]${schemaKey ? `.${schemaKey}` : ''}`,
+        {}
+      )
 
-      if (schemaKey) {
-        schemas = schemas.filter(
-          schema => get(schema, '_fl_meta_.fl_id') === schemaKey
-        )
-      }
-
-      if (
-        !schemas.length ||
-        (schemaKey &&
-          !schemas.find(
-            (schema: any) => get(schema, '_fl_meta_.fl_id') === schemaKey
-          )) ||
-        hasNonCacheableOptionsForCF(options)
-      ) {
+      if (!keys(schemas).length || hasNonCacheableOptionsForCF(options)) {
         const snapshot = await api.getRaw({ schemaKey, ...options })
 
         if (snapshot.empty) {
-          return []
+          return null
         }
 
-        snapshot.forEach((doc: any) => schemas.push(doc.data()))
+        schemas = {}
+
+        snapshot.forEach((doc: any) => {
+          const data = doc.data()
+          schemas[get(data, '_fl_meta_.fl_id', doc.id)] = data
+        })
+
+        if (schemaKey) {
+          schemas = unwrap(schemaKey, schemas)
+        }
       }
 
-      const plucked = pluckFields(schemas)
-      return schemaKey ? plucked[0] : plucked
+      if (schemaKey) {
+        // Wrap result for the field plucking to work
+        schemas = wrap(schemaKey, schemas)
+      }
+
+      return await pluckFields(schemaKey ? unwrap(schemaKey, schemas) : schemas)
     },
 
     async getFields({ schemaKey, fields, ...options }: CF.Get) {
@@ -84,7 +91,13 @@ const factory: FlamelinkFactory = context => {
         return pluckFields(schemas.fields)
       }
 
-      return schemas.map((schema: any) => pluckFields(schema.fields))
+      return keys(schemas).reduce(
+        (acc, key) =>
+          Object.assign(acc, {
+            [key]: pluckFields(schemas[key].fields)
+          }),
+        {}
+      )
     },
 
     subscribeRaw({ schemaKey, callback, ...options }: CF.Subscribe) {
@@ -118,15 +131,16 @@ const factory: FlamelinkFactory = context => {
           }
 
           if (snapshot.empty) {
-            return callback(null, [])
+            return callback(null, null)
           }
 
-          const schemas: any[] = []
+          const schemas: any = {}
 
           if (changeType) {
             snapshot.docChanges().forEach((change: any) => {
               if (change.type === changeType) {
-                schemas.push(change.doc.data())
+                const data = change.doc.data()
+                schemas[get(data, '_fl_meta_.fl_id', change.doc.id)] = data
               }
             })
 
@@ -134,11 +148,14 @@ const factory: FlamelinkFactory = context => {
               return
             }
           } else {
-            snapshot.forEach((doc: any) => schemas.push(doc.data()))
+            snapshot.forEach((doc: any) => {
+              const data = doc.data()
+              schemas[get(data, '_fl_meta_.fl_id', doc.id)] = data
+            })
           }
 
           const plucked = pluckFields(schemas)
-          return callback(null, schemaKey ? plucked[0] : plucked)
+          return callback(null, schemaKey ? plucked[schemaKey] : plucked)
         }
       })
     },
@@ -164,12 +181,16 @@ const factory: FlamelinkFactory = context => {
             return callback(null, [])
           }
 
-          const schemaFields: any[] = []
+          const schemaFields: any = {}
 
           if (changeType) {
             snapshot.docChanges().forEach((change: any) => {
               if (change.type === changeType) {
-                schemaFields.push(pluckFields(change.doc.data().fields))
+                const data = change.doc.data()
+                schemaFields[get(data, '_fl_meta_.fl_id', change.doc.id)] = get(
+                  data,
+                  'fields'
+                )
               }
             })
 
@@ -177,12 +198,19 @@ const factory: FlamelinkFactory = context => {
               return
             }
           } else {
-            snapshot.forEach((doc: any) =>
-              schemaFields.push(pluckFields(doc.data().fields))
-            )
+            snapshot.forEach((doc: any) => {
+              const data = doc.data()
+              schemaFields[get(data, '_fl_meta_.fl_id', doc.id)] = get(
+                data,
+                'fields'
+              )
+            })
           }
 
-          return callback(null, schemaKey ? schemaFields[0] : schemaFields)
+          return callback(
+            null,
+            schemaKey ? schemaFields[schemaKey] : schemaFields
+          )
         }
       })
     },
@@ -300,24 +328,13 @@ const factory: FlamelinkFactory = context => {
             if (err) {
               return logError(err.toString())
             }
-
-            if (!schemaKey) {
-              return set(context, `cache.schemas[${context.env}]`, schemas)
-            }
-
-            const schemasCache = get(
+            return set(
               context,
-              `cache.schemas[${context.env}]`,
-              []
+              `cache.schemas[${context.env}]${
+                schemaKey ? `.${schemaKey}` : ''
+              }`,
+              schemas
             )
-
-            const newCache = schemasCache
-              .filter(
-                (schema: any) => get(schema, '_fl_meta_.fl_id') !== schemaKey
-              )
-              .concat(schemas)
-
-            return set(context, `cache.schemas[${context.env}]`, newCache)
           }
         })
       })

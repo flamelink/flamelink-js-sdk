@@ -33,7 +33,10 @@ import {
   getStorageRefPath,
   setImagePathByClosestSize
 } from '../helpers'
-import { DEFAULT_REQUIRED_IMAGE_SIZE } from '../constants'
+import {
+  DEFAULT_REQUIRED_IMAGE_SIZE,
+  FOLDER_REQUIRED_FIELDS_FOR_STRUCTURING
+} from '../constants'
 
 const factory: FlamelinkFactory = function(context) {
   const api: Api = {
@@ -151,18 +154,28 @@ Instructions here: https://flamelink.github.io/flamelink-js-sdk/#/getting-starte
       )
     },
 
-    async getFolders({ ...options }: App.RTDB.Options) {
-      const pluckFields = pluckResultFields(options.fields)
-      const structureItems = formatStructure(options.structure, {
+    async getFolders({ fields, structure, ...options }: App.RTDB.Options) {
+      const fieldsToPluck = Array.isArray(fields)
+        ? Array.from(
+            new Set(FOLDER_REQUIRED_FIELDS_FOR_STRUCTURING.concat(fields))
+          )
+        : fields
+      const pluckFields = pluckResultFields(fieldsToPluck)
+      const structureItems = formatStructure(structure, {
         idProperty: 'id',
         parentProperty: 'parentId'
       })
       const snapshot = await api.getFoldersRaw(options)
-      return compose(
-        pluckFields,
-        structureItems,
-        values
-      )(snapshot.val())
+
+      if (structure === 'nested' || structure === 'tree') {
+        return compose(
+          pluckFields,
+          structureItems,
+          values
+        )(snapshot.val())
+      }
+
+      return pluckFields(snapshot.val())
     },
 
     async getFileRaw({ fileId, ...options }: RTDB.GetFile) {
@@ -215,6 +228,7 @@ Instructions here: https://flamelink.github.io/flamelink-js-sdk/#/getting-starte
       const filterFolders = filterFilesByFolderId(folderId)
       const pluckFields = pluckResultFields(opts.fields)
       const snapshot = await api.getFilesRaw(opts)
+
       return compose(
         pluckFields,
         filterFolders
