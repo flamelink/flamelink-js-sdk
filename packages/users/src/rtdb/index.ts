@@ -1,6 +1,4 @@
 import compose from 'compose-then'
-import keys from 'lodash/keys'
-import castArray from 'lodash/castArray'
 import flamelink from '@flamelink/sdk-app'
 import App from '@flamelink/sdk-app-types'
 import { FlamelinkFactory, Api, RTDB } from '@flamelink/sdk-users-types'
@@ -40,15 +38,7 @@ const factory: FlamelinkFactory = context => {
         )(snapshot.val())
       }
 
-      const withLocales = snapshot.val()
-
-      const withoutLocales = keys(withLocales).reduce(
-        (menus, key) =>
-          Object.assign(menus, { [key]: withLocales[key][context.locale] }),
-        {}
-      )
-
-      return await pluckFields(withoutLocales)
+      return await pluckFields(snapshot.val())
     },
 
     subscribeRaw({ uid, callback, ...options }: RTDB.Subscribe) {
@@ -87,17 +77,7 @@ const factory: FlamelinkFactory = context => {
               return callback(null, nav) // Error-first callback
             }
 
-            const withLocales = snapshot.val()
-
-            const withoutLocales = keys(withLocales).reduce(
-              (menus, key) =>
-                Object.assign(menus, {
-                  [key]: withLocales[key][context.locale]
-                }),
-              {}
-            )
-
-            const pluckedMenus = await pluckFields(withoutLocales)
+            const pluckedMenus = await pluckFields(snapshot.val())
 
             return callback(null, pluckedMenus) // Error-first callback
           }

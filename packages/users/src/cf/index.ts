@@ -1,3 +1,4 @@
+import get from 'lodash/get'
 import chunk from 'lodash/chunk'
 import flamelink from '@flamelink/sdk-app'
 import { FlamelinkFactory, Api, CF } from '@flamelink/sdk-users-types'
@@ -9,7 +10,8 @@ import {
   createQueue,
   getTimestamp,
   getCurrentUser,
-  isRefLike
+  isRefLike,
+  processReferencesForCF
 } from '@flamelink/sdk-utils'
 import { CF_BATCH_WRITE_LIMIT } from '../constants'
 
@@ -32,14 +34,19 @@ const factory: FlamelinkFactory = context => {
 
     async get({ uid, ...options }: CF.Get = {}) {
       const pluckFields = pluckResultFields(options.fields)
+      const firestoreService = flamelink._ensureService('firestore', context)
+      const processRefs = processReferencesForCF(firestoreService, options)
 
       const snapshot = await api.getRaw({ uid, ...options })
 
-      const users: any[] = []
-      snapshot.forEach((doc: any) => users.push(doc.data()))
+      const users: any = {}
+      snapshot.forEach((doc: any) => {
+        const data = doc.data()
+        users[get(data, 'id', doc.id)] = data
+      })
 
-      const plucked = pluckFields(users)
-      return uid ? plucked[0] : plucked
+      const plucked = await processRefs(pluckFields(users))
+      return uid ? plucked[uid] : plucked
     },
 
     subscribeRaw({ uid, callback, ...options }: CF.Subscribe) {
@@ -63,6 +70,8 @@ const factory: FlamelinkFactory = context => {
 
     subscribe({ uid, callback, changeType, ...options }: CF.Subscribe) {
       const pluckFields = pluckResultFields(options.fields)
+      const firestoreService = flamelink._ensureService('firestore', context)
+      const processRefs = processReferencesForCF(firestoreService, options)
 
       return api.subscribeRaw({
         uid,
@@ -76,12 +85,13 @@ const factory: FlamelinkFactory = context => {
             return callback(null, [])
           }
 
-          const users: any[] = []
+          const users: any = {}
 
           if (changeType) {
             snapshot.docChanges().forEach((change: any) => {
               if (change.type === changeType) {
-                users.push(change.doc.data())
+                const data = change.doc.data()
+                users[get(data, 'id', change.doc.id)] = data
               }
             })
 
@@ -89,11 +99,14 @@ const factory: FlamelinkFactory = context => {
               return
             }
           } else {
-            snapshot.forEach((doc: any) => users.push(doc.data()))
+            snapshot.forEach((doc: any) => {
+              const data = doc.data()
+              users[get(data, 'id', doc.id)] = data
+            })
           }
 
-          const plucked = pluckFields(users)
-          return callback(null, uid ? plucked[0] : plucked)
+          const plucked: any = await processRefs(pluckFields(users))
+          return callback(null, uid ? plucked[uid] : plucked)
         }
       })
     },
