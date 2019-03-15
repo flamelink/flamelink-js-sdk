@@ -74,7 +74,7 @@
     "test": "lerna exec --ignore '@flamelink/sdk-*-types' yarn run test",
     "test:ci": "jest",
     "test:watch": "jest --watch",
-    "publish": "lerna run build && lerna publish --conventional-commits --canary --dist-tag next",
+    "publish:canary": "lerna run build && lerna publish --conventional-commits --canary --dist-tag next",
     "lint": "eslint --cache --ext ts 'packages/**/*.ts' --ignore-pattern '**/*.d.ts'",
     "lint:fix": "yarn run lint --fix",
     "serve-docs": "docsify serve docs -o true -p 4000"
