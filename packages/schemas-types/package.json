@@ -1,6 +1,6 @@
 {
   "name": "@flamelink/sdk-schemas-types",
-  "version": "1.0.0-alpha.0",
+  "version": "0.0.1",
   "config": {
     "access": "public"
   },
@@ -25,7 +25,7 @@
     "url": "https://github.com/flamelink/flamelink-js-sdk/issues"
   },
   "dependencies": {
-    "@flamelink/sdk-app-types": "1.0.0-alpha.0"
+    "@flamelink/sdk-app-types": "0.0.1"
   },
   "scripts": {
     "build": "tsc"
