@@ -397,6 +397,97 @@ export const prepPopulateFields = (
   return memo.prepPopulateFields(populate)
 }
 
+/**
+ * Not pretty - but working for now
+ */
+export const patchFileUrlForCF = curry(
+  async (
+    context: App.Context,
+    schemaKey: string,
+    entryId: string,
+    options: App.CF.Options,
+    entries: any
+  ) => {
+    console.log({ entries })
+    if (!options.populate || !isPlainObject(entries)) {
+      return entries
+    }
+
+    const schemas = get(context, 'modules.schemas')
+    let schemaFields = await schemas.getFields({ schemaKey })
+
+    if (schemaKey) {
+      schemaFields = wrap(schemaKey, schemaFields)
+    }
+
+    const storage = get(context, 'modules.storage')
+
+    const mediaFields = keys(schemaFields).reduce((acc, sKey) => {
+      const sFields = schemaFields[sKey]
+
+      const schemaMediaFields = sFields.reduce(
+        (fields: string[], field: any) => {
+          if (field.type === 'media') {
+            return fields.concat(field.key)
+          }
+          return fields
+        },
+        []
+      )
+
+      return Object.assign(acc, { [sKey]: schemaMediaFields })
+    }, {})
+
+    return keys(entries).reduce((chain, entryKey) => {
+      const entry = entries[entryKey]
+
+      return chain.then(async newEntries => {
+        const entryMediaFields = get(
+          mediaFields,
+          get(entry, '_fl_meta_.schema'),
+          []
+        )
+
+        if (entryMediaFields.length) {
+          if (!storage) {
+            logWarning(
+              'The Flamelink "storage" module is not available. Please make sure it is imported and try again.'
+            )
+          }
+
+          const newEntry = await entryMediaFields.reduce(
+            (entryChain, mediaFieldKey) => {
+              return entryChain.then(async (entryAcc: any) => {
+                if (
+                  entryAcc.hasOwnProperty(mediaFieldKey) &&
+                  Array.isArray(entryAcc[mediaFieldKey])
+                ) {
+                  const newFieldData = await Promise.all(
+                    entryAcc[mediaFieldKey].map(async (file: any) => {
+                      const url = await storage.getURL({ fileId: file.id })
+                      return Object.assign(file, { url })
+                    })
+                  )
+                  return Object.assign(entryAcc, {
+                    [mediaFieldKey]: newFieldData
+                  })
+                }
+
+                return entryAcc
+              })
+            },
+            Promise.resolve(entry)
+          )
+
+          return Object.assign(newEntries, { [entryKey]: newEntry })
+        }
+
+        return newEntries
+      })
+    }, Promise.resolve({}))
+  }
+)
+
 export const processReferencesForCF = curry(
   async (
     firestoreService: any,
