@@ -72,7 +72,7 @@ app.content.subscribe({
 
 ## Media files, Relational Data and References
 
-All relational data, including images and other files are stored as ID's in the Real-time database and as document references in the Cloud Firestore database. To expand these ID's into the entry objects that they represent Flamelink makes a `populate` option available.
+All relational data, including images and other files are stored as ID's in the Real-time database and as [document references](https://firebase.google.com/docs/reference/js/firebase.firestore.DocumentReference) in the Cloud Firestore database. To expand these ID's into the entry objects that they represent Flamelink makes a `populate` option available.
 
 In the simplest case, you can set `populate: true` and all relational fields will be populated into their relevant objects. This is great, but you might want more control over which fields you want to populate so that you do not make unnecessary requests to your database. For these cases, you can specify the exact fields to populate.
 

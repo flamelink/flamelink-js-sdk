@@ -45,7 +45,9 @@ const factory: FlamelinkFactory = context => {
     async get({ navigationKey, ...options }: CF.Get = {}) {
       const fieldsToPluck =
         Array.isArray(options.fields) && options.structure
-          ? new Set(REQUIRED_FIELDS_FOR_STRUCTURING.concat(options.fields))
+          ? Array.from(
+              new Set(REQUIRED_FIELDS_FOR_STRUCTURING.concat(options.fields))
+            )
           : options.fields
 
       const pluckFields = pluckResultFields(fieldsToPluck)
@@ -72,7 +74,7 @@ const factory: FlamelinkFactory = context => {
 
     async getItems({ navigationKey, fields, structure, ...options }: CF.Get) {
       const fieldsToPluck = Array.isArray(fields)
-        ? new Set(REQUIRED_FIELDS_FOR_STRUCTURING.concat(fields))
+        ? Array.from(new Set(REQUIRED_FIELDS_FOR_STRUCTURING.concat(fields)))
         : fields
       const pluckFields = pluckResultFields(fieldsToPluck)
       const navigation = await api.get({ navigationKey, ...options })
@@ -119,7 +121,9 @@ const factory: FlamelinkFactory = context => {
     }: CF.Subscribe) {
       const fieldsToPluck =
         Array.isArray(options.fields) && options.structure
-          ? new Set(REQUIRED_FIELDS_FOR_STRUCTURING.concat(options.fields))
+          ? Array.from(
+              new Set(REQUIRED_FIELDS_FOR_STRUCTURING.concat(options.fields))
+            )
           : options.fields
 
       const pluckFields = pluckResultFields(fieldsToPluck)
