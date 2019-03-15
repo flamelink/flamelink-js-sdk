@@ -1,5 +1,5 @@
 {
-  "version": "0.0.1",
+  "version": "1.0.0-alpha.0",
   "npmClient": "yarn",
   "useWorkspaces": true,
   "packages": [
@@ -8,14 +8,19 @@
   "command": {
     "publish": {
       "allowBranch": "master",
-      "ignoreChanges": ["*.md"],
+      "ignoreChanges": [
+        "*.md"
+      ],
       "message": "chore(release): Publish"
     },
     "version": {
       "allowBranch": "master"
     },
     "bootstrap": {
-      "scope": ["flamelink", "@flamelink/sdk-*"]
+      "scope": [
+        "flamelink",
+        "@flamelink/sdk-*"
+      ]
     }
   }
 }
