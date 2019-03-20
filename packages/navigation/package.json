@@ -26,8 +26,8 @@
   ],
   "dependencies": {
     "@flamelink/sdk-app": "^1.0.0-alpha.1",
-    "@flamelink/sdk-app-types": "^1.0.0-alpha.0",
-    "@flamelink/sdk-navigation-types": "^1.0.0-alpha.0",
+    "@flamelink/sdk-app-types": "^1.0.0-alpha.1",
+    "@flamelink/sdk-navigation-types": "^1.0.0-alpha.1",
     "@flamelink/sdk-utils": "^1.0.0-alpha.1",
     "compose-then": "^1.0.1"
   },
