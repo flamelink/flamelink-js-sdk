@@ -92,21 +92,11 @@ const factory: FlamelinkFactory = context => {
       filters,
       ...options
     }: CF.GetByField) {
-      const pluckFields = pluckResultFields(options.fields)
-      const content = await api.get({
+      return api.get({
         schemaKey,
         ...options,
         filters: (filters || []).concat([[field, '==', value]])
       })
-
-      if (!content) {
-        return content
-      }
-
-      return keys(content).reduce((acc: object, key: string) => {
-        const contentEntry: any = content[key]
-        return Object.assign(acc, { [key]: pluckFields(contentEntry) })
-      }, {})
     },
 
     subscribeRaw({ schemaKey, entryId, callback, ...options }: CF.Subscribe) {
