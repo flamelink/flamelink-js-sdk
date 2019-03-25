@@ -1,3 +1,4 @@
+import keys from 'lodash/keys'
 import get from 'lodash/get'
 import chunk from 'lodash/chunk'
 import flamelink from '@flamelink/sdk-app'
@@ -95,7 +96,7 @@ const factory: FlamelinkFactory = context => {
               }
             })
 
-            if (!users.length) {
+            if (!keys(users).length) {
               return
             }
           } else {

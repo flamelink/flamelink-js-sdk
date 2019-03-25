@@ -150,7 +150,7 @@ const factory: FlamelinkFactory = context => {
               }
             })
 
-            if (!navigation.length) {
+            if (!keys(navigation).length) {
               return
             }
           } else {

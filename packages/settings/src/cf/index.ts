@@ -1,3 +1,4 @@
+import keys from 'lodash/keys'
 import get from 'lodash/get'
 import flamelink from '@flamelink/sdk-app'
 import { FlamelinkFactory, Api, CF } from '@flamelink/sdk-settings-types'
@@ -139,7 +140,7 @@ const factory: FlamelinkFactory = context => {
               }
             })
 
-            if (!entries.length) {
+            if (!keys(entries).length) {
               return
             }
           } else {

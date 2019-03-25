@@ -408,7 +408,6 @@ export const patchFileUrlForCF = curry(
     options: App.CF.Options,
     entries: any
   ) => {
-    console.log({ entries })
     if (!options.populate || !isPlainObject(entries)) {
       return entries
     }
