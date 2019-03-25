@@ -168,7 +168,7 @@ const factory: FlamelinkFactory = context => {
               }
             })
 
-            if (!content.length) {
+            if (!keys(content).length) {
               return
             }
           } else {

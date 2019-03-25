@@ -144,7 +144,7 @@ const factory: FlamelinkFactory = context => {
               }
             })
 
-            if (!schemas.length) {
+            if (!keys(schemas).length) {
               return
             }
           } else {
@@ -194,7 +194,7 @@ const factory: FlamelinkFactory = context => {
               }
             })
 
-            if (!schemaFields.length) {
+            if (!keys(schemaFields).length) {
               return
             }
           } else {
