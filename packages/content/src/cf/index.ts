@@ -47,12 +47,7 @@ const factory: FlamelinkFactory = context => {
 
     async get({ schemaKey, entryId, ...options }: CF.Get = {}) {
       const pluckFields = pluckResultFields(options.fields)
-      const patchFileUrl = patchFileUrlForCF(
-        context,
-        schemaKey,
-        entryId,
-        options
-      )
+      const patchFileUrl = patchFileUrlForCF(context, schemaKey, options)
 
       const snapshot = await api.getRaw({ schemaKey, entryId, ...options })
 
@@ -128,12 +123,7 @@ const factory: FlamelinkFactory = context => {
       const pluckFields = pluckResultFields(options.fields)
       const firestoreService = flamelink._ensureService('firestore', context)
       const processRefs = populateEntriesForCF(firestoreService, options)
-      const patchFileUrl = patchFileUrlForCF(
-        context,
-        schemaKey,
-        entryId,
-        options
-      )
+      const patchFileUrl = patchFileUrlForCF(context, schemaKey, options)
 
       return api.subscribeRaw({
         schemaKey,

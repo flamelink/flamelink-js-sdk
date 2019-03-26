@@ -404,7 +404,6 @@ export const patchFileUrlForCF = curry(
   async (
     context: App.Context,
     schemaKey: string,
-    entryId: string,
     options: App.CF.Options,
     entries: any
   ) => {
@@ -463,7 +462,10 @@ export const patchFileUrlForCF = curry(
                 ) {
                   const newFieldData = await Promise.all(
                     entryAcc[mediaFieldKey].map(async (file: any) => {
-                      const url = await storage.getURL({ fileId: file.id })
+                      const url = await storage.getURL({
+                        fileId: file.id,
+                        ...options
+                      })
                       return Object.assign(file, { url })
                     })
                   )
