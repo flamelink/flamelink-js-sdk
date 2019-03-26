@@ -508,58 +508,48 @@ export const processReferencesForCF = curry(
     }
 
     return fieldsToPopulate.reduce(async (chain, opt) => {
-      const { field, populate } = opt
+      const { field, populate, subFields } = opt
       const val = get(document, field)
 
       const processRefs = processReferencesForCF(firestoreService, {
-        populate: populateAllTheThings ? true : populate
+        populate: populateAllTheThings
+          ? true
+          : Array.isArray(subFields)
+          ? { populate: subFields }
+          : populate
       })
 
-      if (Array.isArray(val)) {
-        const fieldValue = await Promise.all(
-          val.map(async innerRef => {
-            if (isRefLike(innerRef)) {
-              const snapshot = await firestoreService.doc(innerRef.path).get()
-
-              if (typeof snapshot.forEach === 'function') {
-                const docs: App.CF.DocumentSnapshot[] = []
-                snapshot.forEach(async (doc: App.CF.DocumentSnapshot) =>
-                  docs.push(doc.data())
-                )
-                return Promise.all(docs.map(async doc => processRefs(doc)))
-              }
-
-              return processRefs(snapshot.data())
-            }
-
-            return innerRef
-          })
-        )
-
-        return chain.then(async acc => set(acc, field, fieldValue))
-      } else if (isPlainObject(val)) {
-        const newObject = await processRefs(val)
-        return chain.then(async acc => set(acc, field, newObject))
-      } else if (isRefLike(val)) {
-        const snapshot = await firestoreService.doc(val.path).get()
+      const processRef = async (ref: any) => {
+        const snapshot = await firestoreService.doc(ref.path).get()
 
         if (typeof snapshot.forEach === 'function') {
           const docs: App.CF.DocumentSnapshot[] = []
           snapshot.forEach(async (doc: App.CF.DocumentSnapshot) =>
             docs.push(doc.data())
           )
-          return chain.then(async acc =>
-            set(
-              acc,
-              field,
-              await Promise.all(docs.map(async doc => processRefs(doc)))
-            )
-          )
+
+          return Promise.all(docs.map(async doc => processRefs(doc)))
         }
 
-        return chain.then(async acc =>
-          set(acc, field, await processRefs(snapshot.data()))
+        return processRefs(snapshot.data())
+      }
+
+      if (Array.isArray(val)) {
+        const fieldValue = await Promise.all(
+          val.map(async innerRef => {
+            if (isRefLike(innerRef)) {
+              return processRef(innerRef)
+            }
+
+            return processRefs(innerRef)
+          })
         )
+
+        return chain.then(async acc => set(acc, field, fieldValue))
+      } else if (isPlainObject(val)) {
+        return chain.then(async acc => set(acc, field, await processRefs(val)))
+      } else if (isRefLike(val)) {
+        return chain.then(async acc => set(acc, field, await processRef(val)))
       }
 
       return chain
