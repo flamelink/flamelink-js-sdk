@@ -1,6 +1,6 @@
 {
   "name": "@flamelink/sdk-app",
-  "version": "1.0.0-alpha.3",
+  "version": "1.0.0-alpha.4",
   "publishConfig": {
     "access": "public"
   },
@@ -26,7 +26,7 @@
   ],
   "dependencies": {
     "@flamelink/sdk-app-types": "^1.0.0-alpha.2",
-    "@flamelink/sdk-utils": "^1.0.0-alpha.3",
+    "@flamelink/sdk-utils": "^1.0.0-alpha.4",
     "@types/lodash": "^4.14.120",
     "lodash": "^4.17.11"
   },
