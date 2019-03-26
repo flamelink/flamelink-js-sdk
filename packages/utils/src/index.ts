@@ -182,7 +182,7 @@ export const applyOrderByForCF = (ref: any, options: any): any => {
 
   if (options.orderBy) {
     if (typeof options.orderBy === 'string') {
-      return ref.orderBy(options.orderBy, 'asc')
+      return ref.orderBy ? ref.orderBy(options.orderBy, 'asc') : ref
     }
 
     if (isPlainObject(options.orderBy) && options.orderBy.field) {
@@ -215,7 +215,7 @@ export const applyFiltersForCF = (
   if (Array.isArray(options.filters)) {
     return options.filters.reduce((filteredRef: any, clause) => {
       if (Array.isArray(clause)) {
-        return filteredRef.where(...clause)
+        return filteredRef.where ? filteredRef.where(...clause) : filteredRef
       }
 
       logWarning(
@@ -241,14 +241,16 @@ export const applyLimitAndOffsetsForCF = (
 
   let newRef = CF_QUERY_CURSORS.reduce((updatedRef, cursor) => {
     if (typeof options[cursor] !== 'undefined') {
-      return updatedRef[cursor](...castArray(options[cursor]))
+      return updatedRef[cursor]
+        ? updatedRef[cursor](...castArray(options[cursor]))
+        : updatedRef
     }
 
     return updatedRef
   }, ref)
 
   if (get(options, 'limit')) {
-    newRef = ref.limit(options.limit)
+    newRef = ref.limit ? ref.limit(options.limit) : ref
   }
 
   return newRef
