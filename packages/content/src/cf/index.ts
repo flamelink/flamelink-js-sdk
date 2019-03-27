@@ -46,9 +46,6 @@ const factory: FlamelinkFactory = context => {
     },
 
     async get({ schemaKey, entryId, ...options }: CF.Get = {}) {
-      const pluckFields = pluckResultFields(options.fields)
-      const patchFileUrl = patchFileUrlForCF(context, schemaKey, options)
-
       const snapshot = await api.getRaw({ schemaKey, entryId, ...options })
 
       if (snapshot.empty) {
@@ -57,9 +54,8 @@ const factory: FlamelinkFactory = context => {
 
       const firestoreService = flamelink._ensureService('firestore', context)
       const processRefs = populateEntriesForCF(firestoreService, options)
-
-      const schema = await get(context, 'modules.schemas').get({ schemaKey })
-      const isSingleType = get(schema, 'type') === 'single'
+      const patchFileUrl = patchFileUrlForCF(context, options)
+      const pluckFields = pluckResultFields(options.fields)
 
       const content: any = {}
       snapshot.forEach((doc: any) => {
@@ -67,11 +63,16 @@ const factory: FlamelinkFactory = context => {
         content[get(data, '_fl_meta_.fl_id', doc.id)] = data
       })
 
-      const result = await compose(
-        pluckFields,
-        patchFileUrl,
-        processRefs
-      )(content)
+      const [schema, result] = await Promise.all([
+        get(context, 'modules.schemas').get({ schemaKey }),
+        compose(
+          pluckFields,
+          patchFileUrl,
+          processRefs
+        )(content)
+      ])
+
+      const isSingleType = get(schema, 'type') === 'single'
 
       if (isSingleType) {
         return values(result)[0]
@@ -123,7 +124,7 @@ const factory: FlamelinkFactory = context => {
       const pluckFields = pluckResultFields(options.fields)
       const firestoreService = flamelink._ensureService('firestore', context)
       const processRefs = populateEntriesForCF(firestoreService, options)
-      const patchFileUrl = patchFileUrlForCF(context, schemaKey, options)
+      const patchFileUrl = patchFileUrlForCF(context, options)
 
       return api.subscribeRaw({
         schemaKey,

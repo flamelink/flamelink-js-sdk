@@ -186,7 +186,9 @@ export const applyOrderByForCF = (ref: any, options: any): any => {
     }
 
     if (isPlainObject(options.orderBy) && options.orderBy.field) {
-      return ref.orderBy(options.orderBy.field, options.orderBy.order || 'asc')
+      return ref.orderBy
+        ? ref.orderBy(options.orderBy.field, options.orderBy.order || 'asc')
+        : ref
     }
 
     if (Array.isArray(options.orderBy)) {
@@ -399,95 +401,70 @@ export const prepPopulateFields = (
   return memo.prepPopulateFields(populate)
 }
 
-/**
- * Not pretty - but working for now
- */
 export const patchFileUrlForCF = curry(
-  async (
-    context: App.Context,
-    schemaKey: string,
-    options: App.CF.Options,
-    entries: any
-  ) => {
+  async (context: App.Context, options: App.CF.Options, entries: any) => {
     if (!options.populate || !isPlainObject(entries)) {
       return entries
     }
 
-    const schemas = get(context, 'modules.schemas')
-    let schemaFields = await schemas.getFields({ schemaKey })
-
-    if (schemaKey) {
-      schemaFields = wrap(schemaKey, schemaFields)
-    }
-
     const storage = get(context, 'modules.storage')
 
-    const mediaFields = keys(schemaFields).reduce((acc, sKey) => {
-      const sFields = schemaFields[sKey]
+    // TODO: Check if options.populate is array and only process those values instead of traversing everything
 
-      const schemaMediaFields = sFields.reduce(
-        (fields: string[], field: any) => {
-          if (field.type === 'media') {
-            return fields.concat(field.key)
-          }
-          return fields
-        },
-        []
-      )
-
-      return Object.assign(acc, { [sKey]: schemaMediaFields })
-    }, {})
-
-    return keys(entries).reduce((chain, entryKey) => {
-      const entry = entries[entryKey]
-
-      return chain.then(async newEntries => {
-        const entryMediaFields = get(
-          mediaFields,
-          get(entry, '_fl_meta_.schema'),
-          []
+    const patchURL = async (file: any) => {
+      if (!storage) {
+        logWarning(
+          'The Flamelink "storage" module is not available. Please make sure it is imported and try again.'
         )
 
-        if (entryMediaFields.length) {
-          if (!storage) {
-            logWarning(
-              'The Flamelink "storage" module is not available. Please make sure it is imported and try again.'
-            )
-          }
+        return file
+      }
 
-          const newEntry = await entryMediaFields.reduce(
-            (entryChain, mediaFieldKey) => {
-              return entryChain.then(async (entryAcc: any) => {
-                if (
-                  entryAcc.hasOwnProperty(mediaFieldKey) &&
-                  Array.isArray(entryAcc[mediaFieldKey])
-                ) {
-                  const newFieldData = await Promise.all(
-                    entryAcc[mediaFieldKey].map(async (file: any) => {
-                      const url = await storage.getURL({
-                        fileId: file.id,
-                        ...options
-                      })
-                      return Object.assign(file, { url })
-                    })
-                  )
-                  return Object.assign(entryAcc, {
-                    [mediaFieldKey]: newFieldData
-                  })
-                }
+      const url = await storage.getURL({
+        fileId: file.id,
+        ...options
+      })
+      return set(file, 'url', url)
+    }
 
-                return entryAcc
-              })
-            },
-            Promise.resolve(entry)
-          )
+    const isFileObject = (obj: any) => {
+      return (
+        obj.hasOwnProperty('file') &&
+        obj.hasOwnProperty('id') &&
+        obj.hasOwnProperty('contentType') &&
+        obj.hasOwnProperty('folderId')
+      )
+    }
 
-          return Object.assign(newEntries, { [entryKey]: newEntry })
+    const processEntry = async (entry: any): Promise<any> => {
+      if (Array.isArray(entry)) {
+        return Promise.all(
+          entry.map(async innerEntry => processEntry(innerEntry))
+        )
+      }
+
+      if (isPlainObject(entry)) {
+        if (isFileObject(entry)) {
+          return patchURL(entry)
         }
 
-        return newEntries
+        return keys(entry).reduce((chain, propKey) => {
+          return chain.then(async newProp => {
+            const prop: any = await processEntry(entry[propKey])
+            return set(newProp, propKey, prop)
+          })
+        }, Promise.resolve({ ...entry }))
+      }
+
+      return entry
+    }
+
+    return keys(entries).reduce((chain, entryKey) => {
+      return chain.then(async newEntries => {
+        const entry = await processEntry(entries[entryKey])
+        return set(newEntries, entryKey, entry)
       })
-    }, Promise.resolve({}))
+    }, Promise.resolve({ ...entries }))
   }
 )
 
@@ -503,60 +480,62 @@ export const processReferencesForCF = curry(
 
     const populateAllTheThings = options.populate === true
 
-    let fieldsToPopulate: PopulateFieldOption[]
+    let fieldsToPopulate: PopulateFieldOption[] = []
 
     if (isArray(options.populate)) {
       fieldsToPopulate = prepPopulateFields(options.populate)
-    } else {
+    } else if (populateAllTheThings) {
       fieldsToPopulate = prepPopulateFields(Object.keys(document))
     }
 
-    return fieldsToPopulate.reduce(async (chain, opt) => {
-      const { field, populate, subFields } = opt
-      const val = get(document, field)
+    return await fieldsToPopulate.reduce(async (chain, opt) => {
+      return chain.then(async acc => {
+        const { field, populate, subFields } = opt
+        const val = get(document, field)
 
-      const processRefs = processReferencesForCF(firestoreService, {
-        populate: populateAllTheThings
-          ? true
-          : Array.isArray(subFields)
-          ? { populate: subFields }
-          : populate
-      })
+        const processRefs = processReferencesForCF(firestoreService, {
+          populate: populateAllTheThings
+            ? true
+            : Array.isArray(subFields)
+            ? subFields
+            : populate
+        })
 
-      const processRef = async (ref: any) => {
-        const snapshot = await firestoreService.doc(ref.path).get()
+        const processRef = async (ref: any) => {
+          const snapshot = await firestoreService.doc(ref.path).get()
 
-        if (typeof snapshot.forEach === 'function') {
-          const docs: App.CF.DocumentSnapshot[] = []
-          snapshot.forEach(async (doc: App.CF.DocumentSnapshot) =>
-            docs.push(doc.data())
-          )
+          if (typeof snapshot.forEach === 'function') {
+            const docs: App.CF.DocumentSnapshot[] = []
+            snapshot.forEach(async (doc: App.CF.DocumentSnapshot) =>
+              docs.push(doc.data())
+            )
 
-          return Promise.all(docs.map(async doc => processRefs(doc)))
+            return Promise.all(docs.map(async doc => processRefs(doc)))
+          }
+
+          return processRefs(snapshot.data())
         }
 
-        return processRefs(snapshot.data())
-      }
+        let fieldValue = val
 
-      if (Array.isArray(val)) {
-        const fieldValue = await Promise.all(
-          val.map(async innerRef => {
-            if (isRefLike(innerRef)) {
-              return processRef(innerRef)
-            }
+        if (Array.isArray(val)) {
+          fieldValue = await Promise.all(
+            val.map(async innerRef => {
+              if (isRefLike(innerRef)) {
+                return processRef(innerRef)
+              }
 
-            return processRefs(innerRef)
-          })
-        )
+              return processRefs(innerRef)
+            })
+          )
+        } else if (isPlainObject(val)) {
+          fieldValue = await processRefs(val)
+        } else if (isRefLike(val)) {
+          fieldValue = await processRef(val)
+        }
 
-        return chain.then(async acc => set(acc, field, fieldValue))
-      } else if (isPlainObject(val)) {
-        return chain.then(async acc => set(acc, field, await processRefs(val)))
-      } else if (isRefLike(val)) {
-        return chain.then(async acc => set(acc, field, await processRef(val)))
-      }
-
-      return chain
+        return set(acc, field, fieldValue)
+      })
     }, Promise.resolve({ ...document }))
   }
 )
@@ -572,18 +551,19 @@ export const populateEntriesForCF = curry(
     }
 
     if (isPlainObject(entries)) {
-      return await keys(entries).reduce((chain, key) => {
-        const entry = entries[key]
-        return chain.then(async acc =>
-          Object.assign(acc, {
-            [key]: await processReferencesForCF(
-              firestoreService,
-              options,
-              entry
-            )
-          })
-        )
-      }, Promise.resolve({}))
+      return await keys(entries).reduce(
+        (chain, key) =>
+          chain.then(async acc =>
+            Object.assign(acc, {
+              [key]: await processReferencesForCF(
+                firestoreService,
+                options,
+                entries[key]
+              )
+            })
+          ),
+        Promise.resolve({})
+      )
     }
 
     return entries
