@@ -1,6 +1,6 @@
 {
   "name": "flamelink",
-  "version": "1.0.0-alpha.5",
+  "version": "1.0.0-alpha.6",
   "description": "Universal Javascript SDK for integrating with your Flamelink CMS",
   "author": "Flamelink <feedback@flamelink.io> (https://flamelink.io)",
   "homepage": "https://flamelink.github.io/flamelink-js-sdk/",
@@ -42,14 +42,14 @@
   "module": "dist/index.esm.js",
   "typings": "public.d.ts",
   "dependencies": {
-    "@flamelink/sdk-app": "^1.0.0-alpha.5",
+    "@flamelink/sdk-app": "^1.0.0-alpha.6",
     "@flamelink/sdk-app-types": "^1.0.0-alpha.2",
-    "@flamelink/sdk-content": "^1.0.0-alpha.5",
-    "@flamelink/sdk-navigation": "^1.0.0-alpha.5",
-    "@flamelink/sdk-schemas": "^1.0.0-alpha.5",
-    "@flamelink/sdk-settings": "^1.0.0-alpha.5",
-    "@flamelink/sdk-storage": "^1.0.0-alpha.5",
-    "@flamelink/sdk-users": "^1.0.0-alpha.5",
+    "@flamelink/sdk-content": "^1.0.0-alpha.6",
+    "@flamelink/sdk-navigation": "^1.0.0-alpha.6",
+    "@flamelink/sdk-schemas": "^1.0.0-alpha.6",
+    "@flamelink/sdk-settings": "^1.0.0-alpha.6",
+    "@flamelink/sdk-storage": "^1.0.0-alpha.6",
+    "@flamelink/sdk-users": "^1.0.0-alpha.6",
     "compose-then": "^1.0.1"
   },
   "scripts": {

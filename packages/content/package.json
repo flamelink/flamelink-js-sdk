@@ -1,6 +1,6 @@
 {
   "name": "@flamelink/sdk-content",
-  "version": "1.0.0-alpha.5",
+  "version": "1.0.0-alpha.6",
   "publishConfig": {
     "access": "public"
   },
@@ -25,11 +25,11 @@
     "dist"
   ],
   "dependencies": {
-    "@flamelink/sdk-app": "^1.0.0-alpha.5",
+    "@flamelink/sdk-app": "^1.0.0-alpha.6",
     "@flamelink/sdk-app-types": "^1.0.0-alpha.2",
     "@flamelink/sdk-content-types": "^1.0.0-alpha.2",
-    "@flamelink/sdk-schemas": "^1.0.0-alpha.5",
-    "@flamelink/sdk-utils": "^1.0.0-alpha.5"
+    "@flamelink/sdk-schemas": "^1.0.0-alpha.6",
+    "@flamelink/sdk-utils": "^1.0.0-alpha.6"
   },
   "scripts": {
     "prebuild": "rimraf dist",
