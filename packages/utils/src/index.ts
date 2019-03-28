@@ -422,7 +422,7 @@ export const patchFileUrlForCF = curry(
 
       const url = await storage.getURL({
         fileId: file.id,
-        ...options
+        size: options.size
       })
       return set(file, 'url', url)
     }
