@@ -47,7 +47,7 @@ aliases:
     steps:
       - checkout
       - run: ./scripts/assert-changed-files.sh "packages/*|.circleci/*"
-      - run: ./scripts/test-firestore-on-ci.sh"
+      - run: ./scripts/test-firestore-on-ci.sh
       - <<: *restore_cache
       - <<: *install_node_modules
       - <<: *persist_cache
