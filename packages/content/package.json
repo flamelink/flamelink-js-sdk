@@ -35,6 +35,6 @@
     "prebuild": "rimraf dist",
     "build": "rollup -c",
     "dev": "rollup -c -w",
-    "test": "jest"
+    "test": "FIRESTORE_EMULATOR_HOST=[::1]:8080,127.0.0.1:8080 jest"
   }
 }
