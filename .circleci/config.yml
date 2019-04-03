@@ -5,7 +5,7 @@ executors:
         type: string
         default: 'latest'
     docker:
-      - image: circleci/node:<< parameters.image >>
+      - image: circleci/node:<< parameters.image >>-browsers
 
 aliases:
   restore_cache: &restore_cache
