@@ -3,11 +3,13 @@
 # Script adapted from https://gist.github.com/danahartweg/72600e0d30ae54290bf4deb197400ee9
 
 echo "PWD: $(pwd)"
+echo "ls: $(ls -la)"
 
 PWD=$(pwd)
 EMULATOR="cloud-firestore-emulator"
-# EMULATOR_TARGET=$(find ~/.cache/firebase/emulators/ -type f -name "$EMULATOR*.jar" | sort -r | head -n1)
-EMULATOR_TARGET="$PWD/emulators/$EMULATOR.jar"
+EMULATOR_TARGET=$(find "$PWD" -type f -name "$EMULATOR*.jar" | sort -r | head -n1)
+
+echo ">>> $EMULATOR_TARGET >>>"
 
 if [ -z "$EMULATOR_TARGET" ]; then
   echo "Could not find the firestore emulator. Ending test run."
