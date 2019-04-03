@@ -21,10 +21,30 @@ aliases:
       paths:
         - ~/.cache
 
+  bootstrap_and_build: &bootstrap_and_build
+    run:
+      name: Bootstrap and Build
+      command: yarn bootstrap && yarn build
+
   install_node_modules: &install_node_modules
     run:
       name: Install node modules
       command: yarn --frozen-lockfile
+
+  install_emulators: &install_emulators
+    run:
+      name: Install emulators
+      command: yarn install-cf-emulator
+
+  assert_changed_files: &assert_changed_files
+    run:
+      name: Assert Changed Files
+      command: ./scripts/assert-changed-files.sh "packages/*|.circleci/*"
+
+  run_tests: &run_tests
+    run:
+      name: Run tests
+      command: yarn test:ci
 
   attach_to_bootstrap: &attach_to_bootstrap
     attach_workspace:
@@ -46,13 +66,13 @@ aliases:
   test_template: &test_template
     steps:
       - checkout
-      - run: ./scripts/assert-changed-files.sh "packages/*|.circleci/*"
+      - <<: *assert_changed_files
       - <<: *restore_cache
       - <<: *install_node_modules
-      - run: yarn install-cf-emulator
+      - <<: *install_emulators
       - <<: *persist_cache
       - <<: *attach_to_bootstrap
-      - run: yarn test:ci
+      - <<: *run_tests
 
 version: 2.1
 
@@ -61,11 +81,11 @@ jobs:
     executor: node
     steps:
       - checkout
-      - run: ./scripts/assert-changed-files.sh "packages/*|.circleci/*"
+      - <<: *assert_changed_files
       - <<: *restore_cache
       - <<: *install_node_modules
       - <<: *persist_cache
-      - run: yarn bootstrap && yarn build
+      - <<: *bootstrap_and_build
       - persist_to_workspace:
           root: packages
           paths:

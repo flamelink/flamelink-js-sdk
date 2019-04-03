@@ -74,7 +74,7 @@
     "dev": "lerna exec --parallel --ignore '@flamelink/sdk-*-types' yarn run dev",
     "build": "lerna run build",
     "test": "lerna exec --ignore '@flamelink/sdk-*-types' yarn run test",
-    "test:ci": "FIREBASE_FIRESTORE_EMULATOR_ADDRESS='127.0.0.1:8080' sh ./scripts/test-firestore-on-ci.sh",
+    "test:ci": "sh ./scripts/run-tests-on-ci.sh",
     "install-cf-emulator": "firebase setup:emulators:firestore",
     "publish:canary": "lerna run build && lerna publish --conventional-commits --canary --dist-tag dev",
     "publish:next": "lerna run build && lerna publish --dist-tag next",
