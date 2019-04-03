@@ -2,12 +2,9 @@
 
 # Script adapted from https://gist.github.com/danahartweg/72600e0d30ae54290bf4deb197400ee9
 
-echo "$(java -version)"
-
-PWD=$(pwd)
 EMULATOR="cloud-firestore-emulator"
-EMULATOR_TARGET=$(find "$PWD" -type f -name "$EMULATOR*.jar" | sort -r | head -n1)
-EMULATOR_PORT=3000
+EMULATOR_TARGET=$(find ~/.cache/firebase/emulators/ -type f -name "$EMULATOR*.jar" | sort -r | head -n1)
+EMULATOR_PORT=8080
 
 if [ -z "$EMULATOR_TARGET" ]; then
   echo "Could not find the firestore emulator. Ending test run."
@@ -32,7 +29,6 @@ RETRY_LIMIT=10
 while [ $RETRIES -lt $RETRY_LIMIT ]; do
   sleep 1
   echo "Pinging firestore emulator"
-  echo "$RETRIES of $RETRY_LIMIT"
 
   if nc -z localhost $EMULATOR_PORT; then
     break

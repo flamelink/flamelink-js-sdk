@@ -49,6 +49,7 @@ aliases:
       - run: ./scripts/assert-changed-files.sh "packages/*|.circleci/*"
       - <<: *restore_cache
       - <<: *install_node_modules
+      - run: yarn install-cf-emulator
       - <<: *persist_cache
       - <<: *attach_to_bootstrap
       - run: yarn test:ci
