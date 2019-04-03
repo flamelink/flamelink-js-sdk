@@ -34,7 +34,7 @@ aliases:
   install_emulators: &install_emulators
     run:
       name: Install emulators
-      command: yarn install-cf-emulator
+      command: yarn install-emulators
 
   assert_changed_files: &assert_changed_files
     run:
