@@ -2,10 +2,12 @@
 
 # Script adapted from https://gist.github.com/danahartweg/72600e0d30ae54290bf4deb197400ee9
 
-yarn install-cf-emulator
+echo "PWD: $(pwd)"
 
+PWD=$(pwd)
 EMULATOR="cloud-firestore-emulator"
-EMULATOR_TARGET=$(find ~/.cache/firebase/emulators/ -type f -name "$EMULATOR*.jar" | sort -r | head -n1)
+# EMULATOR_TARGET=$(find ~/.cache/firebase/emulators/ -type f -name "$EMULATOR*.jar" | sort -r | head -n1)
+EMULATOR_TARGET="$PWD/emulators/$EMULATOR.jar"
 
 if [ -z "$EMULATOR_TARGET" ]; then
   echo "Could not find the firestore emulator. Ending test run."
