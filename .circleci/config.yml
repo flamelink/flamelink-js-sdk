@@ -51,7 +51,6 @@ aliases:
       - <<: *install_node_modules
       - <<: *persist_cache
       - <<: *attach_to_bootstrap
-      # - run: ./scripts/test-firestore-on-ci.sh
       - run: yarn test:ci
 
 version: 2.1
