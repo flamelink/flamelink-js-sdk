@@ -1,5 +1,7 @@
 #!/bin/sh
 
+# Script adapted from https://gist.github.com/danahartweg/72600e0d30ae54290bf4deb197400ee9
+
 EMULATOR="cloud-firestore-emulator"
 EMULATOR_TARGET=$(find ~/.cache/firebase/emulators/ -type f -name "$EMULATOR*.jar" | sort -r | head -n1)
 
@@ -40,7 +42,8 @@ while [ $RETRIES -lt $RETRY_LIMIT ]; do
   fi
 done
 
-yarn test
+# Now run the tests
+jest
 
 echo "End of test run. Cleaning up the firestore emulator."
 killEmulatorPid
