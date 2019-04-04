@@ -4,7 +4,7 @@ import debug from 'debug'
 
 const startEmulator = (emulator: string, args: any[], successMsg: string) => {
   return new Promise((resolve, reject) => {
-    const dbug = debug(emulator)
+    const dbug = debug(`setup:${emulator}`)
     const logInfo = dbug.extend('stdout')
     const logError = dbug.extend('stderr')
 
@@ -38,12 +38,14 @@ const startEmulator = (emulator: string, args: any[], successMsg: string) => {
     })
 
     child.on('error', (err: any) => {
-      logError(`child process failed to start`)
+      logError(`Emulator failed to start`)
       reject(err)
     })
 
     child.on('close', (code: any) => {
-      dbug(`child process exited with code ${code}`)
+      if (code) {
+        dbug(`Emulator exited with code ${code}`)
+      }
     })
   })
 }

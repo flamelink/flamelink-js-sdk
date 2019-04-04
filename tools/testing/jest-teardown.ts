@@ -3,7 +3,7 @@ import debug from 'debug'
 import { cleanup } from './firebase'
 
 const stopEmulator = async (emulator: string) => {
-  const dbug = debug(emulator)
+  const dbug = debug(`teardown:${emulator}`)
 
   dbug('Stopping emulator process...')
 
@@ -13,18 +13,24 @@ const stopEmulator = async (emulator: string) => {
   dbug(`Emulator PID: ${emulatorPID}`)
 
   if (emulatorPID) {
-    execSync(`kill -9 ${emulatorPID}`)
-    dbug(`Emulator process stopped`)
+    try {
+      execSync(`kill -9 ${emulatorPID}`)
+      dbug(`Emulator process stopped`)
+    } catch (err) {
+      dbug(`Emulator process stop failed`, err)
+    }
   }
 }
 
 const teardown = async () => {
   await cleanup()
+
+  // if (!process.env.CI) {
   await Promise.all([
     stopEmulator('cloud-firestore-emulator'),
     stopEmulator('firebase-database-emulator')
   ])
-  process.exit()
+  // }
 }
 
 export default teardown
