@@ -20,7 +20,7 @@ const createFlamelinkFactory: App.FactoryCreator = () => {
   const initRegisteredModules = (context: App.Context): void => {
     registeredModules.forEach(({ moduleName, setupModule }) => {
       if (context.modules[moduleName]) {
-        return logWarning(`Duplicate imports for the "${moduleName}" module`)
+        return logWarning(`Duplicate import for the "${moduleName}" module`)
       }
 
       Object.defineProperty(context.modules, moduleName, {

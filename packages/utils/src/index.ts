@@ -63,6 +63,10 @@ export const getFirestoreServiceFactory = (context: App.Context): any => {
 }
 
 export const getAuthServiceFactory = (context: App.Context): any => {
+  if (typeof process !== 'undefined' && process.env.NODE_ENV === 'test') {
+    return
+  }
+
   if (context.usesAdminApp) {
     return get(context, 'firebaseApp.firebaseInternals_.firebase_.auth')
   }
