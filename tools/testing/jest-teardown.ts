@@ -17,7 +17,7 @@ const stopEmulator = async (emulator: string) => {
       execSync(`kill -9 ${emulatorPID}`)
       dbug(`Emulator process stopped`)
     } catch (err) {
-      dbug(`Emulator process stop failed`, err)
+      dbug(`Emulator process stopping failed: ${err.message}`)
     }
   }
 }
@@ -25,12 +25,12 @@ const stopEmulator = async (emulator: string) => {
 const teardown = async () => {
   await cleanup()
 
-  // if (!process.env.CI) {
   await Promise.all([
     stopEmulator('cloud-firestore-emulator'),
     stopEmulator('firebase-database-emulator')
   ])
-  // }
+
+  process.exit()
 }
 
 export default teardown
