@@ -2,18 +2,32 @@ import { spawn, execSync } from 'child_process'
 import * as path from 'path'
 import debug from 'debug'
 
-const startEmulator = (emulator: string, args: any[], successMsg: string) => {
+const isEmulatorRunning = (port: string): boolean => {
+  try {
+    execSync(`nc -zw1 localhost ${port}`)
+    return true
+  } catch (err) {
+    return false
+  }
+}
+
+const startEmulator = (emulator: string, args: any[], port: string) => {
   return new Promise((resolve, reject) => {
     const dbug = debug(`setup:${emulator}`)
     const logInfo = dbug.extend('stdout')
     const logError = dbug.extend('stderr')
 
+    if (isEmulatorRunning(port)) {
+      logInfo(`Emulator already running`)
+      return resolve()
+    }
+
     const emulatorPath: any = execSync(
       `find ~/.cache/firebase/emulators -type f -name "${emulator}*.jar" | sort -r | head -n1`
-    )
+    ).toString()
     const commandArgs: any[] = ['-jar']
 
-    commandArgs.push(emulatorPath.toString().replace('\n', ''))
+    commandArgs.push(emulatorPath.replace('\n', ''))
 
     if (args.length) {
       commandArgs.push(...args)
@@ -28,7 +42,7 @@ const startEmulator = (emulator: string, args: any[], successMsg: string) => {
     child.stdout.on('data', (data: string) => {
       logInfo(`${data}`)
 
-      if (data.includes(successMsg)) {
+      if (isEmulatorRunning(port)) {
         resolve(child)
       }
     })
@@ -51,17 +65,14 @@ const startEmulator = (emulator: string, args: any[], successMsg: string) => {
 }
 
 const setup = async () => {
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  const [cfEmulator, rtdbEmulator]: any[] = await Promise.all([
+  await Promise.all([
     startEmulator(
       'cloud-firestore-emulator',
       ['--host=127.0.0.1', '--port=8080'],
-      'Dev App Server is now running'
+      '8080'
     ),
-    startEmulator('firebase-database-emulator', [], 'Listening on port 9000')
+    startEmulator('firebase-database-emulator', [], '9000')
   ])
-
-  // TODO: Seed data into DB's
 }
 
 export default setup
