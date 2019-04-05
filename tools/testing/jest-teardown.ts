@@ -22,7 +22,7 @@ const stopEmulator = async (emulator: string) => {
   }
 }
 
-const teardown = async () => {
+const teardown = async (config: any) => {
   await cleanup()
 
   await Promise.all([
@@ -30,7 +30,10 @@ const teardown = async () => {
     stopEmulator('firebase-database-emulator')
   ])
 
-  process.exit()
+  // Only force exit when not running in "watch" mode
+  if (!config.watch && !config.watchAll) {
+    process.exit()
+  }
 }
 
 export default teardown
