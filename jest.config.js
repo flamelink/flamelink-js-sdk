@@ -6,6 +6,8 @@ const pkgs = glob.sync(`./packages/*`).map(p => p.replace(/^\./, `<rootDir>`))
 module.exports = {
   notify: !process.env.CI,
   verbose: true,
+  globalSetup: './tools/testing/jest-setup.ts',
+  globalTeardown: './tools/testing/jest-teardown.ts',
   // coverageReporters: [`json-summary`, `text`, `html`, `cobertura`],
   collectCoverageFrom: [
     '**/*.{js,ts}',

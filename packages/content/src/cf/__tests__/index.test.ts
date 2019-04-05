@@ -1,6 +1,6 @@
 import { Context } from '@flamelink/sdk-app-types'
 import Content from '@flamelink/sdk-content-types'
-import { firebase, cleanup } from '../../../../../tools/testing/firebase'
+import { firebase } from '../../../../../tools/testing/firebase'
 import createContentAPI from '../index'
 
 let firebaseApp: any
@@ -32,11 +32,10 @@ describe('Content Module > CF', () => {
     api = createContentAPI(context)
   }, 10000)
 
-  afterAll(async () => {
+  afterAll(() => {
     firebaseApp = null
     context = null
     api = null
-    await cleanup()
   })
 
   test('should be possible to retrieve a reference', async () => {

@@ -45,6 +45,8 @@ aliases:
     run:
       name: Run tests
       command: yarn test:ci
+      environment:
+        DEBUG: '*'
 
   attach_to_bootstrap: &attach_to_bootstrap
     attach_workspace:
