@@ -39,12 +39,16 @@ const startEmulator = (emulator: string, args: any[], port: string) => {
       shell: true
     })
 
+    const interval = setInterval(() => {
+      if (isEmulatorRunning(port)) {
+        logInfo(`Emulator successfully started`)
+        clearInterval(interval)
+        return resolve(child)
+      }
+    }, 500)
+
     child.stdout.on('data', (data: string) => {
       logInfo(`${data}`)
-
-      if (isEmulatorRunning(port)) {
-        resolve(child)
-      }
     })
 
     child.stderr.on('data', (data: string) => {
@@ -53,6 +57,7 @@ const startEmulator = (emulator: string, args: any[], port: string) => {
 
     child.on('error', (err: any) => {
       logError(`Emulator failed to start`)
+      clearInterval(interval)
       reject(err)
     })
 

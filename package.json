@@ -86,7 +86,7 @@
     "publish:canary": "lerna run build && lerna publish --conventional-commits --canary --dist-tag dev",
     "publish:next": "lerna run build && lerna publish --dist-tag next",
     "publish:latest": "lerna run build && lerna publish --conventional-commits --dist-tag",
-    "lint": "eslint --cache --ext ts 'packages/**/*.ts' --ext ts 'tools/**/*.ts' --ignore-pattern '**/*.d.ts'",
+    "lint": "eslint --cache --ext ts 'packages/**/*.ts' --ext ts 'tools/**/*.ts' --ext ts 'fixtures/**/*.ts' --ignore-pattern '**/*.d.ts'",
     "lint:fix": "yarn run lint --fix",
     "serve-docs": "docsify serve docs -o true -p 4000"
   },

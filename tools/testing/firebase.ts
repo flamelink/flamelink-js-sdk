@@ -1,5 +1,7 @@
 import * as firebaseTesting from '@firebase/testing'
-// const fs = require('fs')
+import seedRtdb from '../../fixtures/seed-rtdb'
+
+const RTDB_NAMESPACE = 'flamelink'
 
 /*
  * ============
@@ -8,8 +10,7 @@ import * as firebaseTesting from '@firebase/testing'
  */
 export const projectName = 'flamelink-test-project'
 export const coverageUrl = `http://localhost:8080/emulator/v1/projects/${projectName}:ruleCoverage.html`
-
-// const rules = fs.readFileSync('firestore.rules', 'utf8')
+export const firebase = firebaseTesting
 
 /**
  * Creates a new app with authentication data matching the input.
@@ -23,8 +24,18 @@ export const getFirestoreService = function(auth: any) {
     .firestore()
 }
 
+export const initializeRealtimeProject = async function(
+  config: any
+): Promise<any> {
+  const firebaseApp = firebase.initializeAdminApp(config)
+  await firebaseApp
+    .database()
+    .ref(RTDB_NAMESPACE)
+    .set(seedRtdb())
+
+  return firebaseApp
+}
+
 export const cleanup = async function cleanup() {
   return Promise.all(firebaseTesting.apps().map(app => app.delete()))
 }
-
-export const firebase = firebaseTesting
