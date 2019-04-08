@@ -163,7 +163,14 @@ const factory: FlamelinkFactory = context => {
       return api.subscribe({
         ...options,
         settingsKey: 'general',
-        fields: ['imageSizes']
+        fields: ['imageSizes'],
+        callback(err, data) {
+          if (err) {
+            return options.callback(err, data)
+          }
+
+          return options.callback(null, get(data, 'imageSizes', data))
+        }
       })
     },
 
@@ -171,7 +178,17 @@ const factory: FlamelinkFactory = context => {
       return api.subscribe({
         ...options,
         settingsKey: 'general',
-        fields: ['defaultPermissionsGroup']
+        fields: ['defaultPermissionsGroup'],
+        callback(err, data) {
+          if (err) {
+            return options.callback(err, data)
+          }
+
+          return options.callback(
+            null,
+            get(data, 'defaultPermissionsGroup', data)
+          )
+        }
       })
     }
   }
