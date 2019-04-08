@@ -5882,7 +5882,7 @@ export default (): SeedRTDB => ({
       id: 'general',
       imageSizes: getImageSizes()
     },
-    globals: getGlobals(),
+    globals: getGlobals('rtdb'),
     locales: {
       'en-US': {
         id: 'en-US',

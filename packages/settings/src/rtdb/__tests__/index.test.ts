@@ -2,7 +2,6 @@ import getAPI from '../index'
 import { initializeRealtimeProject } from '../../../../../tools/testing/firebase'
 import getImageSizes from '../../../../../fixtures/image-sizes'
 import getGlobals from '../../../../../fixtures/globals'
-import { resolve } from 'uri-js'
 
 const baseContext = {
   env: 'production',
@@ -100,7 +99,7 @@ describe('- RTDB', () => {
     test('should expose a "getGlobals" method', () => {
       expect.assertions(1)
       const api = getAPI({ ...baseContext, dbType: 'rtdb', firebaseApp })
-      return expect(api.getGlobals()).resolves.toEqual(getGlobals())
+      return expect(api.getGlobals()).resolves.toEqual(getGlobals('rtdb'))
     })
 
     test('should expose a "getDefaultPermissionsGroup" method', () => {
@@ -155,7 +154,7 @@ describe('- RTDB', () => {
               return reject(err)
             }
 
-            expect(globals).toEqual(getGlobals())
+            expect(globals).toEqual(getGlobals('rtdb'))
             resolve()
           }
         })
