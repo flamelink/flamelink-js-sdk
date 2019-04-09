@@ -342,7 +342,9 @@ const factory: FlamelinkFactory = context => {
   }
 
   // Only start precaching when the user starts interacting with this API
-  context.emitter.once('schema:ref', subscribeAndCacheSchemas)
+  if (typeof get(context, 'emitter.once') === 'function') {
+    context.emitter.once('schema:ref', subscribeAndCacheSchemas)
+  }
 
   return api
 }

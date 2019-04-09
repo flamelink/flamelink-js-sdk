@@ -169,6 +169,15 @@ const factory: FlamelinkFactory = context => {
     },
 
     add({ schemaKey, data }: RTDB.Add) {
+      if (
+        typeof schemaKey !== 'string' ||
+        (typeof data !== 'object' && data !== null)
+      ) {
+        throw new FlamelinkError(
+          '"add" called with the incorrect arguments. Check the docs for details.'
+        )
+      }
+
       const payload =
         typeof data === 'object'
           ? Object.assign({}, data, {
@@ -181,7 +190,7 @@ const factory: FlamelinkFactory = context => {
                 typeof data.enabled === 'undefined'
                   ? true
                   : Boolean(data.enabled),
-              fields: castArray(data.fields) || [],
+              fields: data.fields ? castArray(data.fields) : [],
               group: data.group || '',
               icon: data.icon || '',
               id: schemaKey,
@@ -262,7 +271,9 @@ const factory: FlamelinkFactory = context => {
   }
 
   // Only start precaching when the user starts interacting with this API
-  context.emitter.once('schema:ref', subscribeAndCacheSchemas)
+  if (typeof get(context, 'emitter.once') === 'function') {
+    context.emitter.once('schema:ref', subscribeAndCacheSchemas)
+  }
 
   return api
 }
