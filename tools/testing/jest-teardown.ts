@@ -27,18 +27,13 @@ const stopEmulator = async (emulator: string) => {
   }
 }
 
-const teardown = async (config: any) => {
+const teardown = async () => {
   await cleanup()
 
   await Promise.all([
     stopEmulator('cloud-firestore-emulator'),
     stopEmulator('firebase-database-emulator')
   ])
-
-  // Only force exit when not running in "watch" mode
-  if (!config.watch && !config.watchAll) {
-    // process.exit()
-  }
 }
 
 export default teardown

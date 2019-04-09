@@ -26,7 +26,6 @@ describe('- RTDB', () => {
     projectId = uniqueId('project-')
 
     firebaseApp = await initializeRealtimeProject({
-      databaseName: 'default',
       projectId
     })
   })
