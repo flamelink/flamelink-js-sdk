@@ -58,7 +58,7 @@ export default (): SeedRTDB => ({
       },
       content: {
         productCategory: {
-          'en-US': {
+          en: {
             '1546177486327': {
               __meta__: {
                 createdBy: 'LKJcOW4CiwS8pijpqmhQcDl9TvX2',
@@ -98,7 +98,7 @@ export default (): SeedRTDB => ({
           }
         },
         products: {
-          'en-US': {
+          en: {
             '1542623529262': {
               __meta__: {
                 createdBy: 'LKJcOW4CiwS8pijpqmhQcDl9TvX2',
@@ -192,7 +192,7 @@ export default (): SeedRTDB => ({
       },
       navigation: {
         mainNav: {
-          'en-US': {
+          en: {
             __meta__: {
               createdBy: 'LKJcOW4CiwS8pijpqmhQcDl9TvX2',
               createdDate: '2019-02-21T08:24:22.671Z'
@@ -261,7 +261,7 @@ export default (): SeedRTDB => ({
       },
       content: {
         productCategory: {
-          'en-US': {
+          en: {
             '1546177486327': {
               __meta__: {
                 createdBy: 'LKJcOW4CiwS8pijpqmhQcDl9TvX2',
@@ -301,7 +301,7 @@ export default (): SeedRTDB => ({
           }
         },
         products: {
-          'en-US': {
+          en: {
             '1542623529262': {
               __meta__: {
                 createdBy: 'LKJcOW4CiwS8pijpqmhQcDl9TvX2',
@@ -396,7 +396,7 @@ export default (): SeedRTDB => ({
       id: 'production',
       navigation: {
         mainNav: {
-          'en-US': {
+          en: {
             __meta__: {
               createdBy: 'LKJcOW4CiwS8pijpqmhQcDl9TvX2',
               createdDate: '2019-02-21T08:24:22.671Z'
@@ -922,7 +922,7 @@ export default (): SeedRTDB => ({
         timestamp: '2019-01-25 13:07:25'
       }
     },
-    defaultLocale: 'en-US',
+    defaultLocale: 'en',
     environments: {
       development: {
         __meta__: {
@@ -950,8 +950,8 @@ export default (): SeedRTDB => ({
     },
     globals: getGlobals('rtdb'),
     locales: {
-      'en-US': {
-        id: 'en-US',
+      en: {
+        id: 'en',
         name: 'English (America)'
       }
     }

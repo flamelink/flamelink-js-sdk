@@ -7,7 +7,7 @@ import { getAllSchemas, getSchema } from '../../../../../fixtures/schemas'
 
 const baseContext = {
   env: 'production',
-  locale: 'en-US',
+  locale: 'en',
   modules: {},
   services: {},
   proxySupported: false,

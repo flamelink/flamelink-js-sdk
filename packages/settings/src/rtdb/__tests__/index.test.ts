@@ -6,7 +6,7 @@ import getGlobals from '../../../../../fixtures/globals'
 
 const baseContext = {
   env: 'production',
-  locale: 'en-US',
+  locale: 'en',
   modules: {},
   services: {},
   proxySupported: false,
@@ -37,7 +37,7 @@ describe('- RTDB', () => {
   describe('- "getLocale"', () => {
     test('should resolve with the default locale if not provided during init', () => {
       expect.assertions(1)
-      const defaultLocale = 'en-US'
+      const defaultLocale = 'en'
       return expect(
         getAPI({ ...baseContext, dbType: 'rtdb' }).getLocale()
       ).resolves.toBe(defaultLocale)

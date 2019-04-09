@@ -17,7 +17,7 @@ describe('Content Module > CF', () => {
     context = {
       firebaseApp,
       env: 'production',
-      locale: 'en-US',
+      locale: 'en',
       dbType: 'cf',
       modules: {},
       services: {},
