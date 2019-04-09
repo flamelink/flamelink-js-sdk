@@ -1,3 +1,4 @@
+import uniqueId from 'lodash/uniqueId'
 import getAPI from '../index'
 import { initializeFirestoreProject } from '../../../../../tools/testing/firebase'
 import getImageSizes from '../../../../../fixtures/image-sizes'
@@ -86,7 +87,7 @@ describe('- CF', () => {
 
   describe('> Once-off methods', () => {
     beforeEach(async () => {
-      projectId = Date.now().toString()
+      projectId = uniqueId('project-')
 
       firebaseApp = await initializeFirestoreProject({
         projectId,
@@ -119,7 +120,7 @@ describe('- CF', () => {
     let unsubscribe: any
 
     beforeEach(async () => {
-      projectId = Date.now().toString()
+      projectId = uniqueId('project-')
 
       firebaseApp = await initializeFirestoreProject({
         projectId,

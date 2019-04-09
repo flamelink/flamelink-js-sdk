@@ -1,3 +1,4 @@
+import uniqueId from 'lodash/uniqueId'
 import getAPI from '../index'
 import { initializeRealtimeProject } from '../../../../../tools/testing/firebase'
 import getImageSizes from '../../../../../fixtures/image-sizes'
@@ -15,12 +16,12 @@ const baseContext = {
 }
 
 let firebaseApp: any
-let databaseName: string
+let projectId: string
 
 describe('- RTDB', () => {
   afterAll(() => {
     firebaseApp = null
-    databaseName = null
+    projectId = null
   })
 
   describe('- "setLocale"', () => {
@@ -83,10 +84,10 @@ describe('- RTDB', () => {
 
   describe('> Once-off methods', () => {
     beforeEach(async () => {
-      databaseName = Date.now().toString()
+      projectId = uniqueId('project-')
 
       firebaseApp = await initializeRealtimeProject({
-        databaseName
+        projectId
       })
     })
 
@@ -114,10 +115,10 @@ describe('- RTDB', () => {
     let unsubscribe: any
 
     beforeEach(async () => {
-      databaseName = Date.now().toString()
+      projectId = uniqueId('project-')
 
       firebaseApp = await initializeRealtimeProject({
-        databaseName
+        projectId
       })
     })
 
