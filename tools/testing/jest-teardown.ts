@@ -8,13 +8,15 @@ const stopEmulator = async (emulator: string) => {
   dbug('Stopping emulator process...')
 
   const emulatorPidBuffer = execSync(`pgrep -f ${emulator}`)
-  const emulatorPID = emulatorPidBuffer.toString().replace('\n', '')
+  const emulatorPID = JSON.stringify(
+    emulatorPidBuffer.toString().replace('\n', '')
+  )
 
   dbug(`Emulator PID: ${emulatorPID}`)
 
   if (emulatorPID) {
     try {
-      execSync(`kill -9 ${emulatorPID}`)
+      execSync(`kill -9 "${emulatorPID}"`)
       dbug(`Emulator process stopped`)
     } catch (err) {
       dbug(`Emulator process stopping failed: ${err.message}`)
