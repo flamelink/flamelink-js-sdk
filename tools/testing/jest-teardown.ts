@@ -32,7 +32,7 @@ const teardown = async (config: any) => {
 
   // Only force exit when not running in "watch" mode
   if (!config.watch && !config.watchAll) {
-    process.exit()
+    // process.exit()
   }
 }
 
