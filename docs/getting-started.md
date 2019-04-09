@@ -13,13 +13,13 @@ Once you have `firebase` installed, you can install `flamelink` using any of the
 Install with `npm`
 
 ```bash
-npm install --save flamelink
+npm install --save flamelink@next
 ```
 
 or with `yarn`
 
 ```bash
-yarn add flamelink
+yarn add flamelink@next
 ```
 
 or with a `<script>` tag hosted from any of these CDN's
