@@ -1,4 +1,5 @@
 import { spawn, execSync } from 'child_process'
+import { EOL } from 'os'
 import * as path from 'path'
 import debug from 'debug'
 
@@ -27,7 +28,7 @@ const startEmulator = (emulator: string, args: any[], port: string) => {
     ).toString()
     const commandArgs: any[] = ['-jar']
 
-    commandArgs.push(emulatorPath.replace('\n', ''))
+    commandArgs.push(emulatorPath.replace(EOL, ''))
 
     if (args.length) {
       commandArgs.push(...args)

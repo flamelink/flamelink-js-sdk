@@ -1,5 +1,6 @@
 import { execSync } from 'child_process'
 import debug from 'debug'
+import { EOL } from 'os'
 import { cleanup } from './firebase'
 
 const stopEmulator = async (emulator: string) => {
@@ -8,19 +9,21 @@ const stopEmulator = async (emulator: string) => {
   dbug('Stopping emulator process...')
 
   const emulatorPidBuffer = execSync(`pgrep -f ${emulator}`)
-  const emulatorPID = JSON.stringify(
-    emulatorPidBuffer.toString().replace('\n', '')
-  )
+  const emulatorPIDs = emulatorPidBuffer.toString().split(EOL)
 
-  dbug(`Emulator PID: ${emulatorPID}`)
+  if (emulatorPIDs.length) {
+    emulatorPIDs.forEach(emulatorPID => {
+      dbug(`Emulator PID: ${JSON.stringify(emulatorPID)}`)
 
-  if (emulatorPID) {
-    try {
-      execSync(`kill -9 "${emulatorPID}"`)
-      dbug(`Emulator process stopped`)
-    } catch (err) {
-      dbug(`Emulator process stopping failed: ${err.message}`)
-    }
+      if (emulatorPID) {
+        try {
+          execSync(`kill -9 "${emulatorPID}"`)
+          dbug(`Emulator process stopped`)
+        } catch (err) {
+          dbug(`Emulator process stopping failed: ${err.message}`)
+        }
+      }
+    })
   }
 }
 
