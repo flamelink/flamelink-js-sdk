@@ -155,18 +155,23 @@ workflows:
   build-test:
     jobs:
       - bootstrap_latest
-      - bootstrap_v10
-      - bootstrap_v8
+      - bootstrap_v10:
+          requires:
+            - bootstrap_latest
+      - bootstrap_v8:
+          requires:
+            - bootstrap_latest
       - lint
       - unit_tests_node_latest:
           <<: *ignore_docs
           requires:
-            - bootstrap_latest
+            - bootstrap_v10
+            - bootstrap_v8
       - unit_tests_node10:
           <<: *ignore_docs
           requires:
-            - bootstrap_v10
+            - unit_tests_node_latest
       - unit_tests_node8:
           <<: *ignore_docs
           requires:
-            - bootstrap_v8
+            - unit_tests_node10
