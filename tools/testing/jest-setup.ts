@@ -3,6 +3,9 @@ import { EOL } from 'os'
 import * as path from 'path'
 import debug from 'debug'
 
+const FIRESTORE_EMULATOR_PORT = process.env.FIRESTORE_EMULATOR_PORT || '8080'
+const DATABASE_EMULATOR_PORT = process.env.DATABASE_EMULATOR_PORT || '9000'
+
 const isEmulatorRunning = (port: string): boolean => {
   try {
     execSync(`nc -zw1 localhost ${port}`)
@@ -14,7 +17,7 @@ const isEmulatorRunning = (port: string): boolean => {
 
 const startEmulator = (
   emulator: string,
-  args: any[],
+  args: string[],
   port: string
 ): Promise<string> => {
   return new Promise((resolve, reject) => {
@@ -33,7 +36,7 @@ const startEmulator = (
       return resolve(emulatorPID)
     }
 
-    const emulatorPath: any = execSync(
+    const emulatorPath: string = execSync(
       `find ~/.cache/firebase/emulators -type f -name "${emulator}*.jar" | sort -r | head -n1`
     ).toString()
     const commandArgs: string[] = ['-jar']
@@ -72,10 +75,11 @@ const startEmulator = (
       reject(err)
     })
 
-    child.on('close', (code: any) => {
+    child.on('close', (code: number) => {
       if (code) {
         dbug(`Emulator exited with code ${code}`)
       }
+      clearInterval(interval)
     })
   })
 }
@@ -84,10 +88,10 @@ const setup = async () => {
   const [firestorePID, firebasePID] = await Promise.all([
     startEmulator(
       'cloud-firestore-emulator',
-      ['--host=127.0.0.1', '--port=8080'],
-      '8080'
+      ['--host=127.0.0.1', `--port=${FIRESTORE_EMULATOR_PORT}`],
+      `${FIRESTORE_EMULATOR_PORT}`
     ),
-    startEmulator('firebase-database-emulator', [], '9000')
+    startEmulator('firebase-database-emulator', [], `${DATABASE_EMULATOR_PORT}`)
   ])
 
   global.__flamelink_emulators = { firestorePID, firebasePID }

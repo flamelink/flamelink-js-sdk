@@ -6,16 +6,15 @@ import { cleanup } from './firebase'
 const stopEmulator = async (emulator: string, pid: string) => {
   const dbug = debug(`teardown:${emulator}`)
 
-  dbug('Stopping emulator process...')
-
-  dbug(`Emulator PID: ${pid}`)
+  dbug(`Stopping emulator process with PID: ${pid}...`)
 
   if (pid) {
     try {
-      execSync(`kill -9 "${pid}"`)
-      dbug(`Emulator process stopped`)
+      // execSync(`kill -9 "${pid}"`)
+      execSync(`kill ${pid}`)
+      dbug(`Emulator process stopped: ${pid}`)
     } catch (err) {
-      dbug(`Emulator process stopping failed: ${err.message}`)
+      dbug(`Emulator process stopping failed - ${pid}: ${err.message}`)
     }
   }
 

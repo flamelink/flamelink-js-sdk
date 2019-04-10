@@ -131,8 +131,8 @@ workflows:
       - unit_tests_node10:
           <<: *ignore_docs
           requires:
-            - unit_tests_node8
+            - bootstrap
       - unit_tests_node_latest:
           <<: *ignore_docs
           requires:
-            - unit_tests_node10
+            - bootstrap
