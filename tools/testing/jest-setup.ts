@@ -86,7 +86,7 @@ const startEmulator = (
 }
 
 const setup = async () => {
-  const [firestorePID, firebasePID] = await Promise.all([
+  await Promise.all([
     startEmulator(
       'cloud-firestore-emulator',
       ['--host=127.0.0.1', `--port=${FIRESTORE_EMULATOR_PORT}`],
@@ -94,8 +94,6 @@ const setup = async () => {
     ),
     startEmulator('firebase-database-emulator', [], `${DATABASE_EMULATOR_PORT}`)
   ])
-
-  global.__flamelink_emulators = { firestorePID, firebasePID }
 }
 
 export default setup
