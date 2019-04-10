@@ -55,9 +55,10 @@ const startEmulator = (
 
     const interval = setInterval(() => {
       if (isEmulatorRunning(port)) {
-        logInfo(`Emulator successfully started`)
+        const emulatorPID = child.pid.toString()
+        logInfo(`Emulator successfully started with PID: ${emulatorPID}`)
         clearInterval(interval)
-        return resolve(child.pid.toString())
+        return resolve(emulatorPID)
       }
     }, 500)
 
