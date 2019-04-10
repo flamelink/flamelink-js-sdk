@@ -16,13 +16,22 @@ const stopEmulator = async (emulator: string, pid: string) => {
 
   dbug(`Emulator processes: ${emulatorPIDs}`)
 
-  if (pid) {
+  // if (pid) {
+  //   try {
+  //     // execSync(`kill -9 "${pid}"`)
+  //     execSync(`kill ${pid}`)
+  //     dbug(`Emulator process stopped: ${pid}`)
+  //   } catch (err) {
+  //     dbug(`Emulator process stopping failed - ${pid}: ${err.message}`)
+  //   }
+  // }
+  if (emulatorPIDs) {
     try {
-      // execSync(`kill -9 "${pid}"`)
-      execSync(`kill ${pid}`)
-      dbug(`Emulator process stopped: ${pid}`)
+      // execSync(`kill -9 "${emulatorPIDs}"`)
+      execSync(`kill ${emulatorPIDs}`)
+      dbug(`Emulator process stopped: ${emulatorPIDs}`)
     } catch (err) {
-      dbug(`Emulator process stopping failed - ${pid}: ${err.message}`)
+      dbug(`Emulator process stopping failed - ${emulatorPIDs}: ${err.message}`)
     }
   }
 
