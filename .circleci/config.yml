@@ -154,24 +154,23 @@ workflows:
   version: 2
   build-test:
     jobs:
-      - bootstrap_latest
-      - bootstrap_v10:
-          requires:
-            - bootstrap_latest
-      - bootstrap_v8:
-          requires:
-            - bootstrap_latest
       - lint
+      - bootstrap_latest
       - unit_tests_node_latest:
           <<: *ignore_docs
           requires:
-            - bootstrap_v10
-            - bootstrap_v8
+            - bootstrap_latest
+      - bootstrap_v10:
+          requires:
+            - unit_tests_node_latest
       - unit_tests_node10:
           <<: *ignore_docs
           requires:
-            - unit_tests_node_latest
+            - bootstrap_v10
+      - bootstrap_v8:
+          requires:
+            - unit_tests_node10
       - unit_tests_node8:
           <<: *ignore_docs
           requires:
-            - unit_tests_node10
+            - bootstrap_v8
