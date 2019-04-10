@@ -15,6 +15,7 @@ module.exports = {
     '!**/index.cdn.ts'
   ],
   roots: pkgs.filter(p => !p.endsWith('-types')).map(p => `${p}/src`),
+  modulePaths: ['<rootDir>'],
   transform: {
     '^.+\\.tsx?$': 'ts-jest'
   },

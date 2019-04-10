@@ -12,12 +12,12 @@ aliases:
     restore_cache:
       name: Restore node_modules cache
       keys:
-        - yarn-cache-{{ checksum "yarn.lock" }}
+        - yarn-cache-{{ .Environment.CIRCLE_JOB }}-{{ checksum "yarn.lock" }}
 
   persist_cache: &persist_cache
     save_cache:
       name: Save node_modules cache
-      key: yarn-cache-{{ checksum "yarn.lock" }}
+      key: yarn-cache-{{ .Environment.CIRCLE_JOB }}-{{ checksum "yarn.lock" }}
       paths:
         - ~/.cache
 
@@ -93,6 +93,38 @@ jobs:
           paths:
             - '*'
 
+  bootstrap_v8:
+    executor:
+      name: node
+      image: '8'
+    steps:
+      - checkout
+      - <<: *assert_changed_files
+      - <<: *restore_cache
+      - <<: *install_node_modules
+      - <<: *persist_cache
+      - <<: *bootstrap_and_build
+      - persist_to_workspace:
+          root: packages
+          paths:
+            - '*'
+
+  bootstrap_v10:
+    executor:
+      name: node
+      image: '10'
+    steps:
+      - checkout
+      - <<: *assert_changed_files
+      - <<: *restore_cache
+      - <<: *install_node_modules
+      - <<: *persist_cache
+      - <<: *bootstrap_and_build
+      - persist_to_workspace:
+          root: packages
+          paths:
+            - '*'
+
   lint:
     executor: node
     steps:
@@ -124,15 +156,21 @@ workflows:
     jobs:
       - bootstrap
       - lint
-      - unit_tests_node8:
-          <<: *ignore_docs
-          requires:
-            - bootstrap
-      - unit_tests_node10:
-          <<: *ignore_docs
-          requires:
-            - unit_tests_node8
       - unit_tests_node_latest:
           <<: *ignore_docs
           requires:
+            - bootstrap
+      - bootstrap_v10:
+          requires:
+            - unit_tests_node_latest
+      - unit_tests_node10:
+          <<: *ignore_docs
+          requires:
+            - bootstrap_v10
+      - bootstrap_v8:
+          requires:
             - unit_tests_node10
+      - unit_tests_node8:
+          <<: *ignore_docs
+          requires:
+            - bootstrap_v8
