@@ -106,3 +106,14 @@ export const initializeFirestoreProject = async function(
 export const cleanup = async function cleanup() {
   return Promise.all(firebaseTesting.apps().map(app => app.delete()))
 }
+
+export const getBaseContext = (extras = {}) => ({
+  env: 'production',
+  locale: 'en',
+  modules: {},
+  services: {},
+  proxySupported: true,
+  usesAdminApp: true,
+  firebaseApp: {},
+  ...extras
+})

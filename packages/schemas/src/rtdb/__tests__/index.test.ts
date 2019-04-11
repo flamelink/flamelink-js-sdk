@@ -1,75 +1,65 @@
+import { FirebaseApp } from '@firebase/app-types'
+import { Context, UnsubscribeMethod } from '@flamelink/sdk-app-types'
+import { Api } from '@flamelink/sdk-schemas-types'
 import get from 'lodash/get'
 import uniqueId from 'lodash/uniqueId'
 import getAPI from '../index'
 import { EventEmitter } from '../../../../app/src/event-emitter'
-import { initializeRealtimeProject } from '../../../../../tools/testing/firebase'
+import {
+  initializeRealtimeProject,
+  getBaseContext
+} from '../../../../../tools/testing/firebase'
 import { getAllSchemas, getSchema } from '../../../../../fixtures/schemas'
 
-const baseContext = {
-  env: 'production',
-  locale: 'en',
-  modules: {},
-  services: {},
-  proxySupported: false,
-  usesAdminApp: false,
-  firebaseApp: {},
-  emitter: new EventEmitter()
-  // dbType: 'rtdb' // TODO: Figure out why Type checking fails when enabled
-}
+describe('- RTDB Schemas', () => {
+  let api: Api
+  let unsubscribe: UnsubscribeMethod
 
-let firebaseApp: any
-let projectId: string
-let unsubscribe: any
-
-describe('- RTDB', () => {
   beforeEach(async () => {
-    projectId = uniqueId('project-')
-
-    firebaseApp = await initializeRealtimeProject({
-      projectId
+    const firebaseApp: FirebaseApp = await initializeRealtimeProject({
+      projectId: uniqueId('project-')
     })
+
+    const context: Context = getBaseContext({
+      dbType: 'rtdb',
+      firebaseApp,
+      emitter: new EventEmitter()
+    })
+
+    api = getAPI(context)
   })
 
   afterEach(() => {
     if (unsubscribe) {
       unsubscribe()
+      unsubscribe = null
     }
 
-    unsubscribe = null
-    firebaseApp = null
-    projectId = null
+    api = null
   })
 
   describe('- "get"', () => {
     test('should return all schemas if no "schemaKey" is provided', () => {
-      expect.assertions(1)
-      const api = getAPI({ ...baseContext, dbType: 'rtdb', firebaseApp })
       return expect(api.get()).resolves.toEqual(
         getAllSchemas({ dbType: 'rtdb' })
       )
     })
 
     test('should return a specific schema if a "schemaKey" is provided for an existing schema', () => {
-      expect.assertions(1)
       const schemaKey = 'products'
-      const api = getAPI({ ...baseContext, dbType: 'rtdb', firebaseApp })
       return expect(api.get({ schemaKey })).resolves.toEqual(
         getSchema({ dbType: 'rtdb', schemaKey })
       )
     })
 
     test('should return `null` if a "schemaKey" is provided for a non-existing schema', () => {
-      expect.assertions(1)
       const schemaKey = 'this-schema-does-not-exist'
-      const api = getAPI({ ...baseContext, dbType: 'rtdb', firebaseApp })
       return expect(api.get({ schemaKey })).resolves.toEqual(null)
     })
   })
 
   describe('- "getFields"', () => {
     test('should return the fields for all schemas if no "schemaKey" is provided', () => {
-      expect.assertions(1)
-      const api = getAPI({ ...baseContext, dbType: 'rtdb', firebaseApp })
       const allSchemas = getAllSchemas({ dbType: 'rtdb' })
       const expected = Object.keys(allSchemas).reduce(
         (acc, schemaKey) =>
@@ -82,18 +72,14 @@ describe('- RTDB', () => {
     })
 
     test(`should return a specific schema's fields if a "schemaKey" is provided for an existing schema`, () => {
-      expect.assertions(1)
       const schemaKey = 'products'
-      const api = getAPI({ ...baseContext, dbType: 'rtdb', firebaseApp })
       return expect(api.getFields({ schemaKey })).resolves.toEqual(
         getSchema({ dbType: 'rtdb', schemaKey }).fields
       )
     })
 
     test('should return `null` if a "schemaKey" is provided for a non-existing schema', () => {
-      expect.assertions(1)
       const schemaKey = 'this-schema-does-not-exist'
-      const api = getAPI({ ...baseContext, dbType: 'rtdb', firebaseApp })
       return expect(api.getFields({ schemaKey })).resolves.toEqual(null)
     })
   })
@@ -101,8 +87,6 @@ describe('- RTDB', () => {
   describe(' - "subscribe"', () => {
     test('should return all schemas if no "schemaKey" is provided', () =>
       new Promise((resolve, reject) => {
-        expect.assertions(1)
-        const api = getAPI({ ...baseContext, dbType: 'rtdb', firebaseApp })
         unsubscribe = api.subscribe({
           callback(err, schemas) {
             if (err) {
@@ -117,9 +101,7 @@ describe('- RTDB', () => {
 
     test('should return a specific schema if a "schemaKey" is provided for an existing schema', () =>
       new Promise((resolve, reject) => {
-        expect.assertions(1)
         const schemaKey = 'products'
-        const api = getAPI({ ...baseContext, dbType: 'rtdb', firebaseApp })
         unsubscribe = api.subscribe({
           schemaKey,
           callback(err, schemas) {
@@ -135,9 +117,7 @@ describe('- RTDB', () => {
 
     test('should return `null` if a "schemaKey" is provided for a non-existing schema', () =>
       new Promise((resolve, reject) => {
-        expect.assertions(1)
         const schemaKey = 'this-schema-key-does-not-exist'
-        const api = getAPI({ ...baseContext, dbType: 'rtdb', firebaseApp })
         unsubscribe = api.subscribe({
           schemaKey,
           callback(err, schemas) {
@@ -155,7 +135,6 @@ describe('- RTDB', () => {
   describe(' - "subscribeFields"', () => {
     test('should return all schemas if no "schemaKey" is provided', () =>
       new Promise((resolve, reject) => {
-        expect.assertions(1)
         const allSchemas = getAllSchemas({ dbType: 'rtdb' })
         const expected = Object.keys(allSchemas).reduce(
           (acc, schemaKey) =>
@@ -164,7 +143,6 @@ describe('- RTDB', () => {
             }),
           {}
         )
-        const api = getAPI({ ...baseContext, dbType: 'rtdb', firebaseApp })
         unsubscribe = api.subscribeFields({
           callback(err, schemas) {
             if (err) {
@@ -179,9 +157,7 @@ describe('- RTDB', () => {
 
     test('should return a specific schema if a "schemaKey" is provided for an existing schema', () =>
       new Promise((resolve, reject) => {
-        expect.assertions(1)
         const schemaKey = 'products'
-        const api = getAPI({ ...baseContext, dbType: 'rtdb', firebaseApp })
         unsubscribe = api.subscribeFields({
           schemaKey,
           callback(err, schemas) {
@@ -199,9 +175,7 @@ describe('- RTDB', () => {
 
     test('should return `null` if a "schemaKey" is provided for a non-existing schema', () =>
       new Promise((resolve, reject) => {
-        expect.assertions(1)
         const schemaKey = 'this-schema-key-does-not-exist'
-        const api = getAPI({ ...baseContext, dbType: 'rtdb', firebaseApp })
         unsubscribe = api.subscribeFields({
           schemaKey,
           callback(err, schemas) {
@@ -218,24 +192,18 @@ describe('- RTDB', () => {
 
   describe('- "add"', () => {
     test('should throw an error if no "schemaKey" is provided', () => {
-      expect.assertions(1)
-      const api = getAPI({ ...baseContext, dbType: 'rtdb', firebaseApp })
       return expect(() =>
         api.add({ schemaKey: undefined, data: {} })
       ).toThrowError()
     })
 
     test('should throw an error if no "data" object is provided', () => {
-      expect.assertions(1)
-      const api = getAPI({ ...baseContext, dbType: 'rtdb', firebaseApp })
       return expect(() =>
         api.add({ schemaKey: 'something', data: undefined })
       ).toThrowError()
     })
 
     test('should successfully add a new schema with fields provided', async () => {
-      expect.assertions(1)
-      const api = getAPI({ ...baseContext, dbType: 'rtdb', firebaseApp })
       const schemaKey = 'posts'
       const data = {
         title: 'Posts',
@@ -268,24 +236,18 @@ describe('- RTDB', () => {
 
   describe('- "update"', () => {
     test('should throw an error if no "schemaKey" is provided', () => {
-      expect.assertions(1)
-      const api = getAPI({ ...baseContext, dbType: 'rtdb', firebaseApp })
       return expect(() =>
         api.update({ schemaKey: undefined, data: {} })
       ).toThrowError()
     })
 
     test('should throw an error if no "data" object is provided', () => {
-      expect.assertions(1)
-      const api = getAPI({ ...baseContext, dbType: 'rtdb', firebaseApp })
       return expect(() =>
         api.update({ schemaKey: 'something', data: undefined })
       ).toThrowError()
     })
 
     test('should successfully update an existing schema with fields provided', async () => {
-      expect.assertions(1)
-      const api = getAPI({ ...baseContext, dbType: 'rtdb', firebaseApp })
       const schemaKey = 'products'
       const data = {
         description: 'Updated description',
@@ -315,13 +277,10 @@ describe('- RTDB', () => {
 
   describe('- "remove"', () => {
     test('should throw an error if no "schemaKey" is provided', () => {
-      expect.assertions(1)
-      const api = getAPI({ ...baseContext, dbType: 'rtdb', firebaseApp })
       return expect(() => api.remove({ schemaKey: undefined })).toThrowError()
     })
 
     test('should successfully remove an existing schema', async () => {
-      const api = getAPI({ ...baseContext, dbType: 'rtdb', firebaseApp })
       const schemaKey = 'productCategory'
 
       const before = await api.get({ schemaKey })

@@ -1,53 +1,57 @@
+import { FirebaseApp } from '@firebase/app-types'
+import { Context, UnsubscribeMethod } from '@flamelink/sdk-app-types'
+import { Api } from '@flamelink/sdk-settings-types'
 import uniqueId from 'lodash/uniqueId'
 import getAPI from '../index'
-import { initializeFirestoreProject } from '../../../../../tools/testing/firebase'
+import {
+  initializeFirestoreProject,
+  getBaseContext
+} from '../../../../../tools/testing/firebase'
 import getImageSizes from '../../../../../fixtures/image-sizes'
 import getGlobals from '../../../../../fixtures/globals'
 
-const baseContext = {
-  env: 'production',
-  locale: 'en',
-  modules: {},
-  services: {},
-  proxySupported: false,
-  usesAdminApp: false,
-  firebaseApp: {}
-  // dbType: 'cf'
-}
+describe('- CF Settings', () => {
+  let api: Api
+  let unsubscribe: UnsubscribeMethod
 
-let firebaseApp: any
-let projectId: string
+  beforeEach(async () => {
+    const firebaseApp: FirebaseApp = await initializeFirestoreProject({
+      projectId: uniqueId('project-')
+    })
 
-describe('- CF', () => {
-  afterAll(() => {
-    firebaseApp = null
+    const context: Context = getBaseContext({
+      dbType: 'cf',
+      firebaseApp
+    })
+
+    api = getAPI(context)
+  })
+
+  afterEach(() => {
+    if (unsubscribe) {
+      unsubscribe()
+      unsubscribe = null
+    }
+
+    api = null
   })
 
   describe('- "setLocale"', () => {
     test('should resolve with the given locale if called with a supported locale', () => {
-      expect.assertions(1)
       const testLocale = 'af-ZA'
 
-      return expect(
-        getAPI({ ...baseContext }).setLocale(testLocale)
-      ).resolves.toBe(testLocale)
+      return expect(api.setLocale(testLocale)).resolves.toBe(testLocale)
     })
   })
 
   describe('- "getLocale"', () => {
     test('should resolve with the default locale if not provided during init', () => {
-      expect.assertions(1)
       const defaultLocale = 'en'
-      return expect(getAPI({ ...baseContext }).getLocale()).resolves.toBe(
-        defaultLocale
-      )
+      return expect(api.getLocale()).resolves.toBe(defaultLocale)
     })
 
     test('should resolve with the previously explicitly set locale', async () => {
-      expect.assertions(1)
-
       const testLocale = 'af-ZA'
-      const api = getAPI({ ...baseContext })
       await api.setLocale(testLocale)
 
       return expect(api.getLocale()).resolves.toBe(testLocale)
@@ -56,29 +60,22 @@ describe('- CF', () => {
 
   describe('- "setEnvironment"', () => {
     test('should resolve with the given environment if called with a supported environment', () => {
-      expect.assertions(1)
       const testEnvironment = 'staging'
 
-      return expect(
-        getAPI({ ...baseContext }).setEnvironment(testEnvironment)
-      ).resolves.toBe(testEnvironment)
+      return expect(api.setEnvironment(testEnvironment)).resolves.toBe(
+        testEnvironment
+      )
     })
   })
 
   describe('- "getEnvironment"', () => {
     test('should resolve with the default environment if not provided during init', () => {
-      expect.assertions(1)
       const defaultEnvironment = 'production'
-      return expect(getAPI({ ...baseContext }).getEnvironment()).resolves.toBe(
-        defaultEnvironment
-      )
+      return expect(api.getEnvironment()).resolves.toBe(defaultEnvironment)
     })
 
     test('should resolve with the previously explicitly set environment', async () => {
-      expect.assertions(1)
-
       const testEnvironment = 'staging'
-      const api = getAPI({ ...baseContext })
       await api.setEnvironment(testEnvironment)
 
       return expect(api.getEnvironment()).resolves.toBe(testEnvironment)
@@ -86,30 +83,15 @@ describe('- CF', () => {
   })
 
   describe('> Once-off methods', () => {
-    beforeEach(async () => {
-      projectId = uniqueId('project-')
-
-      firebaseApp = await initializeFirestoreProject({
-        projectId,
-        auth: null // { uid: 'alice', email: 'alice@example.com' }
-      })
-    })
-
     test('should expose a "getImageSizes" method', () => {
-      expect.assertions(1)
-      const api = getAPI({ ...baseContext, dbType: 'cf', firebaseApp })
       return expect(api.getImageSizes()).resolves.toEqual(getImageSizes())
     })
 
     test('should expose a "getGlobals" method', () => {
-      expect.assertions(1)
-      const api = getAPI({ ...baseContext, dbType: 'cf', firebaseApp })
       return expect(api.getGlobals()).resolves.toEqual(getGlobals('cf'))
     })
 
     test('should expose a "getDefaultPermissionsGroup" method', async () => {
-      expect.assertions(1)
-      const api = getAPI({ ...baseContext, dbType: 'cf', firebaseApp })
       // Default Permission Group is 1 for the Super Admin user
       const defaultPerms = await api.getDefaultPermissionsGroup()
       return expect(defaultPerms.path).toEqual(`fl_permissions/1`)
@@ -117,28 +99,8 @@ describe('- CF', () => {
   })
 
   describe('> Subscribe methods', () => {
-    let unsubscribe: any
-
-    beforeEach(async () => {
-      projectId = uniqueId('project-')
-
-      firebaseApp = await initializeFirestoreProject({
-        projectId,
-        auth: null // { uid: 'alice', email: 'alice@example.com' }
-      })
-    })
-
-    afterEach(() => {
-      if (unsubscribe) {
-        unsubscribe()
-        unsubscribe = null
-      }
-    })
-
     test('should expose a "subscribeImageSizes" method', () =>
       new Promise((resolve, reject) => {
-        expect.assertions(1)
-        const api = getAPI({ ...baseContext, dbType: 'cf', firebaseApp })
         unsubscribe = api.subscribeImageSizes({
           callback(err, images) {
             if (err) {
@@ -153,8 +115,6 @@ describe('- CF', () => {
 
     test('should expose a "subscribeGlobals" method', () =>
       new Promise((resolve, reject) => {
-        expect.assertions(1)
-        const api = getAPI({ ...baseContext, dbType: 'cf', firebaseApp })
         unsubscribe = api.subscribeGlobals({
           callback(err, globals) {
             if (err) {
@@ -169,8 +129,6 @@ describe('- CF', () => {
 
     test('should expose a "subscribeDefaultPermissionsGroup" method', () =>
       new Promise((resolve, reject) => {
-        expect.assertions(1)
-        const api = getAPI({ ...baseContext, dbType: 'cf', firebaseApp })
         unsubscribe = api.subscribeDefaultPermissionsGroup({
           callback(err, permissionGroup) {
             if (err) {
