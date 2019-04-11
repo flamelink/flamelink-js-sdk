@@ -178,7 +178,7 @@ const factory: FlamelinkFactory = context => {
           }
 
           if (snapshot.empty) {
-            return callback(null, [])
+            return callback(null, null)
           }
 
           const schemaFields: any = {}
@@ -207,17 +207,24 @@ const factory: FlamelinkFactory = context => {
             })
           }
 
-          return callback(
-            null,
-            schemaKey ? schemaFields[schemaKey] : schemaFields
-          )
+          const plucked = schemaKey
+            ? pluckFields(schemaFields[schemaKey])
+            : keys(schemaFields).reduce((acc, sKey) => {
+                return Object.assign(acc, {
+                  [sKey]: pluckFields(schemaFields[sKey])
+                })
+              }, {})
+
+          return callback(null, plucked)
         }
       })
     },
 
     add({ schemaKey, data }: CF.Add) {
-      if (!schemaKey) {
-        throw new FlamelinkError(`Please provide the schema's "schemaKey"`)
+      if (typeof schemaKey !== 'string' || typeof data !== 'object') {
+        throw new FlamelinkError(
+          '"add" called with the incorrect arguments. Check the docs for details.'
+        )
       }
 
       const firestoreService = flamelink._ensureService('firestore', context)
@@ -225,33 +232,26 @@ const factory: FlamelinkFactory = context => {
       const docRef = schemasRef.doc()
       const docId = docRef.id
 
-      const payload =
-        typeof data === 'object'
-          ? Object.assign({}, data, {
-              _fl_meta_: {
-                createdBy: getCurrentUser(context),
-                createdDate: getTimestamp(context),
-                env: context.env,
-                docId,
-                fl_id: schemaKey
-              },
-              description: data.description || '',
-              enabled:
-                typeof data.enabled === 'undefined'
-                  ? true
-                  : Boolean(data.enabled),
-              fields: data.fields ? castArray(data.fields) : [],
-              group: data.group || '',
-              icon: data.icon || '',
-              id: schemaKey,
-              sortable:
-                typeof data.sortable === 'undefined'
-                  ? true
-                  : Boolean(data.sortable),
-              title: data.title || schemaKey,
-              type: data.type || 'collection'
-            })
-          : data
+      const payload = Object.assign({}, data, {
+        _fl_meta_: {
+          createdBy: getCurrentUser(context),
+          createdDate: getTimestamp(context),
+          env: context.env,
+          docId,
+          fl_id: schemaKey
+        },
+        description: data.description || '',
+        enabled:
+          typeof data.enabled === 'undefined' ? true : Boolean(data.enabled),
+        fields: data.fields ? castArray(data.fields) : [],
+        group: data.group || '',
+        icon: data.icon || '',
+        id: schemaKey,
+        sortable:
+          typeof data.sortable === 'undefined' ? true : Boolean(data.sortable),
+        title: data.title || schemaKey,
+        type: data.type || 'collection'
+      })
 
       return docRef.set(payload)
     },
@@ -262,16 +262,6 @@ const factory: FlamelinkFactory = context => {
           '"update" called with the incorrect arguments. Check the docs for details.'
         )
       }
-
-      const payload =
-        typeof data === 'object'
-          ? Object.assign({}, data, {
-              '_fl_meta_.lastModifiedBy': getCurrentUser(context),
-              '_fl_meta_.lastModifiedDate': getTimestamp(context),
-              '_fl_meta_.fl_id': schemaKey,
-              id: schemaKey
-            })
-          : data
 
       const snapshot = await api.ref(schemaKey).get()
 
@@ -285,10 +275,27 @@ const factory: FlamelinkFactory = context => {
       const schemas: any[] = []
       snapshot.forEach((doc: any) => schemas.push(doc))
 
-      return await schemas[0].ref.update(payload)
+      const schema = schemas[0]
+
+      const payload = Object.assign({}, data, {
+        '_fl_meta_.createdBy': schema.get('_fl_meta_.createdBy'),
+        '_fl_meta_.createdDate': schema.get('_fl_meta_.createdDate'),
+        '_fl_meta_.lastModifiedBy': getCurrentUser(context),
+        '_fl_meta_.lastModifiedDate': getTimestamp(context),
+        '_fl_meta_.fl_id': schemaKey,
+        id: schemaKey
+      })
+
+      return await schema.ref.update(payload)
     },
 
     async remove({ schemaKey }: CF.Remove) {
+      if (!schemaKey) {
+        throw new FlamelinkError(
+          '"remove" called with the incorrect arguments. Check the docs for details.'
+        )
+      }
+
       const snapshot = await api.getRaw({ schemaKey })
 
       if (snapshot.empty) {
@@ -301,7 +308,7 @@ const factory: FlamelinkFactory = context => {
 
       const batchQueue = createQueue(async (schemaDocChunk: any[]) => {
         const batch = db.batch()
-        schemaDocChunk.forEach((schemaDoc: any) => batch.delete(schemaDoc))
+        schemaDocChunk.forEach((schemaDoc: any) => batch.delete(schemaDoc.ref))
         return batch.commit()
       }, schemaDocChunks)
 

@@ -85,7 +85,6 @@ const createFlamelinkFactory: App.FactoryCreator = () => {
       logError(
         `The "${serviceName}" Firebase service could not be instantiated. Please ensure you have imported the package for this service.`
       )
-      console.error(error)
       throw error
     }
 

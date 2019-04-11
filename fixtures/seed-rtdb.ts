@@ -1,53 +1,7 @@
 import getImageSizes from './image-sizes'
 import getGlobals from './globals'
 import { getAllSchemas } from './schemas'
-
-interface FlamelinkMeta {
-  createdBy: string
-  createdDate: string
-  lastModifiedBy?: string
-  lastModifiedDate?: string
-}
-
-interface Media {
-  files: any
-  folders: any
-}
-
-interface PermissionGroup {
-  __meta__?: FlamelinkMeta
-  id: string | number
-  name: string
-  content: any
-  environments: any
-  media: any
-  navigation: any
-  permissions: any
-  schemas: any
-  settings: any
-  users: any
-}
-
-interface Permissions {
-  [key: string]: PermissionGroup
-}
-
-interface Settings {
-  backups: any
-  defaultLocale: any
-  locales: any
-  environments: any
-  general: any
-  globals: any
-}
-
-interface SeedRTDB {
-  environments: any
-  media: Media
-  permissions: Permissions
-  settings: Settings
-  users: any
-}
+import { SeedRTDB } from './types'
 
 export default (): SeedRTDB => ({
   environments: {
@@ -252,7 +206,7 @@ export default (): SeedRTDB => ({
           }
         }
       },
-      schemas: getAllSchemas()
+      schemas: getAllSchemas({ dbType: 'rtdb' })
     },
     production: {
       __meta__: {
@@ -456,7 +410,7 @@ export default (): SeedRTDB => ({
           }
         }
       },
-      schemas: getAllSchemas()
+      schemas: getAllSchemas({ dbType: 'rtdb' })
     }
   },
   media: {

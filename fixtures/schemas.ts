@@ -1,66 +1,37 @@
-interface GridColumns {
-  lg: number
-  md: number
-  sm: number
-  xs: number
-}
+import { Schema, Schemas, GetSchemaArgs } from './types'
 
-interface FieldConstraint {
-  rule: string
-  ruleValue: any
-  uniqueKey?: string
-}
-
-interface FieldOption {
-  label: string
-  value: string
-  uniqueKey?: string
-}
-
-interface SchemaField {
-  constraints?: FieldConstraint[]
-  defaultValue?: string
-  description: string
-  gridColumns: GridColumns
-  id: number
-  key: string
-  show: boolean
-  multiple?: boolean
-  hidden?: boolean
-  title: string
-  type: string
-  options?: FieldOption[]
-  relationalFieldsToShow?: string[]
-  mediaTypes?: string[]
-  fieldSeparator?: string
-  relation?: string
-  limit?: number
-}
-
-interface Schema {
-  __meta__?: any
-  title: string
-  description: string
-  type: 'collection' | 'single' | 'form'
-  enabled: boolean
-  sortable: boolean
-  fields: SchemaField[]
-  group: string
-  icon: string
-  id: string
-}
-
-interface Schemas {
-  [key: string]: Schema
-}
-
-const PRODUCTS: Schema = {
-  __meta__: {
-    createdBy: 'LKJcOW4CiwS8pijpqmhQcDl9TvX2',
-    createdDate: '2018-05-27T11:11:04.813Z',
-    lastModifiedBy: 'LKJcOW4CiwS8pijpqmhQcDl9TvX2',
-    lastModifiedDate: '2019-01-23T18:26:40.923Z'
-  },
+const getProducts = ({
+  dbType,
+  env,
+  docId,
+  schemaKey
+}: GetSchemaArgs): Schema => ({
+  ...(dbType === 'cf'
+    ? {
+        _fl_meta_: {
+          createdBy: 'LKJcOW4CiwS8pijpqmhQcDl9TvX2',
+          createdDate: {
+            nanoseconds: 609000000,
+            seconds: 1554974072
+          },
+          docId: docId || 'products',
+          env: env || 'production',
+          fl_id: schemaKey || 'products',
+          lastModifiedBy: 'LKJcOW4CiwS8pijpqmhQcDl9TvX2',
+          lastModifiedDate: {
+            nanoseconds: 609000000,
+            seconds: 1554974072
+          }
+        }
+      }
+    : {
+        __meta__: {
+          createdBy: 'LKJcOW4CiwS8pijpqmhQcDl9TvX2',
+          createdDate: '2018-05-27T11:11:04.813Z',
+          lastModifiedBy: 'LKJcOW4CiwS8pijpqmhQcDl9TvX2',
+          lastModifiedDate: '2019-01-23T18:26:40.923Z'
+        }
+      }),
   description: 'Products',
   enabled: true,
   fields: [
@@ -209,15 +180,40 @@ const PRODUCTS: Schema = {
   sortable: true,
   title: 'products',
   type: 'collection'
-}
+})
 
-const PRODUCT_CATEGORY: Schema = {
-  __meta__: {
-    createdBy: 'LKJcOW4CiwS8pijpqmhQcDl9TvX2',
-    createdDate: '2018-05-27T11:10:08.894Z',
-    lastModifiedBy: 'LKJcOW4CiwS8pijpqmhQcDl9TvX2',
-    lastModifiedDate: '2018-12-30T13:28:21.645Z'
-  },
+const getProductCategory = ({
+  dbType,
+  docId,
+  env,
+  schemaKey
+}: GetSchemaArgs): Schema => ({
+  ...(dbType === 'cf'
+    ? {
+        _fl_meta_: {
+          createdBy: 'LKJcOW4CiwS8pijpqmhQcDl9TvX2',
+          createdDate: {
+            nanoseconds: 609000000,
+            seconds: 1554974072
+          },
+          docId: docId || 'productCategory',
+          env: env || 'production',
+          fl_id: schemaKey || 'productCategory',
+          lastModifiedBy: 'LKJcOW4CiwS8pijpqmhQcDl9TvX2',
+          lastModifiedDate: {
+            nanoseconds: 609000000,
+            seconds: 1554974072
+          }
+        }
+      }
+    : {
+        __meta__: {
+          createdBy: 'LKJcOW4CiwS8pijpqmhQcDl9TvX2',
+          createdDate: '2018-05-27T11:10:08.894Z',
+          lastModifiedBy: 'LKJcOW4CiwS8pijpqmhQcDl9TvX2',
+          lastModifiedDate: '2018-12-30T13:28:21.645Z'
+        }
+      }),
   description: 'Product Categories',
   enabled: true,
   fields: [
@@ -243,13 +239,14 @@ const PRODUCT_CATEGORY: Schema = {
   sortable: true,
   title: 'Product Category',
   type: 'collection'
-}
-
-const schemas: Schemas = Object.freeze({
-  products: PRODUCTS,
-  productCategory: PRODUCT_CATEGORY
 })
 
-export const getAllSchemas = () => schemas
+const getSchemas = (args: GetSchemaArgs): Schemas => ({
+  products: getProducts(args),
+  productCategory: getProductCategory(args)
+})
 
-export const getSchema = (schemaKey: string): Schema => schemas[schemaKey]
+export const getAllSchemas = (args: GetSchemaArgs) => getSchemas(args)
+
+export const getSchema = (args: GetSchemaArgs): Schema =>
+  getSchemas(args)[args.schemaKey]

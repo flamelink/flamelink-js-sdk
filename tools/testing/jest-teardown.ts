@@ -6,21 +6,27 @@ import { cleanup } from './firebase'
 const stopEmulator = async (emulator: string) => {
   const dbug = debug(`teardown:${emulator}`)
 
-  const emulatorPidBuffer = execSync(`pgrep -f ${emulator}`)
-  const emulatorPIDs = emulatorPidBuffer
-    .toString()
-    .split(EOL)
-    .join(' ')
+  try {
+    const emulatorPidBuffer = execSync(`pgrep -f ${emulator}`)
+    const emulatorPIDs = emulatorPidBuffer
+      .toString()
+      .split(EOL)
+      .join(' ')
 
-  dbug(`Stopping emulator processes: ${emulatorPIDs}`)
+    dbug(`Stopping emulator processes: ${emulatorPIDs}`)
 
-  if (emulatorPIDs) {
-    try {
-      execSync(`kill ${emulatorPIDs}`)
-      dbug(`Emulator process stopped: ${emulatorPIDs}`)
-    } catch (err) {
-      dbug(`Emulator process stopping failed - ${emulatorPIDs}: ${err.message}`)
+    if (emulatorPIDs) {
+      try {
+        execSync(`kill ${emulatorPIDs}`)
+        dbug(`Emulator process stopped: ${emulatorPIDs}`)
+      } catch (err) {
+        dbug(
+          `Emulator process stopping failed - ${emulatorPIDs}: ${err.message}`
+        )
+      }
     }
+  } catch (err) {
+    dbug(`Emulator process stopping failed: ${err.message}`)
   }
 }
 
