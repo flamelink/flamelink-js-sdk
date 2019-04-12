@@ -29,7 +29,9 @@ export const getFirestoreService = function(auth: any) {
 export const initializeRealtimeProject = async function(
   config: any
 ): Promise<any> {
-  const firebaseApp = firebase.initializeAdminApp(config)
+  const firebaseApp = firebase.initializeAdminApp(
+    Object.assign({ databaseName: 'default' }, config)
+  )
   await firebaseApp
     .database()
     .ref(RTDB_NAMESPACE)
@@ -104,3 +106,14 @@ export const initializeFirestoreProject = async function(
 export const cleanup = async function cleanup() {
   return Promise.all(firebaseTesting.apps().map(app => app.delete()))
 }
+
+export const getBaseContext = (extras = {}) => ({
+  env: 'production',
+  locale: 'en',
+  modules: {},
+  services: {},
+  proxySupported: true,
+  usesAdminApp: true,
+  firebaseApp: {},
+  ...extras
+})

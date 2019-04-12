@@ -1,9 +1,4 @@
-interface ImageSize {
-  height: number
-  quality: number
-  width: number
-  uniqueKey?: string
-}
+import { ImageSize } from './types'
 
 export default (): ImageSize[] => [
   {

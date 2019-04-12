@@ -1,5 +1,4 @@
 const glob = require('glob')
-const { defaults } = require('jest-config')
 
 const pkgs = glob.sync(`./packages/*`).map(p => p.replace(/^\./, `<rootDir>`))
 
@@ -16,9 +15,9 @@ module.exports = {
     '!**/index.cdn.ts'
   ],
   roots: pkgs.filter(p => !p.endsWith('-types')).map(p => `${p}/src`),
+  modulePaths: ['<rootDir>'],
   transform: {
     '^.+\\.tsx?$': 'ts-jest'
   },
-  testRegex: '(/__tests__/.*|(\\.|/)(test|spec))\\.[jt]sx?$',
-  moduleFileExtensions: [...defaults.moduleFileExtensions, 'ts', 'tsx']
+  testRegex: '(/__tests__/.*|(\\.|/)(test|spec))\\.[jt]sx?$'
 }

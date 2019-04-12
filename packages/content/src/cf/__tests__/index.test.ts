@@ -1,35 +1,29 @@
 import { Context } from '@flamelink/sdk-app-types'
+import { FirebaseApp } from '@firebase/app-types'
 import Content from '@flamelink/sdk-content-types'
-import { firebase } from '../../../../../tools/testing/firebase'
-import createContentAPI from '../index'
+import {
+  initializeFirestoreProject,
+  getBaseContext
+} from '../../../../../tools/testing/firebase'
+import getAPI from '../index'
 
-let firebaseApp: any
+let firebaseApp: FirebaseApp
 let context: Context
 let api: Content.Api
 
 describe('Content Module > CF', () => {
   beforeAll(async () => {
-    firebaseApp = firebase.initializeTestApp({
-      projectId: 'my-test-project',
-      auth: null // { uid: 'alice', email: 'alice@example.com' }
+    firebaseApp = await initializeFirestoreProject({
+      projectId: 'my-test-project'
     })
 
-    context = {
+    context = getBaseContext({
       firebaseApp,
-      env: 'production',
-      locale: 'en-US',
       dbType: 'cf',
-      modules: {},
-      services: {},
-      cache: {},
-      // emitter: new EventEmitter(),
-      precache: false,
-      proxySupported: typeof Proxy !== 'undefined',
-      usesAdminApp: true,
-      isNodeEnvironment: true
-    }
+      precache: false
+    })
 
-    api = createContentAPI(context)
+    api = getAPI(context)
   }, 10000)
 
   afterAll(() => {
@@ -39,7 +33,6 @@ describe('Content Module > CF', () => {
   })
 
   test('should be possible to retrieve a reference', async () => {
-    expect.assertions(1)
     const ref = api.ref()
     // TODO: Figure out how to check if the response object is a Firestore CollectionReference/DocumentReference
     expect(ref).toEqual(expect.any(Object))

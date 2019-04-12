@@ -22,7 +22,7 @@
 
 > Easily integrate with your Flamelink CMS.
 
-**_THIS PACKAGE IS UNDER DEVELOPMENT AND NOT READY TO BE USED - PLEASE USE THE [CURRENT SDK](https://flamelink.github.io/flamelink) FOR NOW_**
+**_THIS PACKAGE IS CURRENTLY IN ALPHA - PLEASE USE WITH CAUTION OR USE THE [CURRENT SDK](https://flamelink.github.io/flamelink) FOR NOW_**
 
 <!-- DESCRIPTION/ -->
 
@@ -48,13 +48,13 @@ Once you have `firebase` installed, you can install `flamelink` using any of the
 Install with `npm`
 
 ```bash
-npm install --save flamelink
+npm install --save flamelink@next
 ```
 
 or with `yarn`
 
 ```bash
-yarn add flamelink
+yarn add flamelink@next
 ```
 
 or with a `<script>` tag hosted from any of these CDN's

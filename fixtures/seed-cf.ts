@@ -1,18 +1,7 @@
 import getImageSizes from './image-sizes'
 import getGlobals from './globals'
-
-interface SeedCF {
-  fl_content: any[]
-  fl_environments: any[]
-  fl_files: any[]
-  fl_folders: any[]
-  fl_locales: any[]
-  fl_navigation: any[]
-  fl_permissions: any[]
-  fl_schemas: any[]
-  fl_settings: any[]
-  fl_users: any[]
-}
+import { SeedCF } from './types'
+import { getSchema } from './schemas'
 
 export default (): SeedCF => ({
   fl_content: [],
@@ -22,7 +11,26 @@ export default (): SeedCF => ({
   fl_locales: [],
   fl_navigation: [],
   fl_permissions: [],
-  fl_schemas: [],
+  fl_schemas: [
+    {
+      docId: 'EBNiExsNqIJ3n4UKVEYg',
+      doc: getSchema({
+        dbType: 'cf',
+        schemaKey: 'products',
+        env: 'production',
+        docId: 'EBNiExsNqIJ3n4UKVEYg'
+      })
+    },
+    {
+      docId: 'GxQ6VZnnQOabHNBlLZFE',
+      doc: getSchema({
+        dbType: 'cf',
+        schemaKey: 'productCategory',
+        env: 'production',
+        docId: 'GxQ6VZnnQOabHNBlLZFE'
+      })
+    }
+  ],
   fl_settings: [
     {
       docId: 'defaultLocale',

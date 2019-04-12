@@ -35,6 +35,7 @@
     "packages/*"
   ],
   "devDependencies": {
+    "@firebase/app-types": "^0.3.7",
     "@firebase/testing": "^0.7.8",
     "@types/debug": "^4.1.3",
     "@types/jest": "^24.0.11",
@@ -78,7 +79,7 @@
     "dev": "lerna exec --parallel --ignore '@flamelink/sdk-*-types' yarn run dev",
     "build": "lerna run build",
     "test": "lerna exec --ignore '@flamelink/sdk-*-types' yarn run test",
-    "test:ci": "jest",
+    "test:ci": "jest --detectOpenHandles",
     "run-cf-emulator": "firebase serve --only firestore",
     "run-rtdb-emulator": "firebase serve --only database",
     "install-cf-emulator": "firebase setup:emulators:firestore",

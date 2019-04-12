@@ -1,15 +1,4 @@
-interface Globals {
-  __meta__?: any
-  _fl_meta_?: any
-  adminEmail: string
-  dateFormat: string
-  id: string
-  siteTitle: string
-  tagline: string
-  timeFormat: string
-  timezone: string
-  url: string
-}
+import { Globals } from './types'
 
 export default (dbType: string): Globals => {
   const globals = {
