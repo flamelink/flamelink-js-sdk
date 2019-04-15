@@ -304,7 +304,7 @@ export const isRefLike = (value: any): boolean => {
     return false
   }
 
-  return typeof value.get === 'function'
+  return typeof get(value, 'get') === 'function'
 }
 
 interface StructureOptions {
