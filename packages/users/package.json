@@ -1,6 +1,6 @@
 {
   "name": "@flamelink/sdk-users",
-  "version": "1.0.0-alpha.8",
+  "version": "1.0.0-alpha.7",
   "publishConfig": {
     "access": "public"
   },
@@ -25,10 +25,10 @@
     "dist"
   ],
   "dependencies": {
-    "@flamelink/sdk-app": "^1.0.0-alpha.8",
+    "@flamelink/sdk-app": "^1.0.0-alpha.7",
     "@flamelink/sdk-app-types": "^1.0.0-alpha.2",
     "@flamelink/sdk-users-types": "^1.0.0-alpha.2",
-    "@flamelink/sdk-utils": "^1.0.0-alpha.8",
+    "@flamelink/sdk-utils": "^1.0.0-alpha.7",
     "compose-then": "^1.0.1"
   },
   "scripts": {
