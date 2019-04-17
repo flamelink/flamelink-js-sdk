@@ -171,10 +171,12 @@ const factory: FlamelinkFactory = context => {
             }
           : data
 
-      return api.ref([schemaKey, entryId]).set(payload)
+      await api.ref([schemaKey, entryId]).set(payload)
+
+      return payload
     },
 
-    update({ schemaKey, entryId, data }: RTDB.Update) {
+    async update({ schemaKey, entryId, data }: RTDB.Update) {
       if (
         typeof schemaKey !== 'string' ||
         !entryId ||
@@ -195,7 +197,9 @@ const factory: FlamelinkFactory = context => {
             }
           : data
 
-      return api.ref([schemaKey, entryId]).update(payload)
+      await api.ref([schemaKey, entryId]).update(payload)
+
+      return payload
     },
 
     remove({ schemaKey, entryId }: RTDB.Remove) {

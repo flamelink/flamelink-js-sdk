@@ -168,7 +168,7 @@ const factory: FlamelinkFactory = context => {
       })
     },
 
-    add({ schemaKey, data }: RTDB.Add) {
+    async add({ schemaKey, data }: RTDB.Add) {
       if (
         typeof schemaKey !== 'string' ||
         (typeof data !== 'object' && data !== null)
@@ -203,10 +203,12 @@ const factory: FlamelinkFactory = context => {
             })
           : data
 
-      return api.ref(schemaKey).set(payload)
+      await api.ref(schemaKey).set(payload)
+
+      return payload
     },
 
-    update({ schemaKey, data }: RTDB.Update) {
+    async update({ schemaKey, data }: RTDB.Update) {
       if (
         typeof schemaKey !== 'string' ||
         (typeof data !== 'object' && data !== null)
@@ -225,7 +227,9 @@ const factory: FlamelinkFactory = context => {
             })
           : data
 
-      return api.ref(schemaKey).update(payload)
+      await api.ref(schemaKey).update(payload)
+
+      return payload
     },
 
     remove({ schemaKey }: RTDB.Remove) {

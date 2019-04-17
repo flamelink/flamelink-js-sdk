@@ -130,7 +130,7 @@ const factory: FlamelinkFactory = context => {
       )
     },
 
-    addToDB({ uid, data }: CF.Add) {
+    async addToDB({ uid, data }: CF.Add) {
       if (!uid) {
         throw new FlamelinkError(`Please provide the user's "uid"`)
       }
@@ -155,7 +155,9 @@ const factory: FlamelinkFactory = context => {
             })
           : data
 
-      return api.ref(uid).set(payload)
+      await api.ref(uid).set(payload)
+
+      return payload
     },
 
     async updateInDB({ uid, data }: CF.Update) {
@@ -185,7 +187,9 @@ const factory: FlamelinkFactory = context => {
       const users: any[] = []
       snapshot.forEach((doc: any) => users.push(doc))
 
-      return await users[0].ref.update(payload)
+      await users[0].ref.update(payload)
+
+      return payload
     },
 
     async removeFromDB({ uid }: CF.Remove) {
