@@ -1,4 +1,4 @@
-import App from '@flamelink/sdk-app-types'
+import * as App from '@flamelink/sdk-app-types'
 import { logWarning, logError } from '@flamelink/sdk-utils'
 import {
   getModule,

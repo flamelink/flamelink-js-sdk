@@ -9,7 +9,7 @@
  */
 
 import flamelink from '@flamelink/sdk-app'
-import App from '@flamelink/sdk-app-types'
+import * as App from '@flamelink/sdk-app-types'
 
 const settings: App.SetupModule = async (context: App.Context) => {
   if (context.dbType === 'rtdb') {

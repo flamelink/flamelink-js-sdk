@@ -2,19 +2,19 @@
 // Project: flamelink-js-sdk
 // Definitions by: JP Erasmus <jp@flamelink.io>
 
-import App from '@flamelink/sdk-app-types'
-import Content from '@flamelink/sdk-content-types'
-import Schemas from '@flamelink/sdk-schemas-types'
-import Storage from '@flamelink/sdk-storage-types'
-import Navigation from '@flamelink/sdk-navigation-types'
-import Settings from '@flamelink/sdk-settings-types'
-import Users from '@flamelink/sdk-users-types'
+import * as AppTypes from '@flamelink/sdk-app-types'
+import * as Content from '@flamelink/sdk-content-types'
+import * as Schemas from '@flamelink/sdk-schemas-types'
+import * as Storage from '@flamelink/sdk-storage-types'
+import * as Navigation from '@flamelink/sdk-navigation-types'
+import * as Settings from '@flamelink/sdk-settings-types'
+import * as Users from '@flamelink/sdk-users-types'
 
 declare function flamelink(config: flamelink.Config): flamelink.App
 
 // eslint-disable-next-line no-redeclare
 declare namespace flamelink {
-  export type Config = App.Config
+  export type Config = AppTypes.Config
 
   export interface App {
     content: Content.Api
@@ -24,8 +24,6 @@ declare namespace flamelink {
     settings: Settings.Api
     users: Users.Api
   }
-
-  // export const version: string
 }
 
 // Global export outside of module loader environment

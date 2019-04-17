@@ -1,4 +1,4 @@
-import App from '@flamelink/sdk-app-types'
+import * as App from '@flamelink/sdk-app-types'
 
 export const PUBLIC_MODULES: App.ModuleName[] = [
   'content',
