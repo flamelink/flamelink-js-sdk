@@ -226,9 +226,10 @@ const factory: FlamelinkFactory = context => {
               _fl_meta_: {
                 createdBy: getCurrentUser(context),
                 createdDate: getTimestamp(context),
-                env: context.env,
                 docId,
+                env: context.env,
                 fl_id: entryId || docId,
+                locale: context.locale,
                 schema: schemaKey,
                 schemaType: get(schema, 'type', 'collection'),
                 schemaRef
