@@ -201,7 +201,7 @@ const factory: FlamelinkFactory = context => {
 
       const batchQueue = createQueue(async (usersDocChunk: any[]) => {
         const batch = db.batch()
-        usersDocChunk.forEach((usersDoc: any) => batch.delete(usersDoc))
+        usersDocChunk.forEach((usersDoc: any) => batch.delete(usersDoc.ref))
         return batch.commit()
       }, usersDocChunks)
 

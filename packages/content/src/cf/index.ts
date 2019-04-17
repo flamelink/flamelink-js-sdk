@@ -20,6 +20,7 @@ import {
 import { CF_BATCH_WRITE_LIMIT } from '../constants'
 
 const CONTENT_COLLECTION = 'fl_content'
+const SCHEMAS_COLLECTION = 'fl_schemas'
 
 const factory: FlamelinkFactory = context => {
   const api: Api = {
@@ -197,7 +198,6 @@ const factory: FlamelinkFactory = context => {
         }
       })
 
-      const schemaRef = schemasAPI.ref(schemaKey)
       const schema = await schemasAPI.get({
         schemaKey
       })
@@ -211,6 +211,9 @@ const factory: FlamelinkFactory = context => {
       )
 
       const firestoreService = flamelink._ensureService('firestore', context)
+      const schemaRef = firestoreService.doc(
+        `${SCHEMAS_COLLECTION}/${schemaKey}`
+      )
       const contentRef = firestoreService.collection(CONTENT_COLLECTION)
       const docRef = contentRef.doc()
       const docId = docRef.id
@@ -277,14 +280,16 @@ const factory: FlamelinkFactory = context => {
         return
       }
 
-      const schemaDocChunks: any[] = chunk(snapshot.docs, CF_BATCH_WRITE_LIMIT)
+      const contentDocChunks: any[] = chunk(snapshot.docs, CF_BATCH_WRITE_LIMIT)
       const db = flamelink._ensureService('firestore', context)
 
-      const batchQueue = createQueue(async (schemaDocChunk: any[]) => {
+      const batchQueue = createQueue(async (contentDocChunk: any[]) => {
         const batch = db.batch()
-        schemaDocChunk.forEach((schemaDoc: any) => batch.delete(schemaDoc))
+        contentDocChunk.forEach((contentDoc: any) =>
+          batch.delete(contentDoc.ref)
+        )
         return batch.commit()
-      }, schemaDocChunks)
+      }, contentDocChunks)
 
       return batchQueue.start()
     }
