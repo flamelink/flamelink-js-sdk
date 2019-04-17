@@ -2,7 +2,7 @@ import compose from 'compose-then'
 import keys from 'lodash/keys'
 import castArray from 'lodash/castArray'
 import flamelink from '@flamelink/sdk-app'
-import App from '@flamelink/sdk-app-types'
+import * as App from '@flamelink/sdk-app-types'
 import { FlamelinkFactory, Api, RTDB } from '@flamelink/sdk-navigation-types'
 import {
   applyOptionsForRTDB,

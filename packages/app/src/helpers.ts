@@ -1,4 +1,4 @@
-import App from '@flamelink/sdk-app-types'
+import * as App from '@flamelink/sdk-app-types'
 import { logError } from '@flamelink/sdk-utils'
 import get from 'lodash/get'
 

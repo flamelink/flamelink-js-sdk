@@ -10,7 +10,7 @@ import isPlainObject from 'lodash/isPlainObject'
 import memoize from 'lodash/memoize'
 import pick from 'lodash/fp/pick'
 import compose from 'compose-then'
-import App from '@flamelink/sdk-app-types'
+import * as App from '@flamelink/sdk-app-types'
 
 interface Memo {
   prepPopulateFields?(args: any): any

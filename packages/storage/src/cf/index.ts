@@ -6,7 +6,7 @@ import set from 'lodash/set'
 import values from 'lodash/values'
 import resizeImage from 'browser-image-resizer'
 import flamelink from '@flamelink/sdk-app'
-import App from '@flamelink/sdk-app-types'
+import * as App from '@flamelink/sdk-app-types'
 import {
   FlamelinkFactory,
   Api,

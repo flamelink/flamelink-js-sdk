@@ -1,6 +1,6 @@
 import { Context } from '@flamelink/sdk-app-types'
 import { FirebaseApp } from '@firebase/app-types'
-import Content from '@flamelink/sdk-content-types'
+import * as Content from '@flamelink/sdk-content-types'
 import {
   initializeFirestoreProject,
   getBaseContext

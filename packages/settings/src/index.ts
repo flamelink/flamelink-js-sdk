@@ -1,5 +1,5 @@
 import flamelink from '@flamelink/sdk-app'
-import App from '@flamelink/sdk-app-types'
+import * as App from '@flamelink/sdk-app-types'
 import { getDefaultImport } from '@flamelink/sdk-utils'
 
 const settings: App.SetupModule = function(context) {
