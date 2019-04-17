@@ -238,7 +238,9 @@ const factory: FlamelinkFactory = context => {
             }
           : data
 
-      return docRef.set(payload)
+      await docRef.set(payload)
+
+      return payload
     },
 
     async update({ schemaKey, entryId, data }: CF.Update) {
@@ -270,7 +272,9 @@ const factory: FlamelinkFactory = context => {
       const content: any[] = []
       snapshot.forEach((doc: any) => content.push(doc))
 
-      return await content[0].ref.update(payload)
+      await content[0].ref.update(payload)
+
+      return payload
     },
 
     async remove({ schemaKey, entryId }: CF.Remove) {

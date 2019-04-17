@@ -182,7 +182,7 @@ const factory: FlamelinkFactory = context => {
       })
     },
 
-    add({ navigationKey, data }: CF.Add) {
+    async add({ navigationKey, data }: CF.Add) {
       if (!navigationKey) {
         throw new FlamelinkError(
           `Please provide the navigation's "navigationKey"`
@@ -210,7 +210,9 @@ const factory: FlamelinkFactory = context => {
             })
           : data
 
-      return docRef.set(payload)
+      await docRef.set(payload)
+
+      return payload
     },
 
     async update({ navigationKey, data }: CF.Update) {
@@ -242,7 +244,9 @@ const factory: FlamelinkFactory = context => {
       const navigation: any[] = []
       snapshot.forEach((doc: any) => navigation.push(doc))
 
-      return await navigation[0].ref.update(payload)
+      await navigation[0].ref.update(payload)
+
+      return payload
     },
 
     async remove({ navigationKey }: CF.Remove) {

@@ -150,7 +150,7 @@ const factory: FlamelinkFactory = context => {
       }
     },
 
-    add({ navigationKey, data }: RTDB.Add) {
+    async add({ navigationKey, data }: RTDB.Add) {
       const payload =
         typeof data === 'object'
           ? Object.assign({}, data, {
@@ -164,10 +164,12 @@ const factory: FlamelinkFactory = context => {
             })
           : data
 
-      return api.ref(navigationKey).set(payload)
+      await api.ref(navigationKey).set(payload)
+
+      return payload
     },
 
-    update({ navigationKey, data }: RTDB.Update) {
+    async update({ navigationKey, data }: RTDB.Update) {
       if (
         typeof navigationKey !== 'string' ||
         (typeof data !== 'object' && data !== null)
@@ -186,7 +188,9 @@ const factory: FlamelinkFactory = context => {
             })
           : data
 
-      return api.ref(navigationKey).update(payload)
+      await api.ref(navigationKey).update(payload)
+
+      return payload
     },
 
     remove({ navigationKey }: RTDB.Remove) {

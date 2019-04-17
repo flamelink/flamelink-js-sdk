@@ -220,7 +220,7 @@ const factory: FlamelinkFactory = context => {
       })
     },
 
-    add({ schemaKey, data }: CF.Add) {
+    async add({ schemaKey, data }: CF.Add) {
       if (typeof schemaKey !== 'string' || typeof data !== 'object') {
         throw new FlamelinkError(
           '"add" called with the incorrect arguments. Check the docs for details.'
@@ -253,7 +253,9 @@ const factory: FlamelinkFactory = context => {
         type: data.type || 'collection'
       })
 
-      return docRef.set(payload)
+      await docRef.set(payload)
+
+      return payload
     },
 
     async update({ schemaKey, data }: CF.Update) {
@@ -286,7 +288,9 @@ const factory: FlamelinkFactory = context => {
         id: schemaKey
       })
 
-      return await schema.ref.update(payload)
+      await schema.ref.update(payload)
+
+      return payload
     },
 
     async remove({ schemaKey }: CF.Remove) {
