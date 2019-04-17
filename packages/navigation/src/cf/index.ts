@@ -262,7 +262,7 @@ const factory: FlamelinkFactory = context => {
       const batchQueue = createQueue(async (navigationDocChunk: any[]) => {
         const batch = db.batch()
         navigationDocChunk.forEach((navigationDoc: any) =>
-          batch.delete(navigationDoc)
+          batch.delete(navigationDoc.ref)
         )
         return batch.commit()
       }, navigationDocChunks)
