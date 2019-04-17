@@ -277,14 +277,16 @@ const factory: FlamelinkFactory = context => {
         return
       }
 
-      const schemaDocChunks: any[] = chunk(snapshot.docs, CF_BATCH_WRITE_LIMIT)
+      const contentDocChunks: any[] = chunk(snapshot.docs, CF_BATCH_WRITE_LIMIT)
       const db = flamelink._ensureService('firestore', context)
 
-      const batchQueue = createQueue(async (schemaDocChunk: any[]) => {
+      const batchQueue = createQueue(async (contentDocChunk: any[]) => {
         const batch = db.batch()
-        schemaDocChunk.forEach((schemaDoc: any) => batch.delete(schemaDoc))
+        contentDocChunk.forEach((contentDoc: any) =>
+          batch.delete(contentDoc.ref)
+        )
         return batch.commit()
-      }, schemaDocChunks)
+      }, contentDocChunks)
 
       return batchQueue.start()
     }
