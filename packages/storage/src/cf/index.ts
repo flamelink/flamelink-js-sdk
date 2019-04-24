@@ -40,7 +40,7 @@ const FILES_COLLECTION = 'fl_files'
 const FOLDERS_COLLECTION = 'fl_folders'
 const factory: FlamelinkFactory = function(context) {
   const api: Api = {
-    async _getFolderId({ folderName = '' }) {
+    async _getFolderId({ folderName = 'Root' }) {
       if (!folderName) {
         return null
       }
@@ -51,7 +51,7 @@ const factory: FlamelinkFactory = function(context) {
       const folder = find(folders, { name: folderName })
 
       if (!folder) {
-        return folder
+        return 'root'
       }
 
       return folder.id
