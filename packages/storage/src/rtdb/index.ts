@@ -40,7 +40,7 @@ import {
 
 const factory: FlamelinkFactory = function(context) {
   const api: Api = {
-    async _getFolderId({ folderName = '' }) {
+    async _getFolderId({ folderName = 'Root' }) {
       if (!folderName) {
         return null
       }
