@@ -7,6 +7,7 @@ import values from 'lodash/values'
 import resizeImage from 'browser-image-resizer'
 import flamelink from '@flamelink/sdk-app'
 import * as App from '@flamelink/sdk-app-types'
+import { UploadTask } from '@firebase/storage-types'
 import {
   FlamelinkFactory,
   Api,
@@ -524,7 +525,7 @@ Instructions here: https://flamelink.github.io/flamelink-js-sdk/#/getting-starte
       }
 
       // Upload original file to storage bucket
-      const uploadTask = storageRef[updateMethod](...args)
+      const uploadTask: UploadTask = storageRef[updateMethod](...args)
       const snapshot = await uploadTask
 
       const mediaType = /^image\//.test(get(snapshot, 'metadata.contentType'))
@@ -566,7 +567,7 @@ Instructions here: https://flamelink.github.io/flamelink-js-sdk/#/getting-starte
       // Write to db
       await api._setFile(filePayload)
 
-      return uploadTask
+      return filePayload
     }
   }
 

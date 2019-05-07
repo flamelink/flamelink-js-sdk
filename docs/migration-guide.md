@@ -196,6 +196,24 @@ v1.x
 // This is an advanced use case - use the Firebase SDK directly
 ```
 
+### "storage.upload()"
+
+The "storage.upload()" method returns a Promise resolving to the database file object now instead of the upload task.
+
+v0.x
+
+```javascript
+const file = ... // get file from the File or Blob API
+const uploadTask = await app.storage.upload(file)
+```
+
+v1.x
+
+```javascript
+const file = ... // get file from the File or Blob API
+const fileObject = await app.storage.upload(file)
+```
+
 ## Type Definitions
 
 If you are using TypeScript, the type definitions has changed slightly. The types are still exposed under the `flamelink` namespace, but the internals are much simplified.
