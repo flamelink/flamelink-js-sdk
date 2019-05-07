@@ -80,7 +80,9 @@ version: 2.1
 
 jobs:
   bootstrap_latest:
-    executor: node
+    executor:
+      name: node
+      image: '11' # temporarily set to v11 while Firebase fixes v12 support
     steps:
       - checkout
       - <<: *assert_changed_files
