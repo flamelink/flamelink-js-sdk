@@ -80,7 +80,9 @@ version: 2.1
 
 jobs:
   bootstrap_latest:
-    executor: node
+    executor:
+      name: node
+      image: '11' # temporarily set to v11 while Firebase fixes v12 support
     steps:
       - checkout
       - <<: *assert_changed_files
@@ -126,7 +128,9 @@ jobs:
             - '*'
 
   lint:
-    executor: node
+    executor:
+      name: node
+      image: '11' # temporarily set to v11 while Firebase fixes v12 support
     steps:
       - checkout
       - <<: *restore_cache
@@ -147,7 +151,9 @@ jobs:
     <<: *test_template
 
   unit_tests_node_latest:
-    executor: node
+    executor:
+      name: node
+      image: '11' # temporarily set to v11 while Firebase fixes v12 support
     <<: *test_template
 
 workflows:

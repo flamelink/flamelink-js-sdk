@@ -146,7 +146,7 @@ declare namespace Storage {
     getURL(options: RTDB.GetURL): Promise<any>
     getURL(options: CF.GetURL): Promise<any>
 
-    upload(fileData: any, options: UploadOptions): PromiseLike<any>
+    upload(fileData: any, options: UploadOptions): PromiseLike<FileObject>
 
     deleteFile(options: RTDB.GetFile): Promise<any>
     deleteFile(options: CF.GetFile): Promise<any>

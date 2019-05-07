@@ -21,9 +21,9 @@ _Upload a File or Blob:_
 ```javascript
 const file = ... // get file from the File or Blob API
 
-const uploadTask = await app.storage.upload(file)
+const fileObject = await app.storage.upload(file)
 
-console.log('Upload success!', uploadTask)
+console.log('Upload success!', fileObject)
 ```
 
 _Upload a Byte Array:_
@@ -44,16 +44,16 @@ const bytes = new Uint8Array([
   0x64,
   0x21
 ])
-const uploadTask = await app.storage.upload(bytes)
-console.log('Upload success!', uploadTask)
+const fileObject = await app.storage.upload(bytes)
+console.log('Upload success!', fileObject)
 ```
 
 _Upload a String:_
 
 ```javascript
 const string = 'This is a raw string of text to upload.'
-const uploadTask = await app.storage.upload(string)
-console.log('Upload success!', uploadTask)
+const fileObject = await app.storage.upload(string)
+console.log('Upload success!', fileObject)
 ```
 
 ?> It is important to note that this method will set the file's `id` as well as the `createdBy` and `createdDate` metadata for you.
@@ -230,8 +230,7 @@ app.storage.upload(file, {
 
 ### Return value
 
-A `UploadTask` instance, which is similar to a `Promise` and an `Observable` that resolves when the upload is complete or will reject with an error if the request fails.
-The response object will include the `flamelinkFileId` and `flamelinkFolderId` in the `customMetadata` object inside `metadata` if you need to acces it for some reason.
+A Promise that resolves to the newly uploaded database file object.
 
 ---
 
