@@ -155,7 +155,10 @@ const factory: FlamelinkFactory = context => {
             })
           : data
 
-      await api.ref(uid).set(payload)
+      await api
+        .ref()
+        .doc(uid)
+        .set(payload)
 
       return payload
     },
