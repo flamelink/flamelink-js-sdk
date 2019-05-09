@@ -512,8 +512,8 @@ export const processReferencesForCF = curry(
       fieldsToPopulate = prepPopulateFields(Object.keys(document))
     }
 
-    return await fieldsToPopulate.reduce(async (chain, opt) => {
-      return chain.then(async acc => {
+    const populatedFields = await Promise.all(
+      fieldsToPopulate.map(async opt => {
         const { field, populate, subFields } = opt
         const val = get(document, field)
 
@@ -558,9 +558,20 @@ export const processReferencesForCF = curry(
           fieldValue = await processRef(val)
         }
 
-        return set(acc, field, fieldValue)
+        return { fieldKey: field, fieldValue }
       })
-    }, Promise.resolve({ ...document }))
+    )
+
+    return populatedFields.reduce(
+      (newDocument, populatedField) => {
+        return set(
+          newDocument,
+          populatedField.fieldKey,
+          populatedField.fieldValue
+        )
+      },
+      { ...document }
+    )
   }
 )
 
