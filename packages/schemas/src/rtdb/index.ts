@@ -153,15 +153,18 @@ const factory: FlamelinkFactory = context => {
             return callback(null, result)
           }
 
-          const result = await Object.keys(val || {}).reduce(
-            async (chain, sKey) => {
+          const pluckedFields = await Promise.all(
+            Object.keys(val || {}).map(async sKey => {
               const sFields = await pluckFields(val[sKey].fields)
-              return chain.then(schemaFields =>
-                Object.assign(schemaFields, { [sKey]: sFields })
-              )
-            },
-            Promise.resolve({})
+              return { sKey, sFields }
+            })
           )
+
+          const result = pluckedFields.reduce((schemaFields, pluckedField) => {
+            return Object.assign(schemaFields, {
+              [pluckedField.sKey]: pluckedField.sFields
+            })
+          }, {})
 
           return callback(null, result)
         }
