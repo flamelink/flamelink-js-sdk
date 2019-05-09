@@ -452,23 +452,43 @@ export const patchFileUrlForCF = curry(
           return patchURL(entry)
         }
 
-        return keys(entry).reduce((chain, propKey) => {
-          return chain.then(async newProp => {
-            const prop: any = await processEntry(entry[propKey])
-            return set(newProp, propKey, prop)
+        const processedProps = await Promise.all(
+          keys(entry).map(async propKey => {
+            return { propKey, propValue: await processEntry(entry[propKey]) }
           })
-        }, Promise.resolve({ ...entry }))
+        )
+
+        return processedProps.reduce(
+          (processedEntry, processedProp) => {
+            return set(
+              processedEntry,
+              processedProp.propKey,
+              processedProp.propValue
+            )
+          },
+          { ...entry }
+        )
       }
 
       return entry
     }
 
-    return keys(entries).reduce((chain, entryKey) => {
-      return chain.then(async newEntries => {
-        const entry = await processEntry(entries[entryKey])
-        return set(newEntries, entryKey, entry)
+    const processedEntries = await Promise.all(
+      keys(entries).map(async entryKey => {
+        return { entryKey, entryValue: await processEntry(entries[entryKey]) }
       })
-    }, Promise.resolve({ ...entries }))
+    )
+
+    return processedEntries.reduce(
+      (newEntries, processedEntry) => {
+        return set(
+          newEntries,
+          processedEntry.entryKey,
+          processedEntry.entryValue
+        )
+      },
+      { ...entries }
+    )
   }
 )
 
@@ -555,15 +575,17 @@ export const populateEntriesForCF = curry(
     }
 
     if (isPlainObject(entries)) {
-      return await keys(entries).reduce(
-        (chain, key) =>
-          chain.then(async acc =>
+      const populatedEntries = await Promise.all(
+        keys(entries).map(async key =>
+          processReferencesForCF(firestoreService, options, entries[key])
+        )
+      )
+
+      return populatedEntries.reduce(
+        (chain, entry) =>
+          chain.then(async (acc: any) =>
             Object.assign(acc, {
-              [key]: await processReferencesForCF(
-                firestoreService,
-                options,
-                entries[key]
-              )
+              [entry.id]: entry
             })
           ),
         Promise.resolve({})
