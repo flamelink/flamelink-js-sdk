@@ -1,6 +1,7 @@
 import { resolve } from 'path'
 import { terser } from 'rollup-plugin-terser'
-import typescript from 'rollup-plugin-typescript2'
+import typescriptPlugin from 'rollup-plugin-typescript2'
+import typescript from 'typescript'
 import resolveModule from 'rollup-plugin-node-resolve'
 import commonjs from 'rollup-plugin-commonjs'
 import gzipPlugin from 'rollup-plugin-gzip'
@@ -31,8 +32,8 @@ const external = Object.keys(pkg.dependencies || {})
 
 const plugins = [
   resolveModule(),
-  typescript({
-    typescript: require('typescript')
+  typescriptPlugin({
+    typescript
   }),
   commonjs()
 ]
@@ -75,6 +76,22 @@ export default [
   },
 
   /**
+   * App UMD build
+   */
+  {
+    input: 'app/index.ts',
+    output: {
+      file: 'flamelink-app.js',
+      format: 'umd',
+      name: LIBRARY_NAME,
+      esModule: false,
+      sourcemap: true
+    },
+    inlineDynamicImports: true,
+    plugins: umdPlugins
+  },
+
+  /**
    * Node.js Build
    */
   {
@@ -100,39 +117,38 @@ export default [
   /**
    * UMD build for each module
    */
-  ...moduleNames.map(moduleName => ({
-    input:
-      moduleName === 'app'
-        ? `${moduleName}/index.ts`
-        : `${moduleName}/index.cdn.ts`,
-    output: {
-      file: `flamelink-${moduleName}.js`,
-      format: 'umd',
-      name: LIBRARY_NAME,
-      sourcemap: true,
-      extend: true,
-      esModule: false,
-      globals: {
-        '@flamelink/sdk-app': LIBRARY_NAME
-      },
-      /**
-       * use iife to avoid below error in the old Safari browser
-       * SyntaxError: Functions cannot be declared in a nested block in strict mode
-       * https://github.com/firebase/firebase-js-sdk/issues/1228
-       *
-       */
-      intro: `try {(function() {`,
-      outro: `}).apply(this, arguments); } catch(err) {
+  ...moduleNames
+    .filter(moduleName => moduleName !== 'app')
+    .map(moduleName => ({
+      input: `${moduleName}/index.cdn.ts`,
+      output: {
+        file: `flamelink-${moduleName}.js`,
+        format: 'umd',
+        name: LIBRARY_NAME,
+        sourcemap: true,
+        extend: true,
+        esModule: false,
+        globals: {
+          '@flamelink/sdk-app': LIBRARY_NAME
+        },
+        /**
+         * use iife to avoid below error in the old Safari browser
+         * SyntaxError: Functions cannot be declared in a nested block in strict mode
+         * https://github.com/firebase/firebase-js-sdk/issues/1228
+         *
+         */
+        intro: `try {(function() {`,
+        outro: `}).apply(this, arguments); } catch(err) {
         console.error(err);
         throw new Error(
-          'Cannot instantiate flamelink-${moduleName} - be sure to load flamelink-app.js first.'
+          'Cannot instantiate "flamelink-${moduleName}.js" - be sure to load flamelink-app.js first.'
         );
       }`
-    },
-    inlineDynamicImports: true,
-    external: ['@flamelink/sdk-app'],
-    plugins: umdPlugins
-  })),
+      },
+      inlineDynamicImports: true,
+      external: ['@flamelink/sdk-app'],
+      plugins: umdPlugins
+    })),
 
   ...moduleNames.map(moduleName => {
     const modulePkg = modulePkgs[moduleName]

@@ -11,14 +11,15 @@
 import flamelink from '@flamelink/sdk-app'
 import * as App from '@flamelink/sdk-app-types'
 
-const schemas: App.SetupModule = async (context: App.Context) => {
+import getApiForRTDB from '@flamelink/sdk-schemas/dist/rtdb'
+import getApiForCF from '@flamelink/sdk-schemas/dist/cf'
+
+const schemas: App.SetupModule = (context: App.Context) => {
   if (context.dbType === 'rtdb') {
-    const getApiForRTDB: any = await import('@flamelink/sdk-schemas/dist/rtdb')
     return getApiForRTDB(context)
   }
 
-  const getApiForCF: any = await import('@flamelink/sdk-schemas/dist/cf')
   return getApiForCF(context)
 }
 
-export default flamelink._registerModule('schemas', schemas)
+flamelink._registerModule('schemas', schemas)
