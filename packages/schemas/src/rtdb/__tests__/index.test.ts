@@ -236,15 +236,15 @@ describe('- RTDB Schemas', () => {
 
   describe('- "update"', () => {
     test('should throw an error if no "schemaKey" is provided', () => {
-      return expect(() =>
+      return expect(
         api.update({ schemaKey: undefined, data: {} })
-      ).toThrowError()
+      ).rejects.toThrowError()
     })
 
     test('should throw an error if no "data" object is provided', () => {
-      return expect(() =>
+      return expect(
         api.update({ schemaKey: 'something', data: undefined })
-      ).toThrowError()
+      ).rejects.toThrowError()
     })
 
     test('should successfully update an existing schema with fields provided', async () => {
