@@ -3,7 +3,8 @@
   "npmClient": "yarn",
   "useWorkspaces": true,
   "packages": [
-    "packages/*"
+    "packages/*",
+    "integration/*"
   ],
   "command": {
     "publish": {
@@ -11,7 +12,7 @@
       "ignoreChanges": [
         "*.md"
       ],
-      "message": "chore(release): Publish"
+      "message": "chore(release): Publish to NPM"
     },
     "version": {
       "allowBranch": "master"
@@ -19,6 +20,7 @@
     "bootstrap": {
       "scope": [
         "flamelink",
+        "integration-*",
         "@flamelink/sdk-*"
       ]
     }

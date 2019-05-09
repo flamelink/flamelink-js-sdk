@@ -1,0 +1,11 @@
+{
+  "name": "integration-package-typings",
+  "private": true,
+  "version": "1.0.0-alpha.14",
+  "scripts": {
+    "test": "echo 'yay'"
+  },
+  "dependencies": {
+    "flamelink": "^1.0.0-alpha.14"
+  }
+}
