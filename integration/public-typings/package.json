@@ -3,7 +3,7 @@
   "private": true,
   "version": "1.0.0-alpha.14",
   "scripts": {
-    "test": "echo 'yay'"
+    "test": "tsc index.ts --outDir dist"
   },
   "dependencies": {
     "flamelink": "^1.0.0-alpha.14"
