@@ -208,15 +208,15 @@ describe('- CF Schemas', () => {
 
   describe('- "add"', () => {
     test('should throw an error if no "schemaKey" is provided', () => {
-      return expect(() =>
+      return expect(
         api.add({ schemaKey: undefined, data: {} })
-      ).toThrowError()
+      ).rejects.toThrowError()
     })
 
     test('should throw an error if no "data" object is provided', () => {
-      return expect(() =>
+      return expect(
         api.add({ schemaKey: 'something', data: undefined })
-      ).toThrowError()
+      ).rejects.toThrowError()
     })
 
     test('should successfully add a new schema with fields provided', async () => {

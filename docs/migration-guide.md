@@ -216,7 +216,7 @@ const fileObject = await app.storage.upload(file)
 
 ## Type Definitions
 
-If you are using TypeScript, the type definitions has changed slightly. The types are still exposed under the `flamelink` namespace, but the internals are much simplified.
+If you are using TypeScript, the type definitions has changed slightly. The types are still exposed under the `flamelink` namespace, but each module is split into its own sub-namespace. For example, the public API for the `content` module is available as `flamelink.content.Content`
 
 Most of the types should be inferred by default, so you most likely don't need to explicitly set them.
 
@@ -238,13 +238,13 @@ v1.x
 ```javascript
 import * as flamelink from 'flamelink/app'
 
-const config: flamelink.Config = {
+const config: flamelink.app.Config = {
   firebaseApp: yourFirebaseAppInstance,
   env: 'production',
   locale: 'en-US',
   dbType: 'rtdb'
 }
-const flamelinkApp: flamelink.App = flamelink(config)
+const flamelinkApp: flamelink.app.App = flamelink(config)
 ```
 
 Please [log any issues](https://github.com/flamelink/flamelink-js-sdk/issues) you might find with the types so that we can address them.
