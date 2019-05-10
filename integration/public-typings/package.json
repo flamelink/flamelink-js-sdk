@@ -1,11 +1,11 @@
 {
   "name": "integration-package-typings",
   "private": true,
-  "version": "1.0.0-alpha.16",
+  "version": "1.0.0-alpha.17",
   "scripts": {
     "test": "tsc index.ts --outDir dist"
   },
   "dependencies": {
-    "flamelink": "^1.0.0-alpha.16"
+    "flamelink": "^1.0.0-alpha.17"
   }
 }
