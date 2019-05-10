@@ -459,10 +459,9 @@ Instructions here: https://flamelink.github.io/flamelink-js-sdk/#/getting-starte
 
     async upload(fileData, options = {}) {
       const { sizes: userSizes, overwriteSizes } = options
-      const settingsImageSizes = await get(
-        context,
-        'modules.settings'
-      ).getImageSizes()
+      const settingsImageSizes = await get(context, 'modules.settings', {
+        getImageSizes() {}
+      }).getImageSizes()
 
       if (settingsImageSizes) {
         if (!userSizes && !overwriteSizes) {
