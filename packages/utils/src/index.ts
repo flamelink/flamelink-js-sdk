@@ -55,6 +55,155 @@ export class FlamelinkError extends Error {
   }
 }
 
+/**
+ * Based on Gist found here: https://gist.github.com/mudge/5830382
+ */
+export class EventEmitter implements App.EventEmitter.Emitter {
+  private readonly events: App.EventEmitter.Events = {}
+
+  public on(event: string, listener: App.EventEmitter.Listener): () => void {
+    if (typeof this.events[event] !== 'object') {
+      this.events[event] = []
+    }
+
+    this.events[event].push(listener)
+
+    return () => this.off(event, listener)
+  }
+
+  public off(event: string, listener: App.EventEmitter.Listener): void {
+    if (typeof this.events[event] !== 'object') {
+      return
+    }
+
+    this.events[event] = this.events[event].filter(
+      eventListener => eventListener !== listener
+    )
+  }
+
+  public offAll(): void {
+    Object.keys(this.events).forEach(
+      (event: string) => (this.events[event] = [])
+    )
+  }
+
+  public emit(event: string, ...args: any[]): void {
+    if (typeof this.events[event] !== 'object') {
+      return
+    }
+
+    ;[...this.events[event]].forEach(listener => listener.apply(this, args))
+  }
+
+  public once(event: string, listener: App.EventEmitter.Listener): () => void {
+    const remove: () => void = this.on(event, (...args: any[]) => {
+      remove()
+      listener.apply(this, args)
+    })
+    return remove
+  }
+}
+
+type ResolveFn = (data?: any) => void
+type RejectFn = (error?: any) => void
+
+type Callback = (
+  resolveFn: ResolveFn,
+  rejectFn: RejectFn,
+  emitter: EventEmitter
+) => void
+
+type PromiseState = 'PENDING' | 'FULFILLED' | 'REJECTED'
+
+interface ChainItem {
+  onFulfilled: ResolveFn
+  onRejected: RejectFn
+}
+
+export class PromiseEmitter extends EventEmitter {
+  private state: PromiseState = 'PENDING'
+  private internalValue: any = null
+  private readonly chain: ChainItem[] = []
+
+  public constructor(private callback: Callback) {
+    super()
+
+    if (typeof callback !== 'function') {
+      throw new Error('The callback must be a function')
+    }
+
+    const reject = (err?: any) => {
+      if (this.state !== 'PENDING') {
+        return this.internalValue
+      }
+
+      this.state = 'REJECTED'
+      this.internalValue = err
+      ;(async () => {
+        for await (const { onRejected } of this.chain) {
+          if (typeof onRejected === 'function') {
+            return onRejected(err)
+          }
+        }
+      })()
+    }
+
+    const resolve = (res?: any) => {
+      if (this.state !== 'PENDING') {
+        return this.internalValue
+      }
+
+      const then = get(res, 'then', null)
+
+      if (typeof then === 'function') {
+        return then(resolve, reject)
+      }
+
+      this.state = 'FULFILLED'
+      this.internalValue = res
+      ;(async () => {
+        for await (const { onFulfilled } of this.chain) {
+          if (typeof onFulfilled === 'function') {
+            return onFulfilled(res)
+          }
+        }
+      })()
+    }
+
+    try {
+      callback(resolve, reject, this)
+    } catch (err) {
+      reject(err)
+    }
+  }
+
+  public async then(onFulfilled: ResolveFn, onRejected?: RejectFn) {
+    if (this.state === 'FULFILLED' && typeof onFulfilled === 'function') {
+      return onFulfilled(this.internalValue)
+    }
+
+    if (this.state === 'REJECTED' && typeof onRejected === 'function') {
+      return onRejected(this.internalValue)
+    }
+
+    this.chain.push({ onFulfilled, onRejected })
+
+    return 'testes'
+  }
+
+  public async catch(onRejected?: RejectFn) {
+    if (this.state === 'FULFILLED') {
+      return
+    }
+
+    if (this.state === 'REJECTED' && typeof onRejected === 'function') {
+      return onRejected(this.internalValue)
+    }
+
+    this.chain.push({ onFulfilled: undefined, onRejected })
+  }
+}
+
 export const getFirestoreServiceFactory = (context: App.Context): any => {
   if (context.usesAdminApp) {
     return get(context, 'firebaseApp.firebaseInternals_.firebase_.firestore')

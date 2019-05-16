@@ -6,7 +6,7 @@ import set from 'lodash/set'
 import cloneDeep from 'lodash/cloneDeep'
 import uniqueId from 'lodash/uniqueId'
 import getAPI from '../index'
-import { EventEmitter } from '../../../../app/src/event-emitter'
+import { EventEmitter } from '../../../../utils/src/index'
 import {
   initializeFirestoreProject,
   getBaseContext

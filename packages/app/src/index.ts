@@ -1,5 +1,5 @@
 import * as App from '@flamelink/sdk-app-types'
-import { logWarning, logError } from '@flamelink/sdk-utils'
+import { logWarning, logError, EventEmitter } from '@flamelink/sdk-utils'
 import {
   getModule,
   ensureValidContext,
@@ -12,7 +12,6 @@ import {
   DEFAULT_LOCALE,
   DEFAULT_DB_TYPE
 } from './constants'
-import { EventEmitter } from './event-emitter'
 
 const createFlamelinkFactory: App.FactoryCreator = () => {
   const registeredModules: App.RegisteredModule[] = []
