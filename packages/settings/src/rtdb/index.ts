@@ -52,6 +52,10 @@ const factory: FlamelinkFactory = context => {
       return context.locale
     },
 
+    async getAvailableLocales() {
+      return api.get({ settingsKey: 'locales' })
+    },
+
     async getGlobals(options: RTDB.Get = {}) {
       return api.get({ ...options, needsWrap: true, settingsKey: 'globals' })
     },

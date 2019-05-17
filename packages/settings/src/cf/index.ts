@@ -5,6 +5,7 @@ import { FlamelinkFactory, Api, CF } from '@flamelink/sdk-settings-types'
 import { applyOptionsForCF, pluckResultFields } from '@flamelink/sdk-utils'
 
 const SETTINGS_COLLECTION = 'fl_settings'
+const LOCALES_COLLECTION = 'fl_locales'
 
 const factory: FlamelinkFactory = context => {
   const api: Api = {
@@ -62,6 +63,29 @@ const factory: FlamelinkFactory = context => {
 
     async getLocale() {
       return context.locale
+    },
+
+    async getAvailableLocales() {
+      const firestoreService = flamelink._ensureService('firestore', context)
+
+      const snapshot = await firestoreService
+        .collection(LOCALES_COLLECTION)
+        .get({
+          source: 'default'
+        })
+
+      if (snapshot.empty) {
+        return {}
+      }
+
+      const locales: any = {}
+
+      snapshot.forEach((doc: any) => {
+        const data = doc.data()
+        locales[doc.id] = data
+      })
+
+      return locales
     },
 
     async getGlobals(options: CF.Get = {}) {
