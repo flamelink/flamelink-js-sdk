@@ -228,9 +228,49 @@ app.storage.upload(file, {
 
 !> Since the Flamelink CMS uses a **240px** wide image as preview image, this method will always generate that image regardless of whether it is specified or not.
 
+### Progress Events
+
+This method returns a custom object, a `PromiseEmitter` that behaves both like a `Promise` as well as an `EventEmitter`, so that you can listen to events during the upload process.
+
+The following example logs out all events as they occur during the upload process:
+
+```javascript
+const file = ... // get file from the File or Blob API
+const promiseEmitter = app.storage.upload(file)
+
+const unsubscribe = promiseEmitter.on(app.storage.UploadEvents.ALL, (...args) => console.log(args))
+
+const fileObject = await promiseEmitter
+
+unsubscribe()
+```
+
+> Take a look at the `app.storage.UploadEvents` object to see all the possible events that you can listen to. Not all events are always available in all environments.
+
+```json
+{
+  "ALL": "*",
+  "START": "upload_start",
+  "SUCCESS": "upload_success",
+  "FAILURE": "upload_failure",
+  "DB_PERSIST_STARTED": "file_db_persist_started",
+  "DB_PERSIST_FINISHED": "file_db_persist_finished",
+  "MAIN_FILE_UPLOAD_STARTED": "main_file_upload_started",
+  "MAIN_FILE_UPLOAD_FINISHED": "main_file_upload_finished",
+  "SIZED_FILES_UPLOAD_STARTED": "sized_files_upload_started",
+  "SIZED_FILES_UPLOAD_FINISHED": "sized_files_upload_finished",
+  "SIZED_FILE_UPLOAD_STARTED": "sized_file_upload_started",
+  "SIZED_FILE_UPLOAD_FINISHED": "sized_file_upload_finished",
+  "RESIZE_IMAGE_STARTED": "resize_image_start",
+  "RESIZE_IMAGE_FINISHED": "resize_image_finished",
+  "MAIN_FILE_UPLOAD_STATE_CHANGED": "main_file_upload_state_changed",
+  "SIZED_FILE_UPLOAD_STATE_CHANGED": "sized_file_upload_state_changed"
+}
+```
+
 ### Return value
 
-A Promise that resolves to the newly uploaded database file object.
+A `PromiseEmitter` that resolves to the newly uploaded database file object.
 
 ---
 

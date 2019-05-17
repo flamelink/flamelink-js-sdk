@@ -198,7 +198,9 @@ v1.x
 
 ### "storage.upload()"
 
-The "storage.upload()" method returns a Promise resolving to the database file object now instead of the upload task.
+The "storage.upload()" method returns a `PromiseEmitter` resolving to the database file object now instead of the upload task.
+
+!> What is a `PromiseEmitter`? This is a custom object that behaves like a `Promise` and an `EventEmitter`, so you can wait on it like a `Promise`, but you can also register event listeners to track progress throughout the upload process.
 
 v0.x
 
@@ -211,7 +213,13 @@ v1.x
 
 ```javascript
 const file = ... // get file from the File or Blob API
-const fileObject = await app.storage.upload(file)
+const promiseEmitter = app.storage.upload(file)
+
+const unsubscribe = promiseEmitter.on(app.storage.UploadEvents.ALL, (...args) => console.log(args))
+
+const fileObject = await promiseEmitter
+
+unsubscribe()
 ```
 
 ## Type Definitions

@@ -38,6 +38,25 @@ declare namespace Storage {
     overwriteSizes?: boolean
   }
 
+  interface UploadEvents {
+    ALL: string
+    START: string
+    SUCCESS: string
+    FAILURE: string
+    DB_PERSIST_STARTED: string
+    DB_PERSIST_FINISHED: string
+    MAIN_FILE_UPLOAD_STARTED: string
+    MAIN_FILE_UPLOAD_FINISHED: string
+    SIZED_FILES_UPLOAD_STARTED: string
+    SIZED_FILES_UPLOAD_FINISHED: string
+    SIZED_FILE_UPLOAD_STARTED: string
+    SIZED_FILE_UPLOAD_FINISHED: string
+    RESIZE_IMAGE_STARTED: string
+    RESIZE_IMAGE_FINISHED: string
+    MAIN_FILE_UPLOAD_STATE_CHANGED?: string
+    SIZED_FILE_UPLOAD_STATE_CHANGED?: string
+  }
+
   namespace RTDB {
     interface Get extends App.RTDB.Options {
       storageKey?: string
@@ -146,7 +165,10 @@ declare namespace Storage {
     getURL(options: RTDB.GetURL): Promise<any>
     getURL(options: CF.GetURL): Promise<any>
 
-    upload(fileData: any, options: UploadOptions): PromiseLike<FileObject>
+    upload(
+      fileData: any,
+      options: UploadOptions
+    ): App.PromiseEmitter.PromiseEmitter<FileObject>
 
     deleteFile(options: RTDB.GetFile): Promise<any>
     deleteFile(options: CF.GetFile): Promise<any>
@@ -156,6 +178,8 @@ declare namespace Storage {
 
     updateMetadata(options: RTDB.UpdateMetadata): Promise<any>
     updateMetadata(options: CF.UpdateMetadata): Promise<any>
+
+    UploadEvents: UploadEvents
 
     /** Some internal methods we do not want to explicitly type publicly */
     [key: string]: any

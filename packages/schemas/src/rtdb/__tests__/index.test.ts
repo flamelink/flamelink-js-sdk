@@ -4,7 +4,7 @@ import { Api } from '@flamelink/sdk-schemas-types'
 import get from 'lodash/get'
 import uniqueId from 'lodash/uniqueId'
 import getAPI from '../index'
-import { EventEmitter } from '../../../../app/src/event-emitter'
+import { EventEmitter } from '../../../../utils/src/index'
 import {
   initializeRealtimeProject,
   getBaseContext
