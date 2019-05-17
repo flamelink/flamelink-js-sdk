@@ -40,6 +40,8 @@ declare namespace Settings {
 
     getLocale(): Promise<string>
 
+    getAvailableLocales(): Promise<any>
+
     getGlobals(): Promise<any>
 
     getImageSizes(): Promise<any>
