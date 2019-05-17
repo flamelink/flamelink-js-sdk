@@ -1,3 +1,4 @@
+import get from 'lodash/get'
 import curry from 'lodash/curry'
 import reduce from 'lodash/reduce'
 import { ImageSize } from '@flamelink/sdk-storage-types'
@@ -76,5 +77,34 @@ export const setImagePathByClosestSize = (
         .map(availableSize => availableSize.width)
         .join(', ')}`
     )
+  }
+}
+
+export const getUploadEvents = (storage?: any) => {
+  return {
+    ALL: '*',
+    START: 'upload_start',
+    SUCCESS: 'upload_success',
+    FAILURE: 'upload_failure',
+    DB_PERSIST_STARTED: 'file_db_persist_started',
+    DB_PERSIST_FINISHED: 'file_db_persist_finished',
+    MAIN_FILE_UPLOAD_STARTED: 'main_file_upload_started',
+    MAIN_FILE_UPLOAD_FINISHED: 'main_file_upload_finished',
+    SIZED_FILES_UPLOAD_STARTED: 'sized_files_upload_started',
+    SIZED_FILES_UPLOAD_FINISHED: 'sized_files_upload_finished',
+    SIZED_FILE_UPLOAD_STARTED: 'sized_file_upload_started',
+    SIZED_FILE_UPLOAD_FINISHED: 'sized_file_upload_finished',
+    RESIZE_IMAGE_STARTED: 'resize_image_start',
+    RESIZE_IMAGE_FINISHED: 'resize_image_finished',
+    ...(get(storage, 'TaskEvent.STATE_CHANGED')
+      ? {
+          MAIN_FILE_UPLOAD_STATE_CHANGED: `main_file_upload_${
+            storage.TaskEvent.STATE_CHANGED
+          }`,
+          SIZED_FILE_UPLOAD_STATE_CHANGED: `sized_file_upload_${
+            storage.TaskEvent.STATE_CHANGED
+          }`
+        }
+      : {})
   }
 }

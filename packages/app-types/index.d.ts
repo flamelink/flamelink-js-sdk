@@ -86,6 +86,28 @@ declare namespace App {
     }
   }
 
+  namespace PromiseEmitter {
+    type ResolveFn = (data?: any) => any
+    type RejectFn = (error?: any) => any
+
+    type Callback = (
+      resolveFn: ResolveFn,
+      rejectFn: RejectFn,
+      emitter: EventEmitter.Emitter
+    ) => any
+
+    type PromiseState = 'PENDING' | 'FULFILLED' | 'REJECTED'
+
+    interface ChainItem {
+      onFulfilled: ResolveFn
+      onRejected: RejectFn
+    }
+
+    interface PromiseEmitter<T> extends PromiseLike<any>, EventEmitter.Emitter {
+      then(resolveFn: ResolveFn, rejectFn?: RejectFn): any
+    }
+  }
+
   namespace RTDB {
     interface OrderByOptions {
       orderByChild?: string
