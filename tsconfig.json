@@ -6,7 +6,7 @@
     "esModuleInterop": true,
     "experimentalDecorators": true,
     "importHelpers": true,
-    "lib": ["es2018", "dom"],
+    "lib": ["es2018", "dom", "esnext.asynciterable"],
     "module": "esnext",
     "moduleResolution": "node",
     "noImplicitAny": true,

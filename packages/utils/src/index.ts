@@ -12,6 +12,10 @@ import pick from 'lodash/fp/pick'
 import compose from 'compose-then'
 import * as App from '@flamelink/sdk-app-types'
 
+if (Symbol['asyncIterator'] === undefined) {
+  ;(Symbol as any)['asyncIterator'] = Symbol.for('asyncIterator')
+}
+
 interface Memo {
   prepPopulateFields?(args: any): any
 }
