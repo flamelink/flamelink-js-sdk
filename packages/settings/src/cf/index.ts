@@ -55,7 +55,6 @@ const factory: FlamelinkFactory = context => {
       return context.env
     },
 
-    // TODO: Consider checking for supported locales - if we want - don't want to make API request
     async setLocale(locale) {
       context.locale = locale
       return locale
