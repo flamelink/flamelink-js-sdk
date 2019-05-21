@@ -746,7 +746,7 @@ export const populateEntriesForCF = curry(
         (chain, entry) =>
           chain.then(async (acc: any) =>
             Object.assign(acc, {
-              [entry.id]: entry
+              [get(entry, '_fl_meta_.fl_id', entry.id)]: entry
             })
           ),
         Promise.resolve({})
