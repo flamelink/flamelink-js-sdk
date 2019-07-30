@@ -412,36 +412,34 @@ export const applyLimitAndOffsetsForCF = (
   return newRef
 }
 
-export const pluckResultFields = curry(
-  (fields: any, resultSet: any): any => {
-    if (!resultSet || !isArray(fields)) {
-      return resultSet
-    }
-
-    // TODO: Write our own "pick" that can work with an array of strings or an array of objects for nested objects
-    const pickFields = pick(fields)
-
-    // If resultSet is an array of objects, we just pluck the given fields from each object
-    if (isArray(resultSet)) {
-      return reduce(
-        resultSet,
-        (result, val) => result.concat(pickFields(val)),
-        []
-      )
-    }
-
-    // If resultSet is a POJO, we assume each first-level property is the child from which fields need to be plucked
-    if (isPlainObject(resultSet)) {
-      return reduce(
-        resultSet,
-        (result, val, key) => Object.assign(result, { [key]: pickFields(val) }),
-        {}
-      )
-    }
-
+export const pluckResultFields = curry((fields: any, resultSet: any): any => {
+  if (!resultSet || !isArray(fields)) {
     return resultSet
   }
-)
+
+  // TODO: Write our own "pick" that can work with an array of strings or an array of objects for nested objects
+  const pickFields = pick(fields)
+
+  // If resultSet is an array of objects, we just pluck the given fields from each object
+  if (isArray(resultSet)) {
+    return reduce(
+      resultSet,
+      (result, val) => result.concat(pickFields(val)),
+      []
+    )
+  }
+
+  // If resultSet is a POJO, we assume each first-level property is the child from which fields need to be plucked
+  if (isPlainObject(resultSet)) {
+    return reduce(
+      resultSet,
+      (result, val, key) => Object.assign(result, { [key]: pickFields(val) }),
+      {}
+    )
+  }
+
+  return resultSet
+})
 
 /**
  * @description Check if a given value is a Firebase/Firestore reference.
@@ -503,7 +501,6 @@ export const formatStructure = curry(
               children: mapChildren(item.children, get(item, idProperty))
             }
           })
-
       return mapChildren(formattedItems, DEFAULT_PARENT_ID)
     }
 
@@ -555,15 +552,22 @@ export const prepPopulateFields = (
   return memo.prepPopulateFields(populate)
 }
 
+const isFileObject = (obj: object) => {
+  return (
+    obj.hasOwnProperty('file') &&
+    obj.hasOwnProperty('id') &&
+    obj.hasOwnProperty('contentType') &&
+    obj.hasOwnProperty('folderId')
+  )
+}
+
 export const patchFileUrlForCF = curry(
-  async (context: App.Context, options: App.CF.Options, entries: any) => {
-    if (!options.populate || !isPlainObject(entries)) {
-      return entries
+  async (context: App.Context, options: App.CF.Options, entry: any) => {
+    if (!isPlainObject(entry)) {
+      return entry
     }
 
     const storage = get(context, 'modules.storage')
-
-    // TODO: Check if options.populate is array and only process those values instead of traversing everything
 
     const patchURL = async (file: any) => {
       if (!storage) {
@@ -581,30 +585,21 @@ export const patchFileUrlForCF = curry(
       return set(file, 'url', url)
     }
 
-    const isFileObject = (obj: any) => {
-      return (
-        obj.hasOwnProperty('file') &&
-        obj.hasOwnProperty('id') &&
-        obj.hasOwnProperty('contentType') &&
-        obj.hasOwnProperty('folderId')
-      )
-    }
-
-    const processEntry = async (entry: any): Promise<any> => {
-      if (Array.isArray(entry)) {
+    const processEntry = async (item: any): Promise<any> => {
+      if (Array.isArray(item)) {
         return Promise.all(
-          entry.map(async innerEntry => processEntry(innerEntry))
+          item.map(async innerEntry => processEntry(innerEntry))
         )
       }
 
-      if (isPlainObject(entry)) {
-        if (isFileObject(entry)) {
-          return patchURL(entry)
+      if (isPlainObject(item)) {
+        if (isFileObject(item)) {
+          return patchURL(item)
         }
 
         const processedProps = await Promise.all(
-          keys(entry).map(async propKey => {
-            return { propKey, propValue: await processEntry(entry[propKey]) }
+          keys(item).map(async propKey => {
+            return { propKey, propValue: await processEntry(item[propKey]) }
           })
         )
 
@@ -616,39 +611,30 @@ export const patchFileUrlForCF = curry(
               processedProp.propValue
             )
           },
-          { ...entry }
+          { ...item }
         )
       }
 
-      return entry
+      return item
     }
 
-    const processedEntries = await Promise.all(
-      keys(entries).map(async entryKey => {
-        return { entryKey, entryValue: await processEntry(entries[entryKey]) }
-      })
-    )
-
-    return processedEntries.reduce(
-      (newEntries, processedEntry) => {
-        return set(
-          newEntries,
-          processedEntry.entryKey,
-          processedEntry.entryValue
-        )
-      },
-      { ...entries }
-    )
+    return processEntry(entry)
   }
 )
 
 export const processReferencesForCF = curry(
   async (
-    firestoreService: any,
+    context: App.Context,
     options: App.CF.Options,
     document: any
   ): Promise<any> => {
     if (!isPlainObject(document) || !get(options, 'populate')) {
+      return document
+    }
+
+    const firestoreService = get(context, 'services.firestore')
+
+    if (!firestoreService) {
       return document
     }
 
@@ -667,7 +653,9 @@ export const processReferencesForCF = curry(
         const { field, populate, subFields } = opt
         const val = get(document, field)
 
-        const processRefs = processReferencesForCF(firestoreService, {
+        const patchUrl = patchFileUrlForCF(context, opt)
+
+        const processRefs = processReferencesForCF(context, {
           populate: populateAllTheThings
             ? true
             : Array.isArray(subFields)
@@ -687,7 +675,7 @@ export const processReferencesForCF = curry(
             return Promise.all(docs.map(async doc => processRefs(doc)))
           }
 
-          return processRefs(snapshot.data())
+          return processRefs(patchUrl(snapshot.data()))
         }
 
         let fieldValue = val
@@ -726,11 +714,11 @@ export const processReferencesForCF = curry(
 )
 
 export const populateEntriesForCF = curry(
-  async (firestoreService: any, options: App.CF.Options, entries: any) => {
+  async (context: App.Context, options: App.CF.Options, entries: any) => {
     if (Array.isArray(entries)) {
       return Promise.all(
         entries.map(async entry =>
-          processReferencesForCF(firestoreService, options, entry)
+          processReferencesForCF(context, options, entry)
         )
       )
     }
@@ -738,7 +726,7 @@ export const populateEntriesForCF = curry(
     if (isPlainObject(entries)) {
       const populatedEntries = await Promise.all(
         keys(entries).map(async key =>
-          processReferencesForCF(firestoreService, options, entries[key])
+          processReferencesForCF(context, options, entries[key])
         )
       )
 

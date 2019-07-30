@@ -83,7 +83,7 @@ const factory: FlamelinkFactory = context => {
 
       if (!schemas || hasNonCacheableOptionsForRTDB(options)) {
         const snapshot = await api.getFieldsRaw(options)
-        schemas = snapshot.val()
+        schemas = snapshot.val() // eslint-disable-line require-atomic-updates
       }
 
       return keys(schemas).reduce(

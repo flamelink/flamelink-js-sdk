@@ -21,7 +21,8 @@ module.exports = {
     '@typescript-eslint/camelcase': 'off',
     '@typescript-eslint/explicit-function-return-type': 'off',
     '@typescript-eslint/no-parameter-properties': 'off',
-    'no-console': ['error', { allow: ['warn', 'error', 'log'] }]
+    'no-console': ['error', { allow: ['warn', 'error', 'log'] }],
+    'no-prototype-builtins': 'off'
   },
   overrides: [
     // Override some TypeScript rules just for .js files

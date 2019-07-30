@@ -98,12 +98,8 @@ export const getUploadEvents = (storage?: any) => {
     RESIZE_IMAGE_FINISHED: 'resize_image_finished',
     ...(get(storage, 'TaskEvent.STATE_CHANGED')
       ? {
-          MAIN_FILE_UPLOAD_STATE_CHANGED: `main_file_upload_${
-            storage.TaskEvent.STATE_CHANGED
-          }`,
-          SIZED_FILE_UPLOAD_STATE_CHANGED: `sized_file_upload_${
-            storage.TaskEvent.STATE_CHANGED
-          }`
+          MAIN_FILE_UPLOAD_STATE_CHANGED: `main_file_upload_${storage.TaskEvent.STATE_CHANGED}`,
+          SIZED_FILE_UPLOAD_STATE_CHANGED: `sized_file_upload_${storage.TaskEvent.STATE_CHANGED}`
         }
       : {})
   }
