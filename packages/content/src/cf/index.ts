@@ -14,8 +14,7 @@ import {
   createQueue,
   getTimestamp,
   getCurrentUser,
-  populateEntriesForCF,
-  patchFileUrlForCF
+  populateEntriesForCF
 } from '@flamelink/sdk-utils'
 import { CF_BATCH_WRITE_LIMIT } from '../constants'
 
@@ -53,9 +52,7 @@ const factory: FlamelinkFactory = context => {
         return null
       }
 
-      const firestoreService = flamelink._ensureService('firestore', context)
-      const processRefs = populateEntriesForCF(firestoreService, options)
-      const patchFileUrl = patchFileUrlForCF(context, options)
+      const processRefs = populateEntriesForCF(context, options)
       const pluckFields = pluckResultFields(options.fields)
 
       const content: any = {}
@@ -68,7 +65,6 @@ const factory: FlamelinkFactory = context => {
         get(context, 'modules.schemas').get({ schemaKey }),
         compose(
           pluckFields,
-          patchFileUrl,
           processRefs
         )(content)
       ])
@@ -123,9 +119,7 @@ const factory: FlamelinkFactory = context => {
       ...options
     }: CF.Subscribe) {
       const pluckFields = pluckResultFields(options.fields)
-      const firestoreService = flamelink._ensureService('firestore', context)
-      const processRefs = populateEntriesForCF(firestoreService, options)
-      const patchFileUrl = patchFileUrlForCF(context, options)
+      const processRefs = populateEntriesForCF(context, options)
 
       return api.subscribeRaw({
         schemaKey,
@@ -162,7 +156,6 @@ const factory: FlamelinkFactory = context => {
 
           const result = await compose(
             pluckFields,
-            patchFileUrl,
             processRefs
           )(content)
 
