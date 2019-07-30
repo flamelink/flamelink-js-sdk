@@ -35,8 +35,7 @@ const factory: FlamelinkFactory = context => {
 
     async get({ uid, ...options }: CF.Get = {}) {
       const pluckFields = pluckResultFields(options.fields)
-      const firestoreService = flamelink._ensureService('firestore', context)
-      const processRefs = processReferencesForCF(firestoreService, options)
+      const processRefs = processReferencesForCF(context, options)
 
       const snapshot = await api.getRaw({ uid, ...options })
 
@@ -71,8 +70,7 @@ const factory: FlamelinkFactory = context => {
 
     subscribe({ uid, callback, changeType, ...options }: CF.Subscribe) {
       const pluckFields = pluckResultFields(options.fields)
-      const firestoreService = flamelink._ensureService('firestore', context)
-      const processRefs = processReferencesForCF(firestoreService, options)
+      const processRefs = processReferencesForCF(context, options)
 
       return api.subscribeRaw({
         uid,

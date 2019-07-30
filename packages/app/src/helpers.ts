@@ -11,6 +11,7 @@ export const getModule = (moduleName: App.ModuleName, context: App.Context) => {
     ? new Proxy(
         {},
         {
+          // eslint-disable-next-line @typescript-eslint/no-unused-vars
           get(obj, prop) {
             return () =>
               logError(

@@ -237,8 +237,7 @@ Instructions here: https://flamelink.github.io/flamelink-js-sdk/#/getting-starte
         return folders
       }
 
-      const firestoreService = flamelink._ensureService('firestore', context)
-      const processRefs = processReferencesForCF(firestoreService, options)
+      const processRefs = processReferencesForCF(context, options)
       const structureItems = formatStructure(structure, {
         idProperty: 'id',
         parentProperty: 'parentId.id'
@@ -284,9 +283,8 @@ Instructions here: https://flamelink.github.io/flamelink-js-sdk/#/getting-starte
           'incorrect-arguments'
         )
       }
-      const firestoreService = flamelink._ensureService('firestore', context)
       const pluckFields = pluckResultFields(options.fields)
-      const processRefs = processReferencesForCF(firestoreService, options)
+      const processRefs = processReferencesForCF(context, options)
       const snapshot = await api.getFileRaw({ fileId, ...options })
 
       const docData = await pluckFields({
@@ -314,11 +312,10 @@ Instructions here: https://flamelink.github.io/flamelink-js-sdk/#/getting-starte
             }
           : {}
       )
-      const firestoreService = flamelink._ensureService('firestore', context)
       const folderId = await api._getFolderIdFromOptions(opts)
       const filterFolders = filterFilesByFolderId(folderId)
       const pluckFields = pluckResultFields(opts.fields)
-      const processRefs = processReferencesForCF(firestoreService, options)
+      const processRefs = processReferencesForCF(context, options)
       const snapshot = await api.getFilesRaw(opts)
 
       if (snapshot.empty) {

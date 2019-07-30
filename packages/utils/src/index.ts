@@ -412,36 +412,34 @@ export const applyLimitAndOffsetsForCF = (
   return newRef
 }
 
-export const pluckResultFields = curry(
-  (fields: any, resultSet: any): any => {
-    if (!resultSet || !isArray(fields)) {
-      return resultSet
-    }
-
-    // TODO: Write our own "pick" that can work with an array of strings or an array of objects for nested objects
-    const pickFields = pick(fields)
-
-    // If resultSet is an array of objects, we just pluck the given fields from each object
-    if (isArray(resultSet)) {
-      return reduce(
-        resultSet,
-        (result, val) => result.concat(pickFields(val)),
-        []
-      )
-    }
-
-    // If resultSet is a POJO, we assume each first-level property is the child from which fields need to be plucked
-    if (isPlainObject(resultSet)) {
-      return reduce(
-        resultSet,
-        (result, val, key) => Object.assign(result, { [key]: pickFields(val) }),
-        {}
-      )
-    }
-
+export const pluckResultFields = curry((fields: any, resultSet: any): any => {
+  if (!resultSet || !isArray(fields)) {
     return resultSet
   }
-)
+
+  // TODO: Write our own "pick" that can work with an array of strings or an array of objects for nested objects
+  const pickFields = pick(fields)
+
+  // If resultSet is an array of objects, we just pluck the given fields from each object
+  if (isArray(resultSet)) {
+    return reduce(
+      resultSet,
+      (result, val) => result.concat(pickFields(val)),
+      []
+    )
+  }
+
+  // If resultSet is a POJO, we assume each first-level property is the child from which fields need to be plucked
+  if (isPlainObject(resultSet)) {
+    return reduce(
+      resultSet,
+      (result, val, key) => Object.assign(result, { [key]: pickFields(val) }),
+      {}
+    )
+  }
+
+  return resultSet
+})
 
 /**
  * @description Check if a given value is a Firebase/Firestore reference.
@@ -503,7 +501,6 @@ export const formatStructure = curry(
               children: mapChildren(item.children, get(item, idProperty))
             }
           })
-
       return mapChildren(formattedItems, DEFAULT_PARENT_ID)
     }
 

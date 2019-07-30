@@ -59,7 +59,7 @@ const factory: FlamelinkFactory = context => {
           return null
         }
 
-        schemas = {}
+        schemas = {} // eslint-disable-line require-atomic-updates
 
         snapshot.forEach((doc: any) => {
           const data = doc.data()
@@ -67,13 +67,13 @@ const factory: FlamelinkFactory = context => {
         })
 
         if (schemaKey) {
-          schemas = unwrap(schemaKey, schemas)
+          schemas = unwrap(schemaKey, schemas) // eslint-disable-line require-atomic-updates
         }
       }
 
       if (schemaKey) {
         // Wrap result for the field plucking to work
-        schemas = wrap(schemaKey, schemas)
+        schemas = wrap(schemaKey, schemas) // eslint-disable-line require-atomic-updates
       }
 
       return await pluckFields(schemaKey ? unwrap(schemaKey, schemas) : schemas)

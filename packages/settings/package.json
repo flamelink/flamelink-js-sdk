@@ -30,7 +30,7 @@
     "@flamelink/sdk-settings-types": "^1.0.0-alpha.18",
     "@flamelink/sdk-utils": "^1.0.0-alpha.19",
     "compose-then": "^1.0.1",
-    "lodash": "^4.17.11"
+    "lodash": "^4.17.15"
   },
   "scripts": {
     "prebuild": "rimraf dist",
