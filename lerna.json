@@ -1,28 +1,19 @@
 {
-  "version": "1.0.0-alpha.19",
+  "version": "1.0.0-alpha.20",
   "npmClient": "yarn",
   "useWorkspaces": true,
-  "packages": [
-    "packages/*",
-    "integration/*"
-  ],
+  "packages": ["packages/*", "integration/*"],
   "command": {
     "publish": {
       "allowBranch": "master",
-      "ignoreChanges": [
-        "*.md"
-      ],
+      "ignoreChanges": ["*.md"],
       "message": "chore(release): Publish to NPM"
     },
     "version": {
       "allowBranch": "master"
     },
     "bootstrap": {
-      "scope": [
-        "flamelink",
-        "integration-*",
-        "@flamelink/sdk-*"
-      ]
+      "scope": ["flamelink", "integration-*", "@flamelink/sdk-*"]
     }
   }
 }

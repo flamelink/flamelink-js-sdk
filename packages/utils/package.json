@@ -1,6 +1,6 @@
 {
   "name": "@flamelink/sdk-utils",
-  "version": "1.0.0-alpha.19",
+  "version": "1.0.0-alpha.20",
   "publishConfig": {
     "access": "public"
   },
