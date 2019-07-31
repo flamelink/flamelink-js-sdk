@@ -20,6 +20,10 @@ declare namespace Storage {
     sizes?: any[]
   }
 
+  interface FileObjects {
+    [fileId: string]: FileObject
+  }
+
   interface FolderObject {
     id: App.StringOrNumber
     name: string

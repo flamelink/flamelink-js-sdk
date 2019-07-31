@@ -1,6 +1,7 @@
 import get from 'lodash/get'
 import curry from 'lodash/curry'
 import reduce from 'lodash/reduce'
+import isString from 'lodash/isString'
 import { ImageSize } from '@flamelink/sdk-storage-types'
 import { logWarning, FlamelinkError } from '@flamelink/sdk-utils'
 
@@ -13,7 +14,12 @@ export const filterFilesByFolderId = curry(
     return reduce(
       files,
       (result, val, key) => {
-        if (String(val.folderId) === String(folderId)) {
+        const folderPath = get(val, 'folderId.path', get(val, 'folderId.id'))
+        const testFolderId = isString(folderPath)
+          ? folderPath.split('/').pop()
+          : val.folderId
+
+        if (String(testFolderId) === String(folderId)) {
           return Object.assign(result, { [key]: val })
         }
         return result

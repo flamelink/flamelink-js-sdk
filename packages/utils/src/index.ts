@@ -663,19 +663,22 @@ export const processReferencesForCF = curry(
             : populate
         })
 
-        const processRef = async (ref: any) => {
+        const processRef = async (ref: { path: string }) => {
           const snapshot = await firestoreService.doc(ref.path).get()
 
           if (typeof snapshot.forEach === 'function') {
-            const docs: App.CF.DocumentSnapshot[] = []
+            const docs: Promise<any>[] = []
             snapshot.forEach(async (doc: App.CF.DocumentSnapshot) =>
-              docs.push(doc.data())
+              docs.push(processRefs(doc.data()))
             )
 
-            return Promise.all(docs.map(async doc => processRefs(doc)))
+            return Promise.all(docs)
           }
 
-          return processRefs(patchUrl(snapshot.data()))
+          return await compose(
+            processRefs,
+            patchUrl
+          )(snapshot.data())
         }
 
         let fieldValue = val
