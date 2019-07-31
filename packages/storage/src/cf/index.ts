@@ -14,7 +14,8 @@ import {
   CF,
   ImageSize,
   FolderObject,
-  FileObject
+  FileObject,
+  FileObjects
 } from '@flamelink/sdk-storage-types'
 import {
   applyOptionsForCF,
@@ -44,18 +45,21 @@ const FILES_COLLECTION = 'fl_files'
 const FOLDERS_COLLECTION = 'fl_folders'
 const factory: FlamelinkFactory = function(context) {
   const api: Api = {
-    async _getFolderId({ folderName = 'Root' }) {
+    async _getFolderId({ folderName }: { folderName: string }) {
       if (!folderName) {
         return null
       }
 
-      const foldersSnapshot = await api.folderRef().get()
+      const foldersSnapshot = await api
+        .folderRef()
+        .where('name', '==', folderName)
+        .get()
       const folders: FolderObject[] = []
       foldersSnapshot.forEach((doc: any) => folders.push(doc.data()))
       const folder = find(folders, { name: folderName })
 
       if (!folder) {
-        return 'root'
+        return null
       }
 
       return folder.id
@@ -294,13 +298,13 @@ Instructions here: https://flamelink.github.io/flamelink-js-sdk/#/getting-starte
       return docData[fileId]
     },
 
-    async getFilesRaw({ ...options }: CF.GetFiles) {
+    async getFilesRaw({ ...options }: CF.GetFiles = {}) {
       return applyOptionsForCF(api.fileRef(), options).get({
         source: options.source || 'default'
       })
     },
 
-    async getFiles({ ...options }: CF.GetFiles) {
+    async getFiles({ ...options }: CF.GetFiles = {}) {
       const defaultOptions: CF.GetFiles = {}
       const opts = Object.assign(
         defaultOptions,
@@ -322,14 +326,14 @@ Instructions here: https://flamelink.github.io/flamelink-js-sdk/#/getting-starte
         return null
       }
 
-      const filePromises: Promise<any>[] = []
+      const filePromises: Promise<FileObject>[] = []
       snapshot.forEach(async (doc: any) =>
-        filePromises.push(processRefs(doc.data()))
+        filePromises.push(processRefs(doc.data()) as Promise<FileObject>)
       )
 
       const files = await filePromises.reduce(
-        (chain: Promise<any>, filePromise: Promise<any>) =>
-          chain.then(async (acc: any) => {
+        (chain: Promise<FileObjects>, filePromise: Promise<FileObject>) =>
+          chain.then(async (acc: FileObjects) => {
             const file = await filePromise
             return Object.assign(acc, { [file.id]: file })
           }),
