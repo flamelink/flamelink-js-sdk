@@ -1,6 +1,6 @@
 {
   "name": "@flamelink/sdk-storage-types",
-  "version": "1.0.0-alpha.18",
+  "version": "1.0.0-alpha.21",
   "publishConfig": {
     "access": "public"
   },
