@@ -1,6 +1,6 @@
 {
   "name": "@flamelink/sdk-storage",
-  "version": "1.0.0-alpha.21",
+  "version": "1.0.0-alpha.22",
   "publishConfig": {
     "access": "public"
   },
@@ -26,9 +26,9 @@
   ],
   "dependencies": {
     "@firebase/storage-types": "^0.3.3",
-    "@flamelink/sdk-app": "^1.0.0-alpha.21",
-    "@flamelink/sdk-app-types": "^1.0.0-alpha.18",
-    "@flamelink/sdk-storage-types": "^1.0.0-alpha.21",
+    "@flamelink/sdk-app": "^1.0.0-alpha.22",
+    "@flamelink/sdk-app-types": "^1.0.0-alpha.22",
+    "@flamelink/sdk-storage-types": "^1.0.0-alpha.22",
     "@flamelink/sdk-utils": "^1.0.0-alpha.21",
     "browser-image-resizer": "^1.2.0",
     "compose-then": "^1.0.1",
