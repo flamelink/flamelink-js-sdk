@@ -4,6 +4,7 @@ import compose from 'compose-then'
 import flamelink from '@flamelink/sdk-app'
 import * as App from '@flamelink/sdk-app-types'
 import { FlamelinkFactory, Api, RTDB } from '@flamelink/sdk-content-types'
+import { SchemaFields, SchemaField } from '@flamelink/sdk-schemas-types'
 import {
   applyOptionsForRTDB,
   pluckResultFields,
@@ -18,16 +19,20 @@ import { getContentRefPath } from './helpers'
 
 const factory: FlamelinkFactory = context => {
   const api: Api = {
-    ref(reference) {
+    ref(reference, options) {
       const dbService = flamelink._ensureService('database', context)
       return dbService.ref(
-        getContentRefPath(reference, context.env, context.locale)
+        getContentRefPath(
+          reference,
+          get(options, 'env', get(options, 'env', context.env)),
+          get(options, 'locale', get(options, 'locale', context.locale))
+        )
       )
     },
 
     getRaw({ schemaKey, entryId, ...options }: RTDB.Get) {
       return applyOptionsForRTDB(
-        api.ref(entryId ? [schemaKey, entryId] : schemaKey),
+        api.ref(entryId ? [schemaKey, entryId] : schemaKey, options),
         options
       ).once(options.event || 'value')
     },
@@ -98,7 +103,7 @@ const factory: FlamelinkFactory = context => {
 
     subscribeRaw({ schemaKey, entryId, callback, ...options }: RTDB.Subscribe) {
       const filteredRef = applyOptionsForRTDB(
-        api.ref(entryId ? [schemaKey, entryId] : schemaKey),
+        api.ref(entryId ? [schemaKey, entryId] : schemaKey, options),
         options
       )
 
@@ -135,9 +140,7 @@ const factory: FlamelinkFactory = context => {
       })
     },
 
-    async add({ schemaKey, data }: RTDB.Add) {
-      const entryId = Date.now().toString()
-
+    async add({ schemaKey, entryId = Date.now().toString(), data }: RTDB.Add) {
       const schemasAPI = get(context, 'modules.schemas', {
         getFields() {
           throw new FlamelinkError(
@@ -146,22 +149,47 @@ const factory: FlamelinkFactory = context => {
         }
       })
 
-      const schemaFields = await schemasAPI.getFields({
+      const schemaFields: SchemaFields = await schemasAPI.getFields({
         schemaKey
       })
 
       const defaultValues = schemaFields.reduce(
-        (acc: any, field: any) =>
+        (acc: object, field: SchemaField) =>
           Object.assign(acc, {
             [field.key]: get(field, 'defaultValue', null)
           }),
         {}
       )
 
+      const databaseService = flamelink._ensureService('database', context)
+
+      let createDefaultEntry = false
+      let defaultLocale = ''
+
+      const defaultLocaleSnapshot = await databaseService
+        .ref('flamelink/settings/defaultLocale')
+        .once('value')
+
+      defaultLocale = defaultLocaleSnapshot.val()
+
+      if (defaultLocale && defaultLocale !== context.locale) {
+        const defaultEntry = await api.get({
+          schemaKey,
+          entryId,
+          locale: defaultLocale
+        })
+
+        if (!defaultEntry) {
+          createDefaultEntry = true
+        }
+      }
+
       const payload =
         typeof data === 'object'
           ? {
               ...defaultValues,
+              order: 0,
+              parentId: 0,
               ...data,
               __meta__: {
                 createdBy: getCurrentUser(context),
@@ -172,6 +200,22 @@ const factory: FlamelinkFactory = context => {
           : data
 
       await api.ref([schemaKey, entryId]).set(payload)
+
+      if (createDefaultEntry) {
+        const defaultPayload = {
+          __meta__: {
+            ...payload.__meta__,
+            createdFromLocale: context.locale
+          },
+          id: entryId,
+          order: get(payload, 'order', 0),
+          parentId: get(payload, 'parentId', 0)
+        }
+
+        await api
+          .ref([schemaKey, entryId], { locale: defaultLocale })
+          .set(defaultPayload)
+      }
 
       return payload
     },

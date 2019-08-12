@@ -68,7 +68,10 @@ declare namespace Content {
   }
 
   export interface Api {
-    ref(reference?: string | string[]): any
+    ref(
+      reference?: string | string[],
+      options?: App.RTDB.Options | App.CF.Options
+    ): any
 
     getRaw(options: RTDB.Get): Promise<any>
     getRaw(options: CF.Get): Promise<any>

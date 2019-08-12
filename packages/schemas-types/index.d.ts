@@ -51,6 +51,107 @@ declare namespace Schemas {
     }
   }
 
+  export type SchemaFieldType =
+    | 'autocomplete'
+    | 'boolean'
+    | 'checkbox'
+    | 'color'
+    | 'date'
+    | 'datetime-local'
+    | 'email'
+    | 'fieldset'
+    | 'linked-text'
+    | 'location'
+    | 'markdown-editor'
+    | 'media'
+    | 'number'
+    | 'password'
+    | 'radio'
+    | 'repeater'
+    | 'select'
+    | 'select-relational'
+    | 'tag'
+    | 'text'
+    | 'textarea'
+    | 'tree-relational'
+    | 'wysiwyg'
+    | 'wysiwyg-cke'
+
+  export interface FieldGridColumns {
+    xs: number
+    sm: number
+    md: number
+    lg: number
+  }
+
+  export interface FieldConstraint {
+    rule: string
+    ruleValue: any
+    uniqueKey?: string
+  }
+
+  export interface FieldOption {
+    label: string
+    value: string
+    uniqueKey?: string
+  }
+
+  export interface SchemaField {
+    constraints?: FieldConstraint[]
+    defaultValue?: string
+    description?: string
+    fieldSeparator?: string
+    gridColumns?: FieldGridColumns
+    hidden?: boolean
+    id: number | string
+    key: string
+    limit?: number
+    mediaTypes?: string[]
+    multiple?: boolean
+    options?: FieldOption[]
+    relation?: string
+    relationalFieldsToShow?: string[]
+    show: boolean
+    title: string
+    type: SchemaFieldType
+  }
+
+  export type SchemaFields = SchemaField[]
+
+  export type SchemaType = 'single' | 'collection' | 'form'
+
+  interface RtdbSchemaMetadata {
+    createdBy: string
+    createdDate: string | object
+    lastModifiedBy?: string
+    lastModifiedDate?: string
+  }
+
+  interface CfSchemaMetadata {
+    createdBy: string
+    createdDate: string | object
+    docId: string
+    env: string
+    fl_id: string
+    lastModifiedBy?: string
+    lastModifiedDate?: string
+  }
+
+  export interface Schema {
+    __meta__?: RtdbSchemaMetadata
+    _fl_meta_?: CfSchemaMetadata
+    icon?: string
+    id: string
+    description?: string
+    enabled: boolean
+    fields: SchemaFields
+    group?: string
+    sortable?: boolean
+    title: string
+    type: SchemaType
+    workflow?: string
+  }
+
   export interface Api {
     ref(reference?: string): any
 
