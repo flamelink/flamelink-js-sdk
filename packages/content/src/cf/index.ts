@@ -298,12 +298,13 @@ const factory: FlamelinkFactory = context => {
 
       const payload =
         typeof data === 'object'
-          ? Object.assign({}, data, {
+          ? {
+              ...data,
               '_fl_meta_.lastModifiedBy': getCurrentUser(context),
               '_fl_meta_.lastModifiedDate': getTimestamp(context),
               '_fl_meta_.fl_id': entryId,
               id: entryId
-            })
+            }
           : data
 
       const snapshot = await api.ref([schemaKey, entryId]).get()
@@ -312,7 +313,7 @@ const factory: FlamelinkFactory = context => {
         logWarning(
           `No entry existed for schema "${schemaKey}" with ID "${entryId}" - creating new entry instead.`
         )
-        return api.add({ schemaKey, data })
+        return api.add({ schemaKey, entryId, data })
       }
 
       const content: any[] = []

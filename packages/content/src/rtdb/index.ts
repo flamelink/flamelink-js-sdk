@@ -9,6 +9,7 @@ import {
   applyOptionsForRTDB,
   pluckResultFields,
   populateEntry,
+  logWarning,
   FlamelinkError,
   getTimestamp,
   getCurrentUser,
@@ -229,6 +230,15 @@ const factory: FlamelinkFactory = context => {
         throw new FlamelinkError(
           '"update" called with the incorrect arguments. Check the docs for details.'
         )
+      }
+
+      const snapshot = await api.ref([schemaKey, entryId]).once('value')
+
+      if (!snapshot.val()) {
+        logWarning(
+          `No entry existed for schema "${schemaKey}" with ID "${entryId}" - creating new entry instead.`
+        )
+        return api.add({ schemaKey, entryId, data })
       }
 
       const payload =
