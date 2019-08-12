@@ -6,6 +6,7 @@ import castArray from 'lodash/castArray'
 import compose from 'compose-then'
 import flamelink from '@flamelink/sdk-app'
 import { FlamelinkFactory, Api, CF } from '@flamelink/sdk-content-types'
+import { Schema, SchemaField, SchemaFields } from '@flamelink/sdk-schemas-types'
 import {
   applyOptionsForCF,
   pluckResultFields,
@@ -23,14 +24,14 @@ const SCHEMAS_COLLECTION = 'fl_schemas'
 
 const factory: FlamelinkFactory = context => {
   const api: Api = {
-    ref(ref) {
+    ref(ref, options) {
       const firestoreService = flamelink._ensureService('firestore', context)
       const [schemaKey, entryId] = castArray(ref)
 
       let baseRef = firestoreService
         .collection(CONTENT_COLLECTION)
-        .where('_fl_meta_.env', '==', context.env)
-        .where('_fl_meta_.locale', '==', context.locale)
+        .where('_fl_meta_.env', '==', get(options, 'env', context.env))
+        .where('_fl_meta_.locale', '==', get(options, 'locale', context.locale))
 
       if (schemaKey) {
         baseRef = baseRef.where('_fl_meta_.schema', '==', schemaKey)
@@ -40,7 +41,10 @@ const factory: FlamelinkFactory = context => {
     },
 
     getRaw({ schemaKey, entryId, ...options }: CF.Get) {
-      return applyOptionsForCF(api.ref([schemaKey, entryId]), options).get({
+      return applyOptionsForCF(
+        api.ref([schemaKey, entryId], options),
+        options
+      ).get({
         source: options.source || 'default'
       })
     },
@@ -93,7 +97,10 @@ const factory: FlamelinkFactory = context => {
     },
 
     subscribeRaw({ schemaKey, entryId, callback, ...options }: CF.Subscribe) {
-      const filtered = applyOptionsForCF(api.ref([schemaKey, entryId]), options)
+      const filtered = applyOptionsForCF(
+        api.ref([schemaKey, entryId], options),
+        options
+      )
 
       const args = []
 
@@ -184,19 +191,21 @@ const factory: FlamelinkFactory = context => {
       }
 
       const schemasAPI = get(context, 'modules.schemas', {
-        getFields() {
+        get() {
           throw new FlamelinkError(
             'The "schemas" module is required. Please ensure it is properly imported.'
           )
         }
       })
 
-      const schema = await schemasAPI.get({
+      const schema: Schema = await schemasAPI.get({
         schemaKey
       })
 
-      const defaultValues = get(schema, 'fields', []).reduce(
-        (acc: any, field: any) =>
+      const schemaFields: SchemaFields = get(schema, 'fields', [])
+
+      const defaultValues = schemaFields.reduce(
+        (acc: object, field: SchemaField) =>
           Object.assign(acc, {
             [field.key]: get(field, 'defaultValue', null)
           }),
@@ -204,6 +213,30 @@ const factory: FlamelinkFactory = context => {
       )
 
       const firestoreService = flamelink._ensureService('firestore', context)
+
+      let createDefaultEntry = false
+      let defaultLocale = ''
+
+      const defaultLocaleDoc = await firestoreService
+        .doc('fl_settings/defaultLocale')
+        .get()
+
+      if (defaultLocaleDoc.exists) {
+        defaultLocale = defaultLocaleDoc.data().key
+
+        if (defaultLocale !== context.locale) {
+          const defaultEntry = await api.get({
+            schemaKey,
+            entryId,
+            locale: defaultLocale
+          })
+
+          if (!defaultEntry) {
+            createDefaultEntry = true
+          }
+        }
+      }
+
       const schemaRef = firestoreService.doc(
         `${SCHEMAS_COLLECTION}/${schemaKey}`
       )
@@ -215,6 +248,8 @@ const factory: FlamelinkFactory = context => {
         typeof data === 'object'
           ? {
               ...defaultValues,
+              order: 0,
+              parentId: 0,
               ...data,
               _fl_meta_: {
                 createdBy: getCurrentUser(context),
@@ -227,11 +262,29 @@ const factory: FlamelinkFactory = context => {
                 schemaType: get(schema, 'type', 'collection'),
                 schemaRef
               },
-              id: entryId || docId
+              id: docId
             }
           : data
 
       await docRef.set(payload)
+
+      if (createDefaultEntry) {
+        const defaultDocRef = contentRef.doc()
+        const defaultDocId = defaultDocRef.id
+        const defaultPayload = {
+          _fl_meta_: {
+            ...payload._fl_meta_,
+            docId: defaultDocId,
+            locale: defaultLocale,
+            createdFromLocale: context.locale
+          },
+          id: defaultDocId,
+          order: get(payload, 'order', 0),
+          parentId: get(payload, 'parentId', 0)
+        }
+
+        await defaultDocRef.set(defaultPayload)
+      }
 
       return payload
     },
@@ -245,12 +298,13 @@ const factory: FlamelinkFactory = context => {
 
       const payload =
         typeof data === 'object'
-          ? Object.assign({}, data, {
+          ? {
+              ...data,
               '_fl_meta_.lastModifiedBy': getCurrentUser(context),
               '_fl_meta_.lastModifiedDate': getTimestamp(context),
               '_fl_meta_.fl_id': entryId,
               id: entryId
-            })
+            }
           : data
 
       const snapshot = await api.ref([schemaKey, entryId]).get()
@@ -259,7 +313,7 @@ const factory: FlamelinkFactory = context => {
         logWarning(
           `No entry existed for schema "${schemaKey}" with ID "${entryId}" - creating new entry instead.`
         )
-        return api.add({ schemaKey, data })
+        return api.add({ schemaKey, entryId, data })
       }
 
       const content: any[] = []

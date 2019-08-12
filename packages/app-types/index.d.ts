@@ -128,6 +128,8 @@ declare namespace App {
       needsWrap?: boolean
       event?: string
       fields?: string[]
+      env?: string
+      locale?: string
     }
     interface Snapshot {
       val(): any
@@ -163,6 +165,8 @@ declare namespace App {
     interface Options extends OrderByOptions, FilterOptions {
       changeType?: string
       fields?: string[]
+      env?: string
+      locale?: string
       [x: string]: any
     }
 
