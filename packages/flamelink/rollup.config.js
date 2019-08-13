@@ -115,90 +115,19 @@ export default [
     external
   },
 
-  /**
-   * UMD build for each module
-   */
-  ...moduleNames
-    .filter(moduleName => moduleName !== 'app')
-    .map(moduleName => ({
-      input: `${moduleName}/index.cdn.ts`,
-      output: {
-        file: `flamelink-${moduleName}.js`,
-        format: 'umd',
-        name: LIBRARY_NAME,
-        sourcemap: true,
-        extend: true,
-        esModule: false,
-        globals: {
-          '@flamelink/sdk-app': LIBRARY_NAME
-        },
-        /**
-         * use iife to avoid below error in the old Safari browser
-         * SyntaxError: Functions cannot be declared in a nested block in strict mode
-         * https://github.com/firebase/firebase-js-sdk/issues/1228
-         *
-         */
-        intro: `try {(function() {`,
-        outro: `}).apply(this, arguments); } catch(err) {
-        console.error(err);
-        throw new Error(
-          'Cannot instantiate "flamelink-${moduleName}.js" - be sure to load flamelink-app.js first.'
-        );
-      }`
-      },
-      inlineDynamicImports: true,
-      external: ['@flamelink/sdk-app'],
-      plugins: umdPlugins
-    })),
-
-  ...moduleNames.map(moduleName => {
+  ...flatMap(moduleNames, moduleName => {
     const modulePkg = modulePkgs[moduleName]
 
-    return {
-      input: `${moduleName}/index.ts`,
-      output: [
-        {
-          file: resolve(moduleName, modulePkg.module),
-          format: 'esm'
-        },
-        {
-          file: resolve(moduleName, modulePkg.main),
-          format: 'cjs'
-        }
-      ],
-      plugins,
-      external
-    }
-  }),
-
-  ...flatMap(['schemas', 'content', 'navigation'], moduleName => {
-    const modulePkg = modulePkgs[moduleName]
-
-    return [
+    const options = [
       {
-        input: `cf/${moduleName}/index.ts`,
+        input: `${moduleName}/index.ts`,
         output: [
           {
-            file: resolve('cf', moduleName, modulePkg.module),
+            file: resolve(moduleName, modulePkg.module),
             format: 'esm'
           },
           {
-            file: resolve('cf', moduleName, modulePkg.main),
-            format: 'cjs'
-          }
-        ],
-        plugins,
-        external
-      },
-      {
-        input: `rtdb/${moduleName}/index.ts`,
-        output: [
-          {
-            file: resolve('rtdb', moduleName, modulePkg.module),
-            format: 'esm'
-          },
-          {
-            file: resolve('rtdb', moduleName, modulePkg.main),
+            file: resolve(moduleName, modulePkg.main),
             format: 'cjs'
           }
         ],
@@ -206,5 +135,83 @@ export default [
         external
       }
     ]
+
+    if (moduleName !== 'app') {
+      options.push(
+        /**
+         * UMD build for each module
+         */
+        {
+          input: `${moduleName}/index.ts`,
+          output: {
+            file: `flamelink-${moduleName}.js`,
+            format: 'umd',
+            name: LIBRARY_NAME,
+            sourcemap: true,
+            extend: true,
+            esModule: false,
+            globals: {
+              '@flamelink/sdk-app': LIBRARY_NAME
+            },
+            /**
+             * use iife to avoid below error in the old Safari browser
+             * SyntaxError: Functions cannot be declared in a nested block in strict mode
+             * https://github.com/firebase/firebase-js-sdk/issues/1228
+             *
+             */
+            intro: `try {(function() {`,
+            outro: `}).apply(this, arguments); } catch(err) {
+            console.error(err);
+            throw new Error(
+              'Cannot instantiate "flamelink-${moduleName}.js" - be sure to load flamelink-app.js first.'
+            );
+          }`
+          },
+          inlineDynamicImports: true,
+          external: ['@flamelink/sdk-app'],
+          plugins: umdPlugins
+        },
+
+        /**
+         * Cloud Firestore build for each module
+         */
+        {
+          input: `cf/${moduleName}/index.ts`,
+          output: [
+            {
+              file: resolve('cf', moduleName, modulePkg.module),
+              format: 'esm'
+            },
+            {
+              file: resolve('cf', moduleName, modulePkg.main),
+              format: 'cjs'
+            }
+          ],
+          plugins,
+          external
+        },
+
+        /**
+         * Realtime DB build for each module
+         */
+        {
+          input: `rtdb/${moduleName}/index.ts`,
+          output: [
+            {
+              file: resolve('rtdb', moduleName, modulePkg.module),
+              format: 'esm'
+            },
+            {
+              file: resolve('rtdb', moduleName, modulePkg.main),
+              format: 'cjs'
+            }
+          ],
+          plugins,
+          external
+        }
+      )
+    }
+
+    return options
   })
 ]

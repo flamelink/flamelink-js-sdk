@@ -91,18 +91,18 @@ export const factory: FlamelinkFactory = context => {
       const payload =
         typeof data === 'object'
           ? Object.assign({}, data, {
-            __meta__: {
-              createdBy: getCurrentUser(context),
-              createdDate: getTimestamp(context)
-            },
-            displayName: data.displayName || '',
-            email: data.email || '',
-            enabled: data.enabled || 'Yes',
-            firstName: data.firstName || '',
-            id: uid,
-            lastName: data.lastName || '',
-            permissions: data.permissions || '1'
-          })
+              __meta__: {
+                createdBy: getCurrentUser(context),
+                createdDate: getTimestamp(context)
+              },
+              displayName: data.displayName || '',
+              email: data.email || '',
+              enabled: data.enabled || 'Yes',
+              firstName: data.firstName || '',
+              id: uid,
+              lastName: data.lastName || '',
+              permissions: data.permissions || '1'
+            })
           : data
 
       return api.ref(uid).set(payload)
@@ -121,10 +121,10 @@ export const factory: FlamelinkFactory = context => {
       const payload =
         typeof data === 'object'
           ? Object.assign({}, data, {
-            '__meta__/lastModifiedBy': getCurrentUser(context),
-            '__meta__/lastModifiedDate': getTimestamp(context),
-            id: uid
-          })
+              '__meta__/lastModifiedBy': getCurrentUser(context),
+              '__meta__/lastModifiedDate': getTimestamp(context),
+              id: uid
+            })
           : data
 
       return api.ref(uid).update(payload)

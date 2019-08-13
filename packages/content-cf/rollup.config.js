@@ -1,4 +1,4 @@
 import pkg from './package.json'
-import getRollupConfig from '../../tools/rollup-split-package-base'
+import getRollupConfig from '../../tools/rollup-package-base'
 
 export default getRollupConfig(pkg)

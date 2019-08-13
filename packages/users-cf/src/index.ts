@@ -137,21 +137,21 @@ export const factory: FlamelinkFactory = context => {
       const payload =
         typeof data === 'object'
           ? Object.assign({}, data, {
-            _fl_meta_: {
-              createdBy: getCurrentUser(context),
-              createdDate: getTimestamp(context),
-              docId: uid
-            },
-            displayName: data.displayName || '',
-            email: data.email || '',
-            enabled: data.enabled || 'Yes',
-            firstName: data.firstName || '',
-            id: uid,
-            lastName: data.lastName || '',
-            ...(data.permissions
-              ? { permissions: api._getPermissionsRef(data.permissions) }
-              : {})
-          })
+              _fl_meta_: {
+                createdBy: getCurrentUser(context),
+                createdDate: getTimestamp(context),
+                docId: uid
+              },
+              displayName: data.displayName || '',
+              email: data.email || '',
+              enabled: data.enabled || 'Yes',
+              firstName: data.firstName || '',
+              id: uid,
+              lastName: data.lastName || '',
+              ...(data.permissions
+                ? { permissions: api._getPermissionsRef(data.permissions) }
+                : {})
+            })
           : data
 
       await api
