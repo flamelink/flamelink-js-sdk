@@ -171,7 +171,7 @@ export default [
     }
   }),
 
-  ...flatMap(['schemas', 'content'], moduleName => {
+  ...flatMap(['schemas', 'content', 'navigation'], moduleName => {
     const modulePkg = modulePkgs[moduleName]
 
     return [

@@ -352,7 +352,7 @@ export const factory: FlamelinkFactory = context => {
   return api
 }
 
-const register: App.SetupModule = (context: App.Context) => {
+export const register: App.SetupModule = (context: App.Context) => {
   if (context.dbType === 'cf') {
     return factory(context)
   }

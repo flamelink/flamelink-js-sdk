@@ -4,6 +4,7 @@ import chunk from 'lodash/chunk'
 import castArray from 'lodash/castArray'
 import compose from 'compose-then'
 import flamelink from '@flamelink/sdk-app'
+import * as App from '@flamelink/sdk-app-types'
 import { FlamelinkFactory, Api, CF } from '@flamelink/sdk-navigation-types'
 import {
   applyOptionsForCF,
@@ -14,14 +15,12 @@ import {
   getTimestamp,
   getCurrentUser
 } from '@flamelink/sdk-utils'
-import { structureItems } from '../helpers'
-import { CF_BATCH_WRITE_LIMIT } from '../constants'
+import { structureItems } from './helpers'
+import { BATCH_WRITE_LIMIT, REQUIRED_FIELDS_FOR_STRUCTURING } from './constants'
 
 const NAVIGATION_COLLECTION = 'fl_navigation'
 
-const REQUIRED_FIELDS_FOR_STRUCTURING = ['uuid', 'parentIndex', 'children']
-
-const factory: FlamelinkFactory = context => {
+export const factory: FlamelinkFactory = context => {
   const api: Api = {
     ref(navigationKey) {
       const firestoreService = flamelink._ensureService('firestore', context)
@@ -46,8 +45,8 @@ const factory: FlamelinkFactory = context => {
       const fieldsToPluck =
         Array.isArray(options.fields) && options.structure
           ? Array.from(
-              new Set(REQUIRED_FIELDS_FOR_STRUCTURING.concat(options.fields))
-            )
+            new Set(REQUIRED_FIELDS_FOR_STRUCTURING.concat(options.fields))
+          )
           : options.fields
 
       const pluckFields = pluckResultFields(fieldsToPluck)
@@ -122,8 +121,8 @@ const factory: FlamelinkFactory = context => {
       const fieldsToPluck =
         Array.isArray(options.fields) && options.structure
           ? Array.from(
-              new Set(REQUIRED_FIELDS_FOR_STRUCTURING.concat(options.fields))
-            )
+            new Set(REQUIRED_FIELDS_FOR_STRUCTURING.concat(options.fields))
+          )
           : options.fields
 
       const pluckFields = pluckResultFields(fieldsToPluck)
@@ -197,17 +196,17 @@ const factory: FlamelinkFactory = context => {
       const payload =
         typeof data === 'object'
           ? Object.assign({}, data, {
-              _fl_meta_: {
-                createdBy: getCurrentUser(context),
-                createdDate: getTimestamp(context),
-                env: context.env,
-                docId,
-                fl_id: navigationKey
-              },
-              items: castArray(data.items) || [],
-              id: navigationKey,
-              title: data.title || navigationKey
-            })
+            _fl_meta_: {
+              createdBy: getCurrentUser(context),
+              createdDate: getTimestamp(context),
+              env: context.env,
+              docId,
+              fl_id: navigationKey
+            },
+            items: castArray(data.items) || [],
+            id: navigationKey,
+            title: data.title || navigationKey
+          })
           : data
 
       await docRef.set(payload)
@@ -225,11 +224,11 @@ const factory: FlamelinkFactory = context => {
       const payload =
         typeof data === 'object'
           ? Object.assign({}, data, {
-              '_fl_meta_.lastModifiedBy': getCurrentUser(context),
-              '_fl_meta_.lastModifiedDate': getTimestamp(context),
-              '_fl_meta_.fl_id': navigationKey,
-              id: navigationKey
-            })
+            '_fl_meta_.lastModifiedBy': getCurrentUser(context),
+            '_fl_meta_.lastModifiedDate': getTimestamp(context),
+            '_fl_meta_.fl_id': navigationKey,
+            id: navigationKey
+          })
           : data
 
       const snapshot = await api.ref(navigationKey).get()
@@ -259,7 +258,7 @@ const factory: FlamelinkFactory = context => {
 
       const navigationDocChunks: any[] = chunk(
         snapshot.docs,
-        CF_BATCH_WRITE_LIMIT
+        BATCH_WRITE_LIMIT
       )
       const db = flamelink._ensureService('firestore', context)
 
@@ -278,4 +277,12 @@ const factory: FlamelinkFactory = context => {
   return api
 }
 
-export default factory
+export const register: App.SetupModule = (context: App.Context) => {
+  if (context.dbType === 'cf') {
+    return factory(context)
+  }
+
+  return null
+}
+
+flamelink._registerModule('nav', register)

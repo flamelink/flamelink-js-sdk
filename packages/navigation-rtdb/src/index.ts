@@ -13,10 +13,9 @@ import {
   wrap,
   unwrap
 } from '@flamelink/sdk-utils'
-import { getNavigationRefPath } from './helpers'
-import { structureItems } from '../helpers'
+import { structureItems, getNavigationRefPath } from './helpers'
 
-const factory: FlamelinkFactory = context => {
+export const factory: FlamelinkFactory = context => {
   const api: Api = {
     ref(navigationRef) {
       const dbService = flamelink._ensureService('database', context)
@@ -154,14 +153,14 @@ const factory: FlamelinkFactory = context => {
       const payload =
         typeof data === 'object'
           ? Object.assign({}, data, {
-              __meta__: {
-                createdBy: getCurrentUser(context),
-                createdDate: getTimestamp(context)
-              },
-              items: castArray(data.items) || [],
-              id: navigationKey,
-              title: data.title || navigationKey
-            })
+            __meta__: {
+              createdBy: getCurrentUser(context),
+              createdDate: getTimestamp(context)
+            },
+            items: castArray(data.items) || [],
+            id: navigationKey,
+            title: data.title || navigationKey
+          })
           : data
 
       await api.ref(navigationKey).set(payload)
@@ -182,10 +181,10 @@ const factory: FlamelinkFactory = context => {
       const payload =
         typeof data === 'object'
           ? Object.assign({}, data, {
-              '__meta__/lastModifiedBy': getCurrentUser(context),
-              '__meta__/lastModifiedDate': getTimestamp(context),
-              id: navigationKey
-            })
+            '__meta__/lastModifiedBy': getCurrentUser(context),
+            '__meta__/lastModifiedDate': getTimestamp(context),
+            id: navigationKey
+          })
           : data
 
       await api.ref(navigationKey).update(payload)
@@ -206,4 +205,12 @@ const factory: FlamelinkFactory = context => {
   return api
 }
 
-export default factory
+export const register: App.SetupModule = (context: App.Context) => {
+  if (context.dbType === 'rtdb') {
+    return factory(context)
+  }
+
+  return null
+}
+
+flamelink._registerModule('nav', register)
