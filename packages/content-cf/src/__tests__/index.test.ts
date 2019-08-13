@@ -4,8 +4,8 @@ import * as Content from '@flamelink/sdk-content-types'
 import {
   initializeFirestoreProject,
   getBaseContext
-} from '../../../../../tools/testing/firebase'
-import getAPI from '../index'
+} from '../../../../tools/testing/firebase'
+import { factory as getAPI } from '../index'
 
 let firebaseApp: FirebaseApp
 let context: Context

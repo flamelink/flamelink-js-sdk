@@ -6,6 +6,7 @@ import resolveModule from 'rollup-plugin-node-resolve'
 import commonjs from 'rollup-plugin-commonjs'
 import gzipPlugin from 'rollup-plugin-gzip'
 import { compress } from 'brotli'
+import flatMap from 'lodash/flatMap'
 import pkg from './package.json'
 
 import appPkg from './app/package.json'
@@ -164,7 +165,46 @@ export default [
           file: resolve(moduleName, modulePkg.main),
           format: 'cjs'
         }
-      ]
+      ],
+      plugins,
+      external
     }
+  }),
+
+  ...flatMap(['schemas', 'content'], moduleName => {
+    const modulePkg = modulePkgs[moduleName]
+
+    return [
+      {
+        input: `cf/${moduleName}/index.ts`,
+        output: [
+          {
+            file: resolve('cf', moduleName, modulePkg.module),
+            format: 'esm'
+          },
+          {
+            file: resolve('cf', moduleName, modulePkg.main),
+            format: 'cjs'
+          }
+        ],
+        plugins,
+        external
+      },
+      {
+        input: `rtdb/${moduleName}/index.ts`,
+        output: [
+          {
+            file: resolve('rtdb', moduleName, modulePkg.module),
+            format: 'esm'
+          },
+          {
+            file: resolve('rtdb', moduleName, modulePkg.main),
+            format: 'cjs'
+          }
+        ],
+        plugins,
+        external
+      }
+    ]
   })
 ]

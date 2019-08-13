@@ -19,7 +19,7 @@ import {
 import { getContentRefPath } from './helpers'
 import '@flamelink/sdk-schemas-rtdb'
 
-const factory: FlamelinkFactory = context => {
+export const factory: FlamelinkFactory = context => {
   const api: Api = {
     ref(reference, options) {
       const dbService = flamelink._ensureService('database', context)
@@ -270,4 +270,12 @@ const factory: FlamelinkFactory = context => {
   return api
 }
 
-export default factory
+const register: App.SetupModule = (context: App.Context) => {
+  if (context.dbType === 'cf') {
+    return factory(context)
+  }
+
+  return null
+}
+
+flamelink._registerModule('content', register)

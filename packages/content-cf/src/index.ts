@@ -5,6 +5,7 @@ import chunk from 'lodash/chunk'
 import castArray from 'lodash/castArray'
 import compose from 'compose-then'
 import flamelink from '@flamelink/sdk-app'
+import * as App from '@flamelink/sdk-app-types'
 import { FlamelinkFactory, Api, CF } from '@flamelink/sdk-content-types'
 import { Schema, SchemaField, SchemaFields } from '@flamelink/sdk-schemas-types'
 import {
@@ -17,13 +18,13 @@ import {
   getCurrentUser,
   populateEntriesForCF
 } from '@flamelink/sdk-utils'
-import { CF_BATCH_WRITE_LIMIT } from '../constants'
+import { BATCH_WRITE_LIMIT } from './constants'
 import '@flamelink/sdk-schemas-cf'
 
 const CONTENT_COLLECTION = 'fl_content'
 const SCHEMAS_COLLECTION = 'fl_schemas'
 
-const factory: FlamelinkFactory = context => {
+export const factory: FlamelinkFactory = context => {
   const api: Api = {
     ref(ref, options) {
       const firestoreService = flamelink._ensureService('firestore', context)
@@ -333,7 +334,7 @@ const factory: FlamelinkFactory = context => {
         return
       }
 
-      const contentDocChunks: any[] = chunk(snapshot.docs, CF_BATCH_WRITE_LIMIT)
+      const contentDocChunks: any[] = chunk(snapshot.docs, BATCH_WRITE_LIMIT)
       const db = flamelink._ensureService('firestore', context)
 
       const batchQueue = createQueue(async (contentDocChunk: any[]) => {
@@ -351,4 +352,12 @@ const factory: FlamelinkFactory = context => {
   return api
 }
 
-export default factory
+const register: App.SetupModule = (context: App.Context) => {
+  if (context.dbType === 'cf') {
+    return factory(context)
+  }
+
+  return null
+}
+
+flamelink._registerModule('content', register)

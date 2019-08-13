@@ -44,16 +44,18 @@
   "dependencies": {
     "@flamelink/sdk-app": "^1.0.0-alpha.22",
     "@flamelink/sdk-app-types": "^1.0.0-alpha.22",
-    "@flamelink/sdk-content": "^1.0.0-alpha.22",
+    "@flamelink/sdk-content-cf": "^1.0.0-alpha.22",
+    "@flamelink/sdk-content-rtdb": "^1.0.0-alpha.22",
     "@flamelink/sdk-navigation": "^1.0.0-alpha.22",
-    "@flamelink/sdk-schemas": "^1.0.0-alpha.22",
+    "@flamelink/sdk-schemas-cf": "^1.0.0-alpha.22",
+    "@flamelink/sdk-schemas-rtdb": "^1.0.0-alpha.22",
     "@flamelink/sdk-settings": "^1.0.0-alpha.22",
     "@flamelink/sdk-storage": "^1.0.0-alpha.22",
     "@flamelink/sdk-users": "^1.0.0-alpha.22",
     "compose-then": "^1.0.1"
   },
   "scripts": {
-    "prebuild": "rimraf dist **/dist flamelink-* flamelink.*",
+    "prebuild": "rimraf dist **/dist **/**/dist flamelink-* flamelink.*",
     "build": "rollup -c",
     "dev": "rollup -c -w",
     "test": "jest"

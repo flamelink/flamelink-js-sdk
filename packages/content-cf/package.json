@@ -1,10 +1,10 @@
 {
-  "name": "@flamelink/sdk-content",
+  "name": "@flamelink/sdk-content-cf",
   "version": "1.0.0-alpha.22",
   "publishConfig": {
     "access": "public"
   },
-  "description": "Content module for Flamelink JavaScript SDK",
+  "description": "Content module for Flamelink JavaScript SDK - Cloud Firestore",
   "keywords": [
     "flamelink",
     "sdk",
@@ -26,8 +26,10 @@
   ],
   "dependencies": {
     "@flamelink/sdk-app": "^1.0.0-alpha.22",
-    "@flamelink/sdk-content-cf": "^1.0.0-alpha.22",
-    "@flamelink/sdk-content-rtdb": "^1.0.0-alpha.22"
+    "@flamelink/sdk-app-types": "^1.0.0-alpha.22",
+    "@flamelink/sdk-content-types": "^1.0.0-alpha.22",
+    "@flamelink/sdk-schemas-cf": "^1.0.0-alpha.22",
+    "@flamelink/sdk-utils": "^1.0.0-alpha.21"
   },
   "scripts": {
     "prebuild": "rimraf dist",

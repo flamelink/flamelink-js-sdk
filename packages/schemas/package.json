@@ -26,10 +26,8 @@
   ],
   "dependencies": {
     "@flamelink/sdk-app": "^1.0.0-alpha.22",
-    "@flamelink/sdk-app-types": "^1.0.0-alpha.22",
-    "@flamelink/sdk-schemas-types": "^1.0.0-alpha.22",
-    "@flamelink/sdk-utils": "^1.0.0-alpha.21",
-    "compose-then": "^1.0.1"
+    "@flamelink/sdk-schemas-cf": "^1.0.0-alpha.22",
+    "@flamelink/sdk-schemas-rtdb": "^1.0.0-alpha.22"
   },
   "scripts": {
     "prebuild": "rimraf dist",
