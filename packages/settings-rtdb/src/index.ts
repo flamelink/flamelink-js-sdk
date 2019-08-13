@@ -130,8 +130,6 @@ export const factory: FlamelinkFactory = context => {
   return api
 }
 
-
-
 export const register: App.SetupModule = (context: App.Context) => {
   if (context.dbType === 'rtdb') {
     return factory(context)

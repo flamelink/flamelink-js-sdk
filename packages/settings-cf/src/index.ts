@@ -229,4 +229,3 @@ export const register: App.SetupModule = (context: App.Context) => {
 }
 
 flamelink._registerModule('settings', register)
-

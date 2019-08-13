@@ -29,20 +29,20 @@ import {
   wrap,
   unwrap
 } from '@flamelink/sdk-utils'
-import { getFolderRefPath, getFileRefPath } from './helpers'
 import {
+  getFolderRefPath, getFileRefPath,
   filterFilesByFolderId,
   getScreenResolution,
   getStorageRefPath,
   setImagePathByClosestSize,
   getUploadEvents
-} from '../helpers'
+} from './helpers'
 import {
   DEFAULT_REQUIRED_IMAGE_SIZE,
   FOLDER_REQUIRED_FIELDS_FOR_STRUCTURING
-} from '../constants'
+} from './constants'
 
-const factory: FlamelinkFactory = function(context) {
+export const factory: FlamelinkFactory = function (context) {
   const api: Api = {
     async _getFolderId({ folderName = 'Root' }) {
       if (!folderName) {
@@ -186,8 +186,8 @@ Instructions here: https://flamelink.github.io/flamelink-js-sdk/#/getting-starte
 
       return context.usesAdminApp
         ? storageService
-            .bucket()
-            .file(getStorageRefPath(filename, options as ImageSize))
+          .bucket()
+          .file(getStorageRefPath(filename, options as ImageSize))
         : storageService.ref(getStorageRefPath(filename, options))
     },
 
@@ -210,8 +210,8 @@ Instructions here: https://flamelink.github.io/flamelink-js-sdk/#/getting-starte
     async getFolders({ fields, structure, ...options }: App.RTDB.Options) {
       const fieldsToPluck = Array.isArray(fields)
         ? Array.from(
-            new Set(FOLDER_REQUIRED_FIELDS_FOR_STRUCTURING.concat(fields))
-          )
+          new Set(FOLDER_REQUIRED_FIELDS_FOR_STRUCTURING.concat(fields))
+        )
         : fields
       const pluckFields = pluckResultFields(fieldsToPluck)
       const structureItems = formatStructure(structure, {
@@ -272,9 +272,9 @@ Instructions here: https://flamelink.github.io/flamelink-js-sdk/#/getting-starte
         options,
         options.mediaType
           ? {
-              orderByChild: 'type',
-              equalTo: options.mediaType
-            }
+            orderByChild: 'type',
+            equalTo: options.mediaType
+          }
           : {}
       )
       const folderId = await api._getFolderIdFromOptions(opts)
@@ -327,7 +327,7 @@ Instructions here: https://flamelink.github.io/flamelink-js-sdk/#/getting-starte
           } else {
             logWarning(
               `The provided path (${
-                size.path
+              size.path
               }) has been ignored because it did not match any of the given file's available paths.\nAvailable paths: ${availableFileSizes
                 .map(availableSize => availableSize.path)
                 .join(', ')}`
@@ -459,7 +459,7 @@ Instructions here: https://flamelink.github.io/flamelink-js-sdk/#/getting-starte
             emitter.emit(api.UploadEvents.START)
             const { sizes: userSizes, overwriteSizes } = options
             const settingsImageSizes = await get(context, 'modules.settings', {
-              getImageSizes() {}
+              getImageSizes() { }
             }).getImageSizes()
 
             if (settingsImageSizes) {
@@ -499,15 +499,15 @@ Instructions here: https://flamelink.github.io/flamelink-js-sdk/#/getting-starte
             const metadata = get(options, 'metadata', {} as any)
             const filename =
               (typeof fileData === 'object' && fileData.name) ||
-              typeof metadata.name === 'string'
+                typeof metadata.name === 'string'
                 ? `${id}_${metadata.name || fileData.name}`
                 : id
             const storageRef = api.ref(filename, options as ImageSize)
             const updateMethod = context.usesAdminApp
               ? 'upload'
               : typeof fileData === 'string'
-              ? 'putString'
-              : 'put'
+                ? 'putString'
+                : 'put'
             const args = [fileData]
 
             let folderId = await api._getFolderIdFromOptions(options)
@@ -630,4 +630,12 @@ Instructions here: https://flamelink.github.io/flamelink-js-sdk/#/getting-starte
   return api
 }
 
-export default factory
+export const register: App.SetupModule = (context: App.Context) => {
+  if (context.dbType === 'rtdb') {
+    return factory(context)
+  }
+
+  return null
+}
+
+flamelink._registerModule('storage', register)
