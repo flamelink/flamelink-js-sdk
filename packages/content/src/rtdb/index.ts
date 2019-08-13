@@ -17,6 +17,7 @@ import {
   unwrap
 } from '@flamelink/sdk-utils'
 import { getContentRefPath } from './helpers'
+import '@flamelink/sdk-schemas-rtdb'
 
 const factory: FlamelinkFactory = context => {
   const api: Api = {

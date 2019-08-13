@@ -18,6 +18,7 @@ import {
   populateEntriesForCF
 } from '@flamelink/sdk-utils'
 import { CF_BATCH_WRITE_LIMIT } from '../constants'
+import '@flamelink/sdk-schemas-cf'
 
 const CONTENT_COLLECTION = 'fl_content'
 const SCHEMAS_COLLECTION = 'fl_schemas'

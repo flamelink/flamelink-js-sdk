@@ -8,18 +8,5 @@
  * the module package.
  */
 
-import flamelink from '@flamelink/sdk-app'
-import * as App from '@flamelink/sdk-app-types'
-
-import getApiForRTDB from '@flamelink/sdk-schemas/dist/rtdb'
-import getApiForCF from '@flamelink/sdk-schemas/dist/cf'
-
-const schemas: App.SetupModule = (context: App.Context) => {
-  if (context.dbType === 'rtdb') {
-    return getApiForRTDB(context)
-  }
-
-  return getApiForCF(context)
-}
-
-flamelink._registerModule('schemas', schemas)
+import '@flamelink/sdk-schemas-rtdb'
+import '@flamelink/sdk-schemas-cf'
