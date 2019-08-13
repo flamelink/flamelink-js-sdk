@@ -2,13 +2,13 @@ import { FirebaseApp } from '@firebase/app-types'
 import { Context, UnsubscribeMethod } from '@flamelink/sdk-app-types'
 import { Api } from '@flamelink/sdk-settings-types'
 import uniqueId from 'lodash/uniqueId'
-import getAPI from '../index'
+import { factory as getAPI } from '../index'
 import {
   initializeFirestoreProject,
   getBaseContext
-} from '../../../../../tools/testing/firebase'
-import getImageSizes from '../../../../../fixtures/image-sizes'
-import getGlobals from '../../../../../fixtures/globals'
+} from '../../../../tools/testing/firebase'
+import getImageSizes from '../../../../fixtures/image-sizes'
+import getGlobals from '../../../../fixtures/globals'
 
 describe('- CF Settings', () => {
   let api: Api

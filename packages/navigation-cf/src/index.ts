@@ -45,8 +45,8 @@ export const factory: FlamelinkFactory = context => {
       const fieldsToPluck =
         Array.isArray(options.fields) && options.structure
           ? Array.from(
-            new Set(REQUIRED_FIELDS_FOR_STRUCTURING.concat(options.fields))
-          )
+              new Set(REQUIRED_FIELDS_FOR_STRUCTURING.concat(options.fields))
+            )
           : options.fields
 
       const pluckFields = pluckResultFields(fieldsToPluck)
@@ -121,8 +121,8 @@ export const factory: FlamelinkFactory = context => {
       const fieldsToPluck =
         Array.isArray(options.fields) && options.structure
           ? Array.from(
-            new Set(REQUIRED_FIELDS_FOR_STRUCTURING.concat(options.fields))
-          )
+              new Set(REQUIRED_FIELDS_FOR_STRUCTURING.concat(options.fields))
+            )
           : options.fields
 
       const pluckFields = pluckResultFields(fieldsToPluck)
@@ -196,17 +196,17 @@ export const factory: FlamelinkFactory = context => {
       const payload =
         typeof data === 'object'
           ? Object.assign({}, data, {
-            _fl_meta_: {
-              createdBy: getCurrentUser(context),
-              createdDate: getTimestamp(context),
-              env: context.env,
-              docId,
-              fl_id: navigationKey
-            },
-            items: castArray(data.items) || [],
-            id: navigationKey,
-            title: data.title || navigationKey
-          })
+              _fl_meta_: {
+                createdBy: getCurrentUser(context),
+                createdDate: getTimestamp(context),
+                env: context.env,
+                docId,
+                fl_id: navigationKey
+              },
+              items: castArray(data.items) || [],
+              id: navigationKey,
+              title: data.title || navigationKey
+            })
           : data
 
       await docRef.set(payload)
@@ -224,11 +224,11 @@ export const factory: FlamelinkFactory = context => {
       const payload =
         typeof data === 'object'
           ? Object.assign({}, data, {
-            '_fl_meta_.lastModifiedBy': getCurrentUser(context),
-            '_fl_meta_.lastModifiedDate': getTimestamp(context),
-            '_fl_meta_.fl_id': navigationKey,
-            id: navigationKey
-          })
+              '_fl_meta_.lastModifiedBy': getCurrentUser(context),
+              '_fl_meta_.lastModifiedDate': getTimestamp(context),
+              '_fl_meta_.fl_id': navigationKey,
+              id: navigationKey
+            })
           : data
 
       const snapshot = await api.ref(navigationKey).get()
@@ -256,10 +256,7 @@ export const factory: FlamelinkFactory = context => {
         return
       }
 
-      const navigationDocChunks: any[] = chunk(
-        snapshot.docs,
-        BATCH_WRITE_LIMIT
-      )
+      const navigationDocChunks: any[] = chunk(snapshot.docs, BATCH_WRITE_LIMIT)
       const db = flamelink._ensureService('firestore', context)
 
       const batchQueue = createQueue(async (navigationDocChunk: any[]) => {

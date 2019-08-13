@@ -9,7 +9,7 @@ import {
 } from '@flamelink/sdk-utils'
 import { getSettingsRefPath } from './helpers'
 
-const factory: FlamelinkFactory = context => {
+export const factory: FlamelinkFactory = context => {
   const api: Api = {
     ref(ref) {
       const dbService = flamelink._ensureService('database', context)
@@ -130,4 +130,14 @@ const factory: FlamelinkFactory = context => {
   return api
 }
 
-export default factory
+
+
+export const register: App.SetupModule = (context: App.Context) => {
+  if (context.dbType === 'rtdb') {
+    return factory(context)
+  }
+
+  return null
+}
+
+flamelink._registerModule('settings', register)

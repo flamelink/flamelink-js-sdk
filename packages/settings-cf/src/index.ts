@@ -1,13 +1,14 @@
 import keys from 'lodash/keys'
 import get from 'lodash/get'
 import flamelink from '@flamelink/sdk-app'
+import * as App from '@flamelink/sdk-app-types'
 import { FlamelinkFactory, Api, CF } from '@flamelink/sdk-settings-types'
 import { applyOptionsForCF, pluckResultFields } from '@flamelink/sdk-utils'
 
 const SETTINGS_COLLECTION = 'fl_settings'
 const LOCALES_COLLECTION = 'fl_locales'
 
-const factory: FlamelinkFactory = context => {
+export const factory: FlamelinkFactory = context => {
   const api: Api = {
     ref(settingsKey) {
       const firestoreService = flamelink._ensureService('firestore', context)
@@ -219,4 +220,13 @@ const factory: FlamelinkFactory = context => {
   return api
 }
 
-export default factory
+export const register: App.SetupModule = (context: App.Context) => {
+  if (context.dbType === 'cf') {
+    return factory(context)
+  }
+
+  return null
+}
+
+flamelink._registerModule('settings', register)
+

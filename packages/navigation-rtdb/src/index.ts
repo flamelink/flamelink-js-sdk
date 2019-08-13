@@ -153,14 +153,14 @@ export const factory: FlamelinkFactory = context => {
       const payload =
         typeof data === 'object'
           ? Object.assign({}, data, {
-            __meta__: {
-              createdBy: getCurrentUser(context),
-              createdDate: getTimestamp(context)
-            },
-            items: castArray(data.items) || [],
-            id: navigationKey,
-            title: data.title || navigationKey
-          })
+              __meta__: {
+                createdBy: getCurrentUser(context),
+                createdDate: getTimestamp(context)
+              },
+              items: castArray(data.items) || [],
+              id: navigationKey,
+              title: data.title || navigationKey
+            })
           : data
 
       await api.ref(navigationKey).set(payload)
@@ -181,10 +181,10 @@ export const factory: FlamelinkFactory = context => {
       const payload =
         typeof data === 'object'
           ? Object.assign({}, data, {
-            '__meta__/lastModifiedBy': getCurrentUser(context),
-            '__meta__/lastModifiedDate': getTimestamp(context),
-            id: navigationKey
-          })
+              '__meta__/lastModifiedBy': getCurrentUser(context),
+              '__meta__/lastModifiedDate': getTimestamp(context),
+              id: navigationKey
+            })
           : data
 
       await api.ref(navigationKey).update(payload)
