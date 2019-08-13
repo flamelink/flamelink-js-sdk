@@ -2,6 +2,7 @@ import keys from 'lodash/keys'
 import get from 'lodash/get'
 import chunk from 'lodash/chunk'
 import flamelink from '@flamelink/sdk-app'
+import * as App from '@flamelink/sdk-app-types'
 import { FlamelinkFactory, Api, CF } from '@flamelink/sdk-users-types'
 import {
   applyOptionsForCF,
@@ -14,12 +15,12 @@ import {
   isRefLike,
   processReferencesForCF
 } from '@flamelink/sdk-utils'
-import { CF_BATCH_WRITE_LIMIT } from '../constants'
+import { BATCH_WRITE_LIMIT } from './constants'
 
 const USERS_COLLECTION = 'fl_users'
 const PERMISSIONS_COLLECTION = 'fl_permissions'
 
-const factory: FlamelinkFactory = context => {
+export const factory: FlamelinkFactory = context => {
   const api: Api = {
     ref(uid) {
       const firestoreService = flamelink._ensureService('firestore', context)
@@ -136,21 +137,21 @@ const factory: FlamelinkFactory = context => {
       const payload =
         typeof data === 'object'
           ? Object.assign({}, data, {
-              _fl_meta_: {
-                createdBy: getCurrentUser(context),
-                createdDate: getTimestamp(context),
-                docId: uid
-              },
-              displayName: data.displayName || '',
-              email: data.email || '',
-              enabled: data.enabled || 'Yes',
-              firstName: data.firstName || '',
-              id: uid,
-              lastName: data.lastName || '',
-              ...(data.permissions
-                ? { permissions: api._getPermissionsRef(data.permissions) }
-                : {})
-            })
+            _fl_meta_: {
+              createdBy: getCurrentUser(context),
+              createdDate: getTimestamp(context),
+              docId: uid
+            },
+            displayName: data.displayName || '',
+            email: data.email || '',
+            enabled: data.enabled || 'Yes',
+            firstName: data.firstName || '',
+            id: uid,
+            lastName: data.lastName || '',
+            ...(data.permissions
+              ? { permissions: api._getPermissionsRef(data.permissions) }
+              : {})
+          })
           : data
 
       await api
@@ -201,7 +202,7 @@ const factory: FlamelinkFactory = context => {
         return
       }
 
-      const usersDocChunks: any[] = chunk(snapshot.docs, CF_BATCH_WRITE_LIMIT)
+      const usersDocChunks: any[] = chunk(snapshot.docs, BATCH_WRITE_LIMIT)
       const db = flamelink._ensureService('firestore', context)
 
       const batchQueue = createQueue(async (usersDocChunk: any[]) => {
@@ -217,4 +218,12 @@ const factory: FlamelinkFactory = context => {
   return api
 }
 
-export default factory
+export const register: App.SetupModule = (context: App.Context) => {
+  if (context.dbType === 'cf') {
+    return factory(context)
+  }
+
+  return null
+}
+
+flamelink._registerModule('users', register)

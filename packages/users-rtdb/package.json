@@ -1,10 +1,10 @@
 {
-  "name": "@flamelink/sdk-users",
+  "name": "@flamelink/sdk-users-rtdb",
   "version": "1.0.0-alpha.22",
   "publishConfig": {
     "access": "public"
   },
-  "description": "Users module for Flamelink JavaScript SDK",
+  "description": "Users module for Flamelink JavaScript SDK - Realtime Database",
   "keywords": [
     "flamelink",
     "sdk",
@@ -26,8 +26,10 @@
   ],
   "dependencies": {
     "@flamelink/sdk-app": "^1.0.0-alpha.22",
-    "@flamelink/sdk-users-cf": "^1.0.0-alpha.22",
-    "@flamelink/sdk-users-rtdb": "^1.0.0-alpha.22"
+    "@flamelink/sdk-app-types": "^1.0.0-alpha.22",
+    "@flamelink/sdk-users-types": "^1.0.0-alpha.22",
+    "@flamelink/sdk-utils": "^1.0.0-alpha.21",
+    "compose-then": "^1.0.1"
   },
   "scripts": {
     "prebuild": "rimraf dist",

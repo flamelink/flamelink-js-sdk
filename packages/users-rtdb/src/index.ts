@@ -13,7 +13,7 @@ import {
 } from '@flamelink/sdk-utils'
 import { getUserRefPath } from './helpers'
 
-const factory: FlamelinkFactory = context => {
+export const factory: FlamelinkFactory = context => {
   const api: Api = {
     ref(uid) {
       const dbService = flamelink._ensureService('database', context)
@@ -91,18 +91,18 @@ const factory: FlamelinkFactory = context => {
       const payload =
         typeof data === 'object'
           ? Object.assign({}, data, {
-              __meta__: {
-                createdBy: getCurrentUser(context),
-                createdDate: getTimestamp(context)
-              },
-              displayName: data.displayName || '',
-              email: data.email || '',
-              enabled: data.enabled || 'Yes',
-              firstName: data.firstName || '',
-              id: uid,
-              lastName: data.lastName || '',
-              permissions: data.permissions || '1'
-            })
+            __meta__: {
+              createdBy: getCurrentUser(context),
+              createdDate: getTimestamp(context)
+            },
+            displayName: data.displayName || '',
+            email: data.email || '',
+            enabled: data.enabled || 'Yes',
+            firstName: data.firstName || '',
+            id: uid,
+            lastName: data.lastName || '',
+            permissions: data.permissions || '1'
+          })
           : data
 
       return api.ref(uid).set(payload)
@@ -121,10 +121,10 @@ const factory: FlamelinkFactory = context => {
       const payload =
         typeof data === 'object'
           ? Object.assign({}, data, {
-              '__meta__/lastModifiedBy': getCurrentUser(context),
-              '__meta__/lastModifiedDate': getTimestamp(context),
-              id: uid
-            })
+            '__meta__/lastModifiedBy': getCurrentUser(context),
+            '__meta__/lastModifiedDate': getTimestamp(context),
+            id: uid
+          })
           : data
 
       return api.ref(uid).update(payload)
@@ -143,4 +143,12 @@ const factory: FlamelinkFactory = context => {
   return api
 }
 
-export default factory
+export const register: App.SetupModule = (context: App.Context) => {
+  if (context.dbType === 'rtdb') {
+    return factory(context)
+  }
+
+  return null
+}
+
+flamelink._registerModule('users', register)
