@@ -948,10 +948,6 @@ export const populateEntry = curry(
 
                   return Promise.all(
                     mediaEntries.map(async innerEntryKey => {
-                      console.log({
-                        media: isRefLike(innerEntryKey),
-                        innerEntryKey
-                      })
                       const pluckFields = pluckResultFields(
                         populateField.fields
                       )
