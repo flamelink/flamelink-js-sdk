@@ -59,6 +59,57 @@ const moduleNames = [
   'users'
 ]
 
+const getOptionTemplate = ({ input, cjs, esm }) => {
+  return {
+    input,
+    output: [
+      {
+        file: cjs,
+        format: 'cjs'
+      },
+      {
+        file: esm,
+        format: 'esm'
+      }
+    ],
+    plugins,
+    external
+  }
+}
+
+const getUmdTemplate = ({ moduleName, input, outputFile }) => {
+  return {
+    input,
+    output: {
+      file: outputFile,
+      format: 'umd',
+      name: LIBRARY_NAME,
+      sourcemap: true,
+      extend: true,
+      esModule: false,
+      globals: {
+        '@flamelink/sdk-app': LIBRARY_NAME
+      },
+      /**
+       * use iife to avoid below error in the old Safari browser
+       * SyntaxError: Functions cannot be declared in a nested block in strict mode
+       * https://github.com/firebase/firebase-js-sdk/issues/1228
+       *
+       */
+      intro: `try {(function() {`,
+      outro: `}).apply(this, arguments); } catch(err) {
+      console.error(err);
+      throw new Error(
+        'Cannot instantiate "flamelink-${moduleName}.js" - be sure to load flamelink-app.js first.'
+      );
+    }`
+    },
+    inlineDynamicImports: true,
+    external: ['@flamelink/sdk-app'],
+    plugins: umdPlugins
+  }
+}
+
 export default [
   /**
    * Global UMD build
@@ -105,35 +156,21 @@ export default [
   /**
    * Browser Builds
    */
-  {
-    input: 'src/index.ts',
-    output: [
-      { file: pkg.browser, format: 'cjs' },
-      { file: pkg.module, format: 'esm' }
-    ],
-    plugins,
-    external
-  },
+  getOptionTemplate({
+    input: `src/index.ts`,
+    cjs: pkg.browser,
+    esm: pkg.module
+  }),
 
   ...flatMap(moduleNames, moduleName => {
     const modulePkg = modulePkgs[moduleName]
 
     const options = [
-      {
+      getOptionTemplate({
         input: `${moduleName}/index.ts`,
-        output: [
-          {
-            file: resolve(moduleName, modulePkg.module),
-            format: 'esm'
-          },
-          {
-            file: resolve(moduleName, modulePkg.main),
-            format: 'cjs'
-          }
-        ],
-        plugins,
-        external
-      }
+        cjs: resolve(moduleName, modulePkg.main),
+        esm: resolve(moduleName, modulePkg.module)
+      })
     ]
 
     if (moduleName !== 'app') {
@@ -141,74 +178,47 @@ export default [
         /**
          * UMD build for each module
          */
-        {
+        getUmdTemplate({
+          moduleName,
           input: `${moduleName}/index.ts`,
-          output: {
-            file: `flamelink-${moduleName}.js`,
-            format: 'umd',
-            name: LIBRARY_NAME,
-            sourcemap: true,
-            extend: true,
-            esModule: false,
-            globals: {
-              '@flamelink/sdk-app': LIBRARY_NAME
-            },
-            /**
-             * use iife to avoid below error in the old Safari browser
-             * SyntaxError: Functions cannot be declared in a nested block in strict mode
-             * https://github.com/firebase/firebase-js-sdk/issues/1228
-             *
-             */
-            intro: `try {(function() {`,
-            outro: `}).apply(this, arguments); } catch(err) {
-            console.error(err);
-            throw new Error(
-              'Cannot instantiate "flamelink-${moduleName}.js" - be sure to load flamelink-app.js first.'
-            );
-          }`
-          },
-          inlineDynamicImports: true,
-          external: ['@flamelink/sdk-app'],
-          plugins: umdPlugins
-        },
+          outputFile: `flamelink-${moduleName}.js`
+        }),
+
+        /**
+         * Cloud Firestore UMD build for each module
+         */
+        getUmdTemplate({
+          moduleName,
+          input: `cf/${moduleName}/index.ts`,
+          outputFile: `flamelink-${moduleName}-cf.js`
+        }),
+
+        /**
+         * Realtime Database UMD build for each module
+         */
+        getUmdTemplate({
+          moduleName,
+          input: `rtdb/${moduleName}/index.ts`,
+          outputFile: `flamelink-${moduleName}-rtdb.js`
+        }),
 
         /**
          * Cloud Firestore build for each module
          */
-        {
+        getOptionTemplate({
           input: `cf/${moduleName}/index.ts`,
-          output: [
-            {
-              file: resolve('cf', moduleName, modulePkg.module),
-              format: 'esm'
-            },
-            {
-              file: resolve('cf', moduleName, modulePkg.main),
-              format: 'cjs'
-            }
-          ],
-          plugins,
-          external
-        },
+          cjs: resolve('cf', moduleName, modulePkg.main),
+          esm: resolve('cf', moduleName, modulePkg.module)
+        }),
 
         /**
          * Realtime DB build for each module
          */
-        {
+        getOptionTemplate({
           input: `rtdb/${moduleName}/index.ts`,
-          output: [
-            {
-              file: resolve('rtdb', moduleName, modulePkg.module),
-              format: 'esm'
-            },
-            {
-              file: resolve('rtdb', moduleName, modulePkg.main),
-              format: 'cjs'
-            }
-          ],
-          plugins,
-          external
-        }
+          cjs: resolve('rtdb', moduleName, modulePkg.main),
+          esm: resolve('rtdb', moduleName, modulePkg.module)
+        })
       )
     }
 
