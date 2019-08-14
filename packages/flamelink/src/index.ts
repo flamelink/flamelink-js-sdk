@@ -15,8 +15,8 @@ by your application when you use this SDK in production.
 
 ---------------------------------- CommonJS ------------------------------------
 
-import flamelink from 'flamelink/app'
-import 'flamelink/<module>'
+const flamelink = require('flamelink/app')
+require('flamelink/<module>')
 
 ------------------------------- EcmaScript Modules -----------------------------
 

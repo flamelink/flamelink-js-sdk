@@ -1,1 +1,2 @@
-import '@flamelink/sdk-settings'
+import '@flamelink/sdk-settings-cf'
+import '@flamelink/sdk-settings-rtdb'

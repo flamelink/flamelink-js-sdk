@@ -177,4 +177,141 @@ app.content.get({ schemaKey: 'products' })
 
 Check out the [API docs](/api-overview) for all the available methods!
 
+## Advanced Installation
+
+For the bundle-size-minded developers out there, this JavaScript SDK is split out into very small sub-modules that you can import to ensure the smallest possible bundle size.
+
+You essentially have 3 options to import and use this SDK:
+
+1. **Import everything** - all modules for both Cloud Firestore and the Realtime DB
+2. **Import specific modules** - only the Flamelink modules you need for both CF & RTDB
+3. **Import DB specific modules** - only the Flamelink modules for your specific DB
+
+!> All of these installation options still require Firebase to be imported first
+
+### Import Everything
+
+This is the simplest way to quickly get started with Flamelink.
+
+#### JavaScript imports
+
+```javascript
+import flamelink from 'flamelink'
+```
+
+#### TypeScript imports
+
+```javascript
+import * as flamelink from 'flamelink'
+```
+
+#### UMD/Script imports
+
+```javascript
+<script src="//cdn.jsdelivr.net/npm/flamelink@next/flamelink.js"></script>
+```
+
+### Import Specific Modules
+
+This will import only the Flamelink modules that you plan to use.
+
+#### JavaScript imports
+
+```javascript
+import flamelink from 'flamelink/app'
+// The following are all optional depending on your use case
+import 'flamelink/content'
+import 'flamelink/navigation'
+import 'flamelink/storage'
+import 'flamelink/settings'
+import 'flamelink/users'
+```
+
+#### TypeScript imports
+
+```javascript
+import * as flamelink from 'flamelink/app'
+// The following are all optional depending on your use case
+import 'flamelink/content'
+import 'flamelink/navigation'
+import 'flamelink/storage'
+import 'flamelink/settings'
+import 'flamelink/users'
+```
+
+#### UMD/Script imports
+
+```javascript
+<script src="//cdn.jsdelivr.net/npm/flamelink@next/flamelink-app.js"></script>
+// The following are all optional depending on your use case
+<script src="//cdn.jsdelivr.net/npm/flamelink@next/flamelink-content.js"></script>
+<script src="//cdn.jsdelivr.net/npm/flamelink@next/flamelink-navigation.js"></script>
+<script src="//cdn.jsdelivr.net/npm/flamelink@next/flamelink-storage.js"></script>
+<script src="//cdn.jsdelivr.net/npm/flamelink@next/flamelink-settings.js"></script>
+<script src="//cdn.jsdelivr.net/npm/flamelink@next/flamelink-users.js"></script>
+```
+
+### Import DB Specific Modules
+
+This will produce the absolute smallest bundle sizes.
+
+!> It is very important that the imports match the `dbType` you specify when initializing the Flamelink app instance.
+
+> `cf`: Cloud Firestore
+> `rtdb`: Realtime Database
+
+#### JavaScript imports
+
+```javascript
+import flamelink from 'flamelink/app'
+// The following are all optional depending on your use case
+// (import either rtdb or cf, not both)
+import 'flamelink/cf/content'
+import 'flamelink/rtdb/content'
+import 'flamelink/cf/navigation'
+import 'flamelink/rtdb/navigation'
+import 'flamelink/cf/storage'
+import 'flamelink/rtdb/storage'
+import 'flamelink/cf/settings'
+import 'flamelink/rtdb/settings'
+import 'flamelink/cf/users'
+import 'flamelink/rtdb/users'
+```
+
+#### TypeScript imports
+
+```javascript
+import * as flamelink from 'flamelink/app'
+// The following are all optional depending on your use case
+// (import either rtdb or cf, not both)
+import 'flamelink/cf/content'
+import 'flamelink/rtdb/content'
+import 'flamelink/cf/navigation'
+import 'flamelink/rtdb/navigation'
+import 'flamelink/cf/storage'
+import 'flamelink/rtdb/storage'
+import 'flamelink/cf/settings'
+import 'flamelink/rtdb/settings'
+import 'flamelink/cf/users'
+import 'flamelink/rtdb/users'
+```
+
+#### UMD/Script imports
+
+```javascript
+<script src="//cdn.jsdelivr.net/npm/flamelink@next/flamelink-app.js"></script>
+// The following are all optional depending on your use case
+// (import either rtdb or cf, not both)
+<script src="//cdn.jsdelivr.net/npm/flamelink@next/flamelink-content-cf.js"></script>
+<script src="//cdn.jsdelivr.net/npm/flamelink@next/flamelink-content-rtdb.js"></script>
+<script src="//cdn.jsdelivr.net/npm/flamelink@next/flamelink-navigation-cf.js"></script>
+<script src="//cdn.jsdelivr.net/npm/flamelink@next/flamelink-navigation-rtdb.js"></script>
+<script src="//cdn.jsdelivr.net/npm/flamelink@next/flamelink-storage-cf.js"></script>
+<script src="//cdn.jsdelivr.net/npm/flamelink@next/flamelink-storage-rtdb.js"></script>
+<script src="//cdn.jsdelivr.net/npm/flamelink@next/flamelink-settings-cf.js"></script>
+<script src="//cdn.jsdelivr.net/npm/flamelink@next/flamelink-settings-rtdb.js"></script>
+<script src="//cdn.jsdelivr.net/npm/flamelink@next/flamelink-users-cf.js"></script>
+<script src="//cdn.jsdelivr.net/npm/flamelink@next/flamelink-users-rtdb.js"></script>
+```
+
 > 🔥🔥🔥 **PSST. Your coding skills... So hot right now.** 🔥🔥🔥

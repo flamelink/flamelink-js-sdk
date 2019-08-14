@@ -4,7 +4,6 @@
 
 <!-- /TITLE -->
 
-
 <!-- BADGES/ -->
 
 <span class="badge-badge"><a href="https://lernajs.io/" title="Maintained by Lerna"><img src="https://img.shields.io/badge/maintained%20with-lerna-cc00ff.svg" alt="Lerna" /></a></span>
@@ -17,7 +16,6 @@
 
 <!-- /BADGES -->
 
-
 ![logo](https://raw.githubusercontent.com/flamelink/flamelink/master/docs/_assets/icon.svg?sanitize=true)
 
 > Easily integrate with your Flamelink CMS.
@@ -26,12 +24,11 @@
 
 <!-- DESCRIPTION/ -->
 
-This SDK is intended for use in a browser or Node.js environment. 
+This SDK is intended for use in a browser or Node.js environment.
 
 If you are unfamiliar with Flamelink, please visit our [flamelink.io](https://www.flamelink.io/) website for more info on features, pricing and more.
 
 <!-- /DESCRIPTION -->
-
 
 ## Prerequisites
 
@@ -97,37 +94,24 @@ This will always load the latest version of this SDK for you. If you want to loa
 
 First ensure that you load the `firebase` SDK and then the main `flamelink` app package along with any of the modules you want to you in your project.
 
+> The examples below shows you how to quickly get started. Take a look at the [Advanced Installation](https://flamelink.github.io/flamelink-js-sdk/#/getting-started?id=advanced-installation) instructions to import only what you need.
+
 In a CommonJS environment:
 
 ```javascript
-var flamelink = require('flamelink/app')
-require('flamelink/settings')
-require('flamelink/content')
-require('flamelink/storage')
-require('flamelink/navigation')
-require('flamelink/users')
+var flamelink = require('flamelink')
 ```
 
 or using ES Modules:
 
 ```javascript
-import flamelink from 'flamelink/app'
-import 'flamelink/settings'
-import 'flamelink/content'
-import 'flamelink/storage'
-import 'flamelink/navigation'
-import 'flamelink/users'
+import flamelink from 'flamelink'
 ```
 
 or using TypeScript:
 
 ```javascript
-import * as flamelink from 'flamelink/app'
-import 'flamelink/settings'
-import 'flamelink/content'
-import 'flamelink/storage'
-import 'flamelink/navigation'
-import 'flamelink/users'
+import * as flamelink from 'flamelink'
 ```
 
 ### Creating your Flamelink app instance
@@ -135,8 +119,8 @@ import 'flamelink/users'
 Create your `flamelink` app instance by passing in an existing `firebaseApp` instance along with any other `flamelink` config options:
 
 ```javascript
-import * as firebase from 'firebase' // This imports everything - just as an example
-import flamelink from 'flamelink' // This imports everything - just as an example - it is better to import only what you need
+import * as firebase from 'firebase'
+import flamelink from 'flamelink'
 
 const firebaseConfig = {
   apiKey: '<your-api-key>',
@@ -204,7 +188,6 @@ As easy as that. Read our [docs](https://flamelink.github.io/flamelink-js-sdk) f
 
 <!-- /HISTORY -->
 
-
 <!-- BACKERS/ -->
 
 <h2>Backers</h2>
@@ -219,18 +202,13 @@ These amazing people are maintaining this project:
 
 No sponsors yet! Will you be the first?
 
-
-
 <h3>Contributors</h3>
 
 These amazing people have contributed code to this project:
 
 <ul><li><a href="http://jperasmus.me">JP Erasmus</a> — <a href="https://github.com/flamelink/flamelink-js-sdk/commits?author=jperasmus" title="View the GitHub contributions of JP Erasmus on repository flamelink/flamelink-js-sdk">view contributions</a></li></ul>
 
-
-
 <!-- /BACKERS -->
-
 
 <!-- LICENSE/ -->
 

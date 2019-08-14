@@ -1,10 +1,10 @@
 import flamelink from '../app/index'
-import '../settings/index.cdn'
-import '../schemas/index.cdn'
-import '../content/index.cdn'
-import '../navigation/index.cdn'
-import '../storage/index.cdn'
-import '../users/index.cdn'
+import '../settings/index'
+import '../schemas/index'
+import '../content/index'
+import '../navigation/index'
+import '../storage/index'
+import '../users/index'
 
 console.warn(`
 [Flamelink] Warning!

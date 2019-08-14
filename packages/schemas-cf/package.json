@@ -1,0 +1,41 @@
+{
+  "name": "@flamelink/sdk-schemas-cf",
+  "version": "1.0.0-alpha.22",
+  "publishConfig": {
+    "access": "public"
+  },
+  "description": "Schemas module for Flamelink JavaScript SDK - Cloud Firestore",
+  "keywords": [
+    "flamelink",
+    "sdk",
+    "javascript",
+    "cloud firestore"
+  ],
+  "author": "Flamelink <feedback@flamelink.io> (https://flamelink.io)",
+  "homepage": "https://flamelink.github.io/flamelink-js-sdk/",
+  "license": "MIT",
+  "main": "dist/cjs/index.js",
+  "browser": "dist/cjs/index.js",
+  "module": "dist/esm/index.js",
+  "typings": "dist/index.d.ts",
+  "directories": {
+    "lib": "src",
+    "test": "src/__tests__"
+  },
+  "files": [
+    "dist"
+  ],
+  "dependencies": {
+    "@flamelink/sdk-app": "^1.0.0-alpha.22",
+    "@flamelink/sdk-app-types": "^1.0.0-alpha.22",
+    "@flamelink/sdk-schemas-types": "^1.0.0-alpha.22",
+    "@flamelink/sdk-utils": "^1.0.0-alpha.21",
+    "compose-then": "^1.0.1"
+  },
+  "scripts": {
+    "prebuild": "rimraf dist",
+    "build": "rollup -c",
+    "dev": "rollup -c -w",
+    "test": "jest"
+  }
+}
