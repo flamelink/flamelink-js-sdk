@@ -10,22 +10,22 @@
 
 To either retrieve a single content entry or all the entries for a given content type once, ie. Give me all my "Blog Posts".
 
-This method does not *watch* for real-time db changes, but is intended to retrieve your content once. If you're looking for real-time methods, take a look at the [`app.content.subscribe()`](/content?id=subscribe) method below.
+This method does not _watch_ for real-time db changes, but is intended to retrieve your content once. If you're looking for real-time methods, take a look at the [`app.content.subscribe()`](/content?id=subscribe) method below.
 
-*To get all entries for a specific content type:*
+_To get all entries for a specific content type:_
 
 ```javascript
 const blogPost = await app.content.get({ schemaKey: 'blogPosts' })
 console.log('All the blog posts:', blogPosts)
 ```
 
-*or to get an individual entry for that type (with options):*
+_or to get an individual entry for that type (with options):_
 
 ```javascript
 const blogPost = await app.content.get({
   schemaKey: 'blogPosts',
   entryId: '1502966447501',
-  fields: [ 'title', 'description' ]
+  fields: ['title', 'description']
 })
 console.log('Individual blog post with options applied:', blogPost)
 ```
@@ -33,7 +33,7 @@ console.log('Individual blog post with options applied:', blogPost)
 ### Option properties
 
 | Type              | Property    | Required | Description                                               |
-|-------------------|-------------|----------|-----------------------------------------------------------|
+| ----------------- | ----------- | -------- | --------------------------------------------------------- |
 | `string`          | `schemaKey` | optional | The content type reference you want to retrieve           |
 | `string`          | `entryId`   | optional | The entry ID for given content type                       |
 | `string[]`        | `fields`    | optional | Pluck specific fields from results                        |
@@ -44,22 +44,22 @@ See the [API overview](/api-overview?id=fields) for details regarding some of th
 
 #### .get() examples
 
-*Retrieve all of your blog posts, but only the `title`, `description` and `image` property for each individual post*
+_Retrieve all of your blog posts, but only the `title`, `description` and `image` property for each individual post_
 
 ```javascript
 app.content.get({
   schemaKey: 'blogPosts',
-  fields: [ 'title', 'description', 'image' ]
+  fields: ['title', 'description', 'image']
 })
 ```
 
-*Retrieve all of your blog posts and populate the `category` property for each individual post*
+_Retrieve all of your blog posts and populate the `category` property for each individual post_
 
 ```javascript
 app.content.get({
   schemaKey: 'blogPosts',
-  populate: [ 'category' ]
-});
+  populate: ['category']
+})
 ```
 
 *Retrieve all of your blog posts and populate *everything* for each individual post*
@@ -68,10 +68,10 @@ app.content.get({
 app.content.get({
   schemaKey: 'blogPosts',
   populate: true
-});
+})
 ```
 
-*find all your blog posts and populate the `category` relational field along with the `banner-image` media field, but only return the `id`, `name`, `icon` and `section` for each category assigned to each blog post. Additionally, each `category` might be related to a `section`, so populate that as well.*
+_find all your blog posts and populate the `category` relational field along with the `banner-image` media field, but only return the `id`, `name`, `icon` and `section` for each category assigned to each blog post. Additionally, each `category` might be related to a `section`, so populate that as well._
 
 ```javascript
 app.content.get({
@@ -79,17 +79,17 @@ app.content.get({
   populate: [
     {
       field: 'category',
-      fields: [ 'id', 'name', 'icon', 'section' ],
-      populate: [ 'section' ]
+      fields: ['id', 'name', 'icon', 'section'],
+      populate: ['section']
     },
     {
       field: 'banner-image'
     }
   ]
-});
+})
 ```
 
-*Retrieve only blog posts for entries that were updated*
+_Retrieve only blog posts for entries that were updated_
 
 ```javascript
 app.content.get({
@@ -106,7 +106,7 @@ A `Promise` that resolves to the reference `{Object}` on success or will reject 
 
 ## .getByField()
 
-*To retrieve a single entry once for a given field and value, ie. Give me my blog post with the `slug` `"my-famous-blog-post"`.*
+_To retrieve a single entry once for a given field and value, ie. Give me my blog post with the `slug` `"my-famous-blog-post"`._
 
 ```javascript
 const blogPost = await app.content.getByField({
@@ -129,7 +129,7 @@ const blogPost = await app.content.get({
 ### Option properties
 
 | Type       | Property    | Required | Description                                      |
-|------------|-------------|----------|--------------------------------------------------|
+| ---------- | ----------- | -------- | ------------------------------------------------ |
 | `{string}` | `schemaKey` | required | The content type reference you want to retrieve  |
 | `{string}` | `field`     | required | The name of the field to check the value against |
 | `{string}` | `value`     | required | The value of the given field to find             |
@@ -146,13 +146,15 @@ app.content.getByField({
   field: 'slug',
   value: 'my-blog-post-title',
   event: 'child_changed',
-  fields: [ 'title', 'description', 'image', 'category' ],
-  populate: [{
-    field: 'category',
-    fields: [ 'id', 'name', 'icon', 'section' ],
-    populate: [ 'section' ]
-  }]
-});
+  fields: ['title', 'description', 'image', 'category'],
+  populate: [
+    {
+      field: 'category',
+      fields: ['id', 'name', 'icon', 'section'],
+      populate: ['section']
+    }
+  ]
+})
 ```
 
 ### Return value
@@ -167,16 +169,19 @@ This method is similar to the `app.content.get()` method except that where the `
 
 If you are looking for retrieving data once, take a look at the [`app.content.get()`](/content?id=get) method above.
 
-*To subscribe to all entries for a specific content type:*
+_To subscribe to all entries for a specific content type:_
 
 ```javascript
 const unsubscribe = app.content.subscribe({
   schemaKey: 'blogPosts',
   callback(error, blogPosts) {
     if (error) {
-      return console.error('Something went wrong while retrieving all the content. Details:', error);
+      return console.error(
+        'Something went wrong while retrieving all the content. Details:',
+        error
+      )
     }
-    console.log('All the blog posts:', blogPosts);
+    console.log('All the blog posts:', blogPosts)
   }
 })
 
@@ -184,7 +189,7 @@ const unsubscribe = app.content.subscribe({
 unsubscribe()
 ```
 
-*To subscribe to the `child_added` child event for a specific content type:*
+_To subscribe to the `child_added` child event for a specific content type:_
 
 ```javascript
 const unsubscribe = app.content.subscribe({
@@ -192,7 +197,10 @@ const unsubscribe = app.content.subscribe({
   event: 'child_added',
   callback(error, blogPost) {
     if (error) {
-      return console.error('Something went wrong while retrieving the content that got added. Details:', error)
+      return console.error(
+        'Something went wrong while retrieving the content that got added. Details:',
+        error
+      )
     }
     console.log('The blog post that got added:', blogPost)
   }
@@ -202,16 +210,19 @@ const unsubscribe = app.content.subscribe({
 unsubscribe()
 ```
 
-*To subscribe to an individual entry for that type (with options):*
+_To subscribe to an individual entry for that type (with options):_
 
 ```javascript
 const unsubscribe = app.content.subscribe({
   schemaKey: 'blogPosts',
   entryId: '1502966447501',
-  fields: [ 'title', 'description' ],
+  fields: ['title', 'description'],
   callback(error, blogPost) {
     if (error) {
-      return console.error('Something went wrong while retrieving the entry. Details:', error);
+      return console.error(
+        'Something went wrong while retrieving the entry. Details:',
+        error
+      )
     }
     console.log('Individual blog post with options applied:', blogPost)
   }
@@ -224,7 +235,7 @@ unsubscribe()
 ### Option properties
 
 | Type         | Property    | Required | Description                                                           |
-|--------------|-------------|----------|-----------------------------------------------------------------------|
+| ------------ | ----------- | -------- | --------------------------------------------------------------------- |
 | `{string}`   | `schemaKey` | optional | The content type reference you want to retrieve                       |
 | `{string}`   | `entryId`   | optional | The entry ID/reference for given content type                         |
 | `{function}` | `callback`  | required | Function called once when subscribed and when subscribed data changes |
@@ -233,24 +244,24 @@ See the [API overview](/api-overview?id=fields) for details regarding some of th
 
 ### .subscribe() examples
 
-*To retrieve all of your blog posts, but only the `title`, `description` and `image` property for each individual post.*
+_To retrieve all of your blog posts, but only the `title`, `description` and `image` property for each individual post._
 
 ```javascript
 app.content.subscribe({
   schemaKey: 'blogPosts',
-  fields: [ 'title', 'description', 'image' ],
+  fields: ['title', 'description', 'image'],
   callback: function(error, blogPosts) {
     // Handle callback
   }
-});
+})
 ```
 
-*To retrieve all of your blog posts and populate the `category` property for each individual post.*
+_To retrieve all of your blog posts and populate the `category` property for each individual post._
 
 ```javascript
 app.content.subscribe({
   schemaKey: 'blogPosts',
-  populate: [ 'category' ],
+  populate: ['category'],
   callback: function(error, blogPosts) {
     // Handle callback
   }
@@ -279,7 +290,7 @@ app.content.add({
 ### Option properties
 
 | Type       | Property    | Required | Description                                              |
-|------------|-------------|----------|----------------------------------------------------------|
+| ---------- | ----------- | -------- | -------------------------------------------------------- |
 | `{string}` | `schemaKey` | required | The content type reference for the entry you want to set |
 | `{object}` | `data`      | required | Payload object for the new entry                         |
 
@@ -310,7 +321,7 @@ app.content.update({
 ### Option properties
 
 | Type       | Property    | Required | Description                                                 |
-|------------|-------------|----------|-------------------------------------------------------------|
+| ---------- | ----------- | -------- | ----------------------------------------------------------- |
 | `{string}` | `schemaKey` | required | The content type reference for the entry you want to update |
 | `{string}` | `entryId`   | required | The entry ID/reference for given content type to update     |
 | `{object}` | `data`      | required | Payload object to update at the given entry's reference     |
@@ -334,12 +345,12 @@ app.content.remove({
 })
 ```
 
-?> **Tip:** For the Real-time database, an entry can also be removed by passing `null` as the payload to the `app.content.update()` method.
+?> **Tip:** For the Realtime database, an entry can also be removed by passing `null` as the payload to the `app.content.update()` method.
 
 ### Option properties
 
 | Type       | Property    | Required | Description                                                 |
-|------------|-------------|----------|-------------------------------------------------------------|
+| ---------- | ----------- | -------- | ----------------------------------------------------------- |
 | `{string}` | `schemaKey` | required | The content type reference for the entry you want to remove |
 | `{string}` | `entryId`   | required | The entry ID/reference for given content type to remove     |
 

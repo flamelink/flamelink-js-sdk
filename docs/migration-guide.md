@@ -23,7 +23,7 @@ const app = flamelink({
   messagingSenderId: '<your-messenger-id>',
   env: 'production',
   locale: 'en-US',
-  dbType: 'rtdb' // can be 'rtdb' or 'cf' (Real-time DB vs Cloud Firestore)
+  dbType: 'rtdb' // can be 'rtdb' or 'cf' (Realtime DB vs Cloud Firestore)
 })
 ```
 
@@ -49,7 +49,7 @@ const app = flamelink({
   firebaseApp,
   env: 'production',
   locale: 'en-US',
-  dbType: 'rtdb' // can be 'rtdb' or 'cf' (Real-time DB vs Cloud Firestore)
+  dbType: 'rtdb' // can be 'rtdb' or 'cf' (Realtime DB vs Cloud Firestore)
 })
 ```
 

@@ -121,7 +121,7 @@ const app = flamelink({
   firebaseApp,
   env: 'production', // optional, defaults to `production`
   locale: 'en-US', // optional, defaults to `en-US`
-  dbType: 'rtdb' // optional, defaults to `rtdb` - can be 'rtdb' or 'cf' (Real-time DB vs Cloud Firestore)
+  dbType: 'rtdb' // optional, defaults to `rtdb` - can be 'rtdb' or 'cf' (Realtime DB vs Cloud Firestore)
 })
 ```
 

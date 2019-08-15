@@ -118,9 +118,9 @@ declare namespace App {
     interface FilterOptions {
       limitToFirst?: number
       limitToLast?: number
-      startAt?: string | number
-      endAt?: string | number
-      equalTo?: string | number
+      startAt?: StringOrNumber
+      endAt?: StringOrNumber | StringOrNumber[] | [number, string]
+      equalTo?: StringOrNumber
       [x: string]: any
     }
 
