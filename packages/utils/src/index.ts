@@ -320,7 +320,7 @@ export const applyFiltersForRTDB = (
     if (typeof filterValue === 'undefined') {
       return newRef
     }
-    return newRef[filter](filterValue)
+    return newRef[filter](...castArray(filterValue))
   }, ref)
 }
 

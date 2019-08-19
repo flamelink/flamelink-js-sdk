@@ -4,9 +4,9 @@ The Flamelink SDK exposes a Promise-based API that is intended to be very intuit
 
 All the API methods are available on a separate namespace/module of the Flamelink `app` instance that you've created, eg `app.content.get({ schemaKey: 'blogPosts' })`. The details for each of these methods can be found under the relevant sub-headings in these docs.
 
-This SDK can be used for either Firebase Real-time Database or Cloud Firestore projects and the surface API is mostly similar. Where there are difference, they are called out explicitly.
+This SDK can be used for either Firebase Realtime Database or Cloud Firestore projects and the surface API is mostly similar. Where there are difference, they are called out explicitly.
 
-> All methods are subject to the [Firebase Real-time Database](https://firebase.google.com/docs/database/security/), [Cloud Firestore](https://firebase.google.com/docs/firestore/security/get-started) or [Cloud Storage](https://firebase.google.com/docs/storage/security/) rules. That means, if you have database rules set up that only allows authenticated users access to read and write to your database, you would need to authenticate with a Firebase auth user before trying to use this API. It is always a good idea to only allow as little access as possible. If certain content should only be available behind a login, set up the rules to require authentication for the particular read or write action and then make sure you authenticate against the Firebase app first before trying to call the Flamelink SDK's methods.
+> All methods are subject to the [Firebase Realtime Database](https://firebase.google.com/docs/database/security/), [Cloud Firestore](https://firebase.google.com/docs/firestore/security/get-started) or [Cloud Storage](https://firebase.google.com/docs/storage/security/) rules. That means, if you have database rules set up that only allows authenticated users access to read and write to your database, you would need to authenticate with a Firebase auth user before trying to use this API. It is always a good idea to only allow as little access as possible. If certain content should only be available behind a login, set up the rules to require authentication for the particular read or write action and then make sure you authenticate against the Firebase app first before trying to call the Flamelink SDK's methods.
 
 ---
 
@@ -33,14 +33,17 @@ Most of the API methods allow you to pluck out only the fields that you want fro
 This example will get all the blog posts but only the `title`, `description` and `image` field for each.
 
 ```javascript
-app.content.get({ schemaKey: 'blogPosts', fields: [ 'title', 'description', 'image' ] })
+app.content.get({
+  schemaKey: 'blogPosts',
+  fields: ['title', 'description', 'image']
+})
 ```
 
 ## Database Events & Changes
 
-Both the Real-time database and Cloud Firestore allows you to only query for specific events or changes.
+Both the Realtime database and Cloud Firestore allows you to only query for specific events or changes.
 
-### Real-time database
+### Realtime database
 
 For the RTDB, the event is the child event to retrieve data for. By default, the `event` is `'value'`, which is used for retrieving the entire content at the given reference(s) path.
 
@@ -72,7 +75,7 @@ app.content.subscribe({
 
 ## Media files, Relational Data and References
 
-All relational data, including images and other files are stored as ID's in the Real-time database and as [document references](https://firebase.google.com/docs/reference/js/firebase.firestore.DocumentReference) in the Cloud Firestore database. To expand these ID's into the entry objects that they represent Flamelink makes a `populate` option available.
+All relational data, including images and other files are stored as ID's in the Realtime database and as [document references](https://firebase.google.com/docs/reference/js/firebase.firestore.DocumentReference) in the Cloud Firestore database. To expand these ID's into the entry objects that they represent Flamelink makes a `populate` option available.
 
 In the simplest case, you can set `populate: true` and all relational fields will be populated into their relevant objects. This is great, but you might want more control over which fields you want to populate so that you do not make unnecessary requests to your database. For these cases, you can specify the exact fields to populate.
 
@@ -83,8 +86,8 @@ A basic example that only populates a field called `category` for each `blogPost
 ```javascript
 app.content.get({
   schemaKey: 'blogPosts',
-  populate: [ 'category' ]
-});
+  populate: ['category']
+})
 ```
 
 There is also an alternative, more flexible option, to pass through an array of **objects** instead of **strings**. The important thing is to set the `field` attribute to the name of the field that should be populated.
@@ -99,14 +102,14 @@ app.content.get({
   populate: [
     {
       field: 'category',
-      fields: [ 'id', 'name', 'icon', 'section' ],
-      populate: [ 'section' ]
+      fields: ['id', 'name', 'icon', 'section'],
+      populate: ['section']
     },
     {
       field: 'banner-image'
     }
   ]
-});
+})
 ```
 
 !> **For advanced use:** It is also possible to populate fields for `repeater` and `field group` fields by specifying the `subFields` to populate.
@@ -117,28 +120,28 @@ app.content.get({
   populate: [
     {
       field: 'some-repeater-field',
-      subFields: [ 'field-inside-repeater-field' ]
+      subFields: ['field-inside-repeater-field']
     }
   ]
-});
+})
 ```
 
-?> **Tip:** The array of __strings__ *vs* array of __objects__ syntax can be mixed and matched if you want.
+?> **Tip:** The array of **strings** _vs_ array of **objects** syntax can be mixed and matched if you want.
 
 ---
 
 ## Sorting, Filtering and Ordering data
 
-Where appropriate, [Firebase's](https://firebase.google.com/docs/database/web/lists-of-data#sorting_and_filtering_data) and [Firestore's](https://firebase.google.com/docs/firestore/query-data/queries#simple_queries) filtering and ordering query options are made available to the different API methods. Since Cloud Firestore's querying functionality is way more powerful than that of the Real-time database, there are different limitations and options for each.
+Where appropriate, [Firebase's](https://firebase.google.com/docs/database/web/lists-of-data#sorting_and_filtering_data) and [Firestore's](https://firebase.google.com/docs/firestore/query-data/queries#simple_queries) filtering and ordering query options are made available to the different API methods. Since Cloud Firestore's querying functionality is way more powerful than that of the Realtime database, there are different limitations and options for each.
 
 ### Ordering
 
 The following options are available to order your result sets:
 
-#### Real-time database
+#### Realtime database
 
 | Property Name | Example Value Param                                    | Usage                                                                   |
-|---------------|--------------------------------------------------------|-------------------------------------------------------------------------|
+| ------------- | ------------------------------------------------------ | ----------------------------------------------------------------------- |
 | orderByKey    | can only be `true`                                     | Order the results by the child keys. This normally means the entry IDs. |
 | orderByValue  | can only be `true`                                     | Order the results by the child values.                                  |
 | orderByChild  | string name of child key, eg. `description` or `price` | Order the results by the specified child key.                           |
@@ -148,7 +151,7 @@ The following options are available to order your result sets:
 #### Cloud Firestore
 
 | Property Name | Example Value Param                                  | Usage                                                                       |
-|---------------|------------------------------------------------------|-----------------------------------------------------------------------------|
+| ------------- | ---------------------------------------------------- | --------------------------------------------------------------------------- |
 | orderBy       | {string} `'slug'`                                    | Order the results by the provided property - ascending                      |
 | orderBy       | {object} `{ field: 'slug', order: 'desc' }`          | Order the results by the provided `field` property in the `order` specified |
 | orderBy       | {array} `['slug', { field: 'date', order: 'desc' }]` | Order the results by the all of the provided options                        |
@@ -157,12 +160,12 @@ The following options are available to order your result sets:
 
 ### Filtering & Pagination
 
-#### Real-time database
+#### Realtime database
 
 The following options are available and can be combined with one another:
 
 | Property Name | Example Value Param | Usage                                                                                                      |
-|---------------|---------------------|------------------------------------------------------------------------------------------------------------|
+| ------------- | ------------------- | ---------------------------------------------------------------------------------------------------------- |
 | limitToFirst  | {number} `5`        | Limit the maximum number of entries from the beginning of the ordered list of results.                     |
 | limitToLast   | {number} `1`        | Limit the maximum number of entries from the end of the ordered list of results.                           |
 | startAt       | {number} `1`        | Return items greater than or equal to the specified key or value, depending on the order-by method chosen. |
@@ -176,7 +179,7 @@ The following options are available and can be combined with one another:
 The following options are available and can be combined with one another:
 
 | Property Name | Example Value Param                                                        | Usage                                                                             |
-|---------------|----------------------------------------------------------------------------|-----------------------------------------------------------------------------------|
+| ------------- | -------------------------------------------------------------------------- | --------------------------------------------------------------------------------- |
 | filters       | {array of arrays} `[ ['state', '==', 'CA'], ['language', '==', 'en-US'] ]` | Apply any number of `where` clauses to your result set.                           |
 | limit         | {number} `5`                                                               | Limit the number of document entries to be returned.                              |
 | startAt       | {number or string} `1` or `'a'`                                            | Return items greater than or equal to the specified value - given value included. |
@@ -190,7 +193,7 @@ The following options are available and can be combined with one another:
 
 ### Sorting
 
-#### Real-time database
+#### Realtime database
 
 Since the order of JavaScript object properties are not guaranteed and that most data in the Firebase database is stored as objects, Firebase does not guarantee the order of properties in the returned result set. When using the ordering methods, entries will always be sorted _ascending_ on the server and you can then use the `limitToFirst` or `limitToLast` methods to retrieve the relevant entries.
 
