@@ -14,12 +14,12 @@ import { Api as UsersApi } from '@flamelink/sdk-users-types'
 declare function flamelink(config: flamelink.app.Config): flamelink.app.App
 
 // eslint-disable-next-line no-redeclare
-declare namespace flamelink {}
+declare namespace flamelink { }
 
 declare namespace flamelink.app {
   export type Config = AppTypes.Config
 
-  interface App {
+  export interface App {
     content: flamelink.content.Content
     schemas: flamelink.schemas.Schemas
     storage: flamelink.storage.Storage
@@ -30,32 +30,32 @@ declare namespace flamelink.app {
 }
 
 declare namespace flamelink.schemas {
-  interface Schemas extends SchemasApi {}
+  export interface Schemas extends SchemasApi { }
 }
 
 declare namespace flamelink.content {
-  interface Content extends ContentApi {}
+  export interface Content extends ContentApi { }
 }
 
 declare namespace flamelink.nav {
-  interface Navigation extends NavigationApi {}
+  export interface Navigation extends NavigationApi { }
 }
 
 declare namespace flamelink.settings {
-  interface Settings extends SettingsApi {}
+  export interface Settings extends SettingsApi { }
 }
 
 declare namespace flamelink.storage {
-  interface Storage extends StorageApi {}
+  export interface Storage extends StorageApi { }
 }
 
 declare namespace flamelink.users {
-  interface Users extends UsersApi {}
+  export interface Users extends UsersApi { }
 }
-
-// Export for build systems (module loaders)
-export = flamelink
 
 // Global export outside of module loader environment
 // eslint-disable-next-line no-undef
 export as namespace flamelink
+
+// Export for build systems (module loaders)
+export = flamelink

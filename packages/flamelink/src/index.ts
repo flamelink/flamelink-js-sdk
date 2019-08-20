@@ -25,7 +25,7 @@ import 'flamelink/<module>'
 
 ----------------------------------- TypeScript ---------------------------------
 
-import * as flamelink from 'flamelink/app'
+import flamelink from 'flamelink/app'
 import 'flamelink/<module>'
 
 --------------------------------------------------------------------------------

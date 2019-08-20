@@ -70,17 +70,13 @@ Depending on your app setup, you can import the package using `require()` statem
 var flamelink = require('flamelink')
 ```
 
-or using ES2015/ES6 imports:
+or using ES2015/ES6/TypeScript imports:
 
 ```javascript
 import flamelink from 'flamelink'
 ```
 
-or using TypeScript:
-
-```javascript
-import * as flamelink from 'flamelink'
-```
+> **NOTE:** You might need to enable the `esModuleInterop` option in either your `tsconfig.json` file or provided as a CLI flag when using TypeScript.
 
 ### Creating your Flamelink app instance
 
@@ -193,17 +189,13 @@ You essentially have 3 options to import and use this SDK:
 
 This is the simplest way to quickly get started with Flamelink.
 
-#### JavaScript imports
+#### JavaScript/TypeScript imports
 
 ```javascript
 import flamelink from 'flamelink'
 ```
 
-#### TypeScript imports
-
-```javascript
-import * as flamelink from 'flamelink'
-```
+> **NOTE:** You might need to enable the `esModuleInterop` option in either your `tsconfig.json` file or provided as a CLI flag when using TypeScript.
 
 #### UMD/Script imports
 
@@ -215,22 +207,10 @@ import * as flamelink from 'flamelink'
 
 This will import only the Flamelink modules that you plan to use.
 
-#### JavaScript imports
+#### JavaScript/TypeScript imports
 
 ```javascript
 import flamelink from 'flamelink/app'
-// The following are all optional depending on your use case
-import 'flamelink/content'
-import 'flamelink/navigation'
-import 'flamelink/storage'
-import 'flamelink/settings'
-import 'flamelink/users'
-```
-
-#### TypeScript imports
-
-```javascript
-import * as flamelink from 'flamelink/app'
 // The following are all optional depending on your use case
 import 'flamelink/content'
 import 'flamelink/navigation'
@@ -260,7 +240,7 @@ This will produce the absolute smallest bundle sizes.
 > `cf`: Cloud Firestore
 > `rtdb`: Realtime Database
 
-#### JavaScript imports
+#### JavaScript/TypeScript imports
 
 ```javascript
 import flamelink from 'flamelink/app'
@@ -278,23 +258,7 @@ import 'flamelink/cf/users'
 import 'flamelink/rtdb/users'
 ```
 
-#### TypeScript imports
-
-```javascript
-import * as flamelink from 'flamelink/app'
-// The following are all optional depending on your use case
-// (import either rtdb or cf, not both)
-import 'flamelink/cf/content'
-import 'flamelink/rtdb/content'
-import 'flamelink/cf/navigation'
-import 'flamelink/rtdb/navigation'
-import 'flamelink/cf/storage'
-import 'flamelink/rtdb/storage'
-import 'flamelink/cf/settings'
-import 'flamelink/rtdb/settings'
-import 'flamelink/cf/users'
-import 'flamelink/rtdb/users'
-```
+> **NOTE:** You might need to enable the `esModuleInterop` option in either your `tsconfig.json` file or provided as a CLI flag when using TypeScript.
 
 #### UMD/Script imports
 
