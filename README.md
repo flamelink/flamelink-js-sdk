@@ -102,17 +102,13 @@ In a CommonJS environment:
 var flamelink = require('flamelink')
 ```
 
-or using ES Modules:
+or using ES Modules or TypeScript:
 
 ```javascript
 import flamelink from 'flamelink'
 ```
 
-or using TypeScript:
-
-```javascript
-import * as flamelink from 'flamelink'
-```
+> **Note:** You might need to enable the `esModuleInterop` option in either your `tsconfig.json` file or provided as a CLI flag when using TypeScript.
 
 ### Creating your Flamelink app instance
 

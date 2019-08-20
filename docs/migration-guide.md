@@ -244,7 +244,7 @@ const flamelinkApp: flamelink.App = flamelink(config)
 v1.x
 
 ```javascript
-import * as flamelink from 'flamelink/app'
+import flamelink from 'flamelink'
 
 const config: flamelink.app.Config = {
   firebaseApp: yourFirebaseAppInstance,
@@ -254,5 +254,7 @@ const config: flamelink.app.Config = {
 }
 const flamelinkApp: flamelink.app.App = flamelink(config)
 ```
+
+> **NOTE:** You might need to enable the `esModuleInterop` option in either your `tsconfig.json` file or provided as a CLI flag when using TypeScript.
 
 Please [log any issues](https://github.com/flamelink/flamelink-js-sdk/issues) you might find with the types so that we can address them.
