@@ -1,6 +1,6 @@
 {
   "name": "@flamelink/sdk-storage-types",
-  "version": "1.0.0-alpha.22",
+  "version": "1.0.0-alpha.25",
   "publishConfig": {
     "access": "public"
   },
@@ -25,7 +25,7 @@
     "url": "https://github.com/flamelink/flamelink-js-sdk/issues"
   },
   "dependencies": {
-    "@flamelink/sdk-app-types": "^1.0.0-alpha.22"
+    "@flamelink/sdk-app-types": "^1.0.0-alpha.25"
   },
   "scripts": {
     "build": "tsc"

@@ -1,6 +1,6 @@
 {
   "name": "@flamelink/sdk-navigation-rtdb",
-  "version": "1.0.0-alpha.24",
+  "version": "1.0.0-alpha.25",
   "publishConfig": {
     "access": "public"
   },
@@ -25,10 +25,10 @@
     "dist"
   ],
   "dependencies": {
-    "@flamelink/sdk-app": "^1.0.0-alpha.24",
-    "@flamelink/sdk-app-types": "^1.0.0-alpha.22",
-    "@flamelink/sdk-navigation-types": "^1.0.0-alpha.22",
-    "@flamelink/sdk-utils": "^1.0.0-alpha.24",
+    "@flamelink/sdk-app": "^1.0.0-alpha.25",
+    "@flamelink/sdk-app-types": "^1.0.0-alpha.25",
+    "@flamelink/sdk-navigation-types": "^1.0.0-alpha.25",
+    "@flamelink/sdk-utils": "^1.0.0-alpha.25",
     "compose-then": "^1.0.1"
   },
   "scripts": {
