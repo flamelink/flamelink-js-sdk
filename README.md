@@ -202,7 +202,8 @@ No sponsors yet! Will you be the first?
 
 These amazing people have contributed code to this project:
 
-<ul><li><a href="http://jperasmus.me">JP Erasmus</a> — <a href="https://github.com/flamelink/flamelink-js-sdk/commits?author=jperasmus" title="View the GitHub contributions of JP Erasmus on repository flamelink/flamelink-js-sdk">view contributions</a></li></ul>
+<ul><li><a href="http://jperasmus.me">JP Erasmus</a> — <a href="https://github.com/flamelink/flamelink-js-sdk/commits?author=jperasmus" title="View the GitHub contributions of JP Erasmus on repository flamelink/flamelink-js-sdk">view contributions</a></li>
+<li><a href="http://github.com/apps/dependabot">dependabot[bot]</a> — <a href="https://github.com/flamelink/flamelink-js-sdk/commits?author=dependabot[bot]" title="View the GitHub contributions of dependabot[bot] on repository flamelink/flamelink-js-sdk">view contributions</a></li></ul>
 
 <!-- /BACKERS -->
 

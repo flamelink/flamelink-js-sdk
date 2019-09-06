@@ -79,13 +79,14 @@ export const factory: FlamelinkFactory = function(context) {
     },
 
     async _setFile(filePayload: FileObject) {
-      const payload = Object.assign({}, filePayload, {
+      const payload = {
+        ...filePayload,
         _fl_meta_: {
           createdBy: getCurrentUser(context),
           createdDate: getTimestamp(context),
           docId: filePayload.id
         }
-      })
+      }
 
       return api.fileRef(filePayload.id).set(payload)
     },
@@ -619,7 +620,7 @@ Instructions here: https://flamelink.github.io/flamelink-js-sdk/#/getting-starte
             const filePayload: FileObject = {
               id,
               file: get(snapshot, 'metadata.name', ''),
-              folderId: api.folderRef(folderId),
+              folderId: api.folderRef(folderId || 'root'),
               type: mediaType,
               contentType: get(snapshot, 'metadata.contentType', '')
             }
