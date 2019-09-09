@@ -49,6 +49,7 @@ typings/
 !.vscode
 !.github
 !.nojekyll
+!.opensource
 
 # Build files
 dist

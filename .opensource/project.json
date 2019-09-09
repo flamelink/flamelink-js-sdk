@@ -1,0 +1,10 @@
+{
+  "name": "Flamelink JS SDK",
+  "platforms": ["Web"],
+  "content": "README.md",
+  "pages": {
+    "docs/README.md": "Overview",
+    "docs/getting-started.md": "Getting Started"
+  },
+  "related": []
+}
