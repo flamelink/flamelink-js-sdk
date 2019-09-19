@@ -223,11 +223,15 @@ export const factory: FlamelinkFactory = context => {
 
       const payload =
         typeof data === 'object'
-          ? Object.assign({}, data, {
-              '__meta__/lastModifiedBy': getCurrentUser(context),
-              '__meta__/lastModifiedDate': getTimestamp(context),
+          ? {
+              ...data,
+              __meta__: {
+                ...(data.__meta__ || {}),
+                lastModifiedBy: getCurrentUser(context),
+                lastModifiedDate: getTimestamp(context)
+              },
               id: schemaKey
-            })
+            }
           : data
 
       await api.ref(schemaKey).update(payload)

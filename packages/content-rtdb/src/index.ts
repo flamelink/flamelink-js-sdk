@@ -246,8 +246,11 @@ export const factory: FlamelinkFactory = context => {
         typeof data === 'object'
           ? {
               ...data,
-              '__meta__/lastModifiedBy': getCurrentUser(context),
-              '__meta__/lastModifiedDate': getTimestamp(context),
+              __meta__: {
+                ...(data.__meta__ || {}),
+                lastModifiedBy: getCurrentUser(context),
+                lastModifiedDate: getTimestamp(context)
+              },
               id: entryId
             }
           : data
