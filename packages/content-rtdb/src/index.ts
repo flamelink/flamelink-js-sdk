@@ -4,7 +4,7 @@ import compose from 'compose-then'
 import flamelink from '@flamelink/sdk-app'
 import * as App from '@flamelink/sdk-app-types'
 import { FlamelinkFactory, Api, RTDB } from '@flamelink/sdk-content-types'
-import { SchemaFields, SchemaField } from '@flamelink/sdk-schemas-types'
+import { SchemaFields, SchemaField, Schema } from '@flamelink/sdk-schemas-types'
 import {
   applyOptionsForRTDB,
   pluckResultFields,
@@ -42,7 +42,11 @@ export const factory: FlamelinkFactory = context => {
     async get({ schemaKey, entryId, ...options }: RTDB.Get = {}) {
       const pluckFields = pluckResultFields(options.fields)
       const populateFields = populateEntry(context, schemaKey, options.populate)
-      const snapshot = await api.getRaw({ ...options, schemaKey, entryId })
+      const snapshot: firebase.database.DataSnapshot = await api.getRaw({
+        ...options,
+        schemaKey,
+        entryId
+      })
 
       if (entryId) {
         return await compose(
@@ -53,7 +57,9 @@ export const factory: FlamelinkFactory = context => {
         )(snapshot.val())
       }
 
-      const schema = await get(context, 'modules.schemas').get({ schemaKey })
+      const schema: Schema = await get(context, 'modules.schemas').get({
+        schemaKey
+      })
       const isSingleType = schema && schema.type === 'single'
 
       // If content type is a single, we need to wrap the object for filters to work correctly
@@ -111,7 +117,7 @@ export const factory: FlamelinkFactory = context => {
 
       filteredRef.on(
         options.event || 'value',
-        (snapshot: any) => callback(null, snapshot),
+        (snapshot: firebase.database.DataSnapshot) => callback(null, snapshot),
         (err: Error) => callback(err, null)
       )
 
@@ -127,7 +133,7 @@ export const factory: FlamelinkFactory = context => {
         schemaKey,
         entryId,
         ...options,
-        async callback(err, snapshot) {
+        async callback(err, snapshot: firebase.database.DataSnapshot) {
           if (err) {
             return callback(err, null)
           }

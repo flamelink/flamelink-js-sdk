@@ -13,12 +13,12 @@ declare namespace Schemas {
 
     interface Add extends App.RTDB.Options {
       schemaKey: string
-      data: any
+      data: Partial<Schema>
     }
 
     interface Update extends App.RTDB.Options {
       schemaKey: string
-      data: any
+      data: Partial<Schema>
     }
 
     interface Remove extends App.RTDB.Options {
@@ -38,12 +38,12 @@ declare namespace Schemas {
 
     interface Add extends App.CF.Options {
       schemaKey: string
-      data: any
+      data: Partial<Schema>
     }
 
     interface Update extends App.CF.Options {
       schemaKey: string
-      data: any
+      data: Partial<Schema>
     }
 
     interface Remove extends App.CF.Options {
@@ -86,7 +86,7 @@ declare namespace Schemas {
 
   export interface FieldConstraint {
     rule: string
-    ruleValue: any
+    ruleValue: unknown
     uniqueKey?: string
   }
 
@@ -121,20 +121,20 @@ declare namespace Schemas {
   export type SchemaType = 'single' | 'collection' | 'form'
 
   interface RtdbSchemaMetadata {
-    createdBy: string
-    createdDate: string | object
+    createdBy?: string
+    createdDate?: string
     lastModifiedBy?: string
     lastModifiedDate?: string
   }
 
   interface CfSchemaMetadata {
-    createdBy: string
-    createdDate: string | object
+    createdBy?: string
+    createdDate?: string | firebase.firestore.Timestamp
     docId: string
     env: string
     fl_id: string
     lastModifiedBy?: string
-    lastModifiedDate?: string
+    lastModifiedDate?: string | firebase.firestore.Timestamp
   }
 
   export interface Schema {
@@ -176,11 +176,11 @@ declare namespace Schemas {
     subscribeFields(options?: RTDB.Subscribe): App.UnsubscribeMethod
     subscribeFields(options?: CF.Subscribe): App.UnsubscribeMethod
 
-    add(options: RTDB.Add): Promise<any>
-    add(options: CF.Add): Promise<any>
+    add(options: RTDB.Add): Promise<Schema>
+    add(options: CF.Add): Promise<Schema>
 
-    update(options: RTDB.Update): Promise<any>
-    update(options: CF.Update): Promise<any>
+    update(options: RTDB.Update): Promise<Partial<Schema>>
+    update(options: CF.Update): Promise<Partial<Schema>>
 
     remove(options: RTDB.Remove): Promise<any>
     remove(options: CF.Remove): Promise<any>

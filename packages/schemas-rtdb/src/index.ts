@@ -100,7 +100,7 @@ export const factory: FlamelinkFactory = context => {
 
       filteredRef.on(
         options.event || 'value',
-        (snapshot: any) => callback(null, snapshot),
+        (snapshot: firebase.database.DataSnapshot) => callback(null, snapshot),
         (err: Error) => callback(err, null)
       )
 

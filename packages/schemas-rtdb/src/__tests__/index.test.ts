@@ -257,8 +257,6 @@ describe('- RTDB Schemas', () => {
         ...getSchema({ dbType: 'rtdb', schemaKey }),
         ...{
           __meta__: {
-            createdBy: expect.any(String),
-            createdDate: expect.any(String),
             lastModifiedBy: expect.any(String),
             lastModifiedDate: expect.any(String)
           },

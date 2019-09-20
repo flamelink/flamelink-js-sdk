@@ -223,7 +223,9 @@ export const getAuthServiceFactory = (context: App.Context): any => {
   return get(context, 'firebaseApp.firebase_.auth')
 }
 
-export const getTimestamp = (context: App.Context): any => {
+export const getTimestamp = (
+  context: App.Context
+): string | firebase.firestore.Timestamp => {
   if (context.dbType === 'cf') {
     return get(getFirestoreServiceFactory(context), 'Timestamp.now', () =>
       new Date().toISOString()
@@ -233,7 +235,7 @@ export const getTimestamp = (context: App.Context): any => {
   return new Date().toISOString()
 }
 
-export const getCurrentUser = (context: App.Context): any => {
+export const getCurrentUser = (context: App.Context): string => {
   const auth = getAuthServiceFactory(context)
 
   if (typeof auth !== 'function') {
