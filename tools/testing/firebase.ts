@@ -27,7 +27,7 @@ export const getFirestoreService = function(auth: any) {
 }
 
 export const initializeRealtimeProject = async function(
-  config: Partial<firebase.app.App['options']>
+  config: firebase.app.App['options']
 ): Promise<firebase.app.App> {
   const firebaseApp = firebase.initializeAdminApp(
     Object.assign({ databaseName: 'default' }, config)
