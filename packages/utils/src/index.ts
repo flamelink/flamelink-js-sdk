@@ -11,6 +11,7 @@ import memoize from 'lodash/memoize'
 import pick from 'lodash/fp/pick'
 import compose from 'compose-then'
 import * as App from '@flamelink/sdk-app-types'
+import * as FirestoreTypes from '@firebase/firestore-types'
 
 if (Symbol['asyncIterator'] === undefined) {
   ;(Symbol as any)['asyncIterator'] = Symbol.for('asyncIterator')
@@ -225,7 +226,7 @@ export const getAuthServiceFactory = (context: App.Context): any => {
 
 export const getTimestamp = (
   context: App.Context
-): string | firebase.firestore.Timestamp => {
+): string | FirestoreTypes.Timestamp => {
   if (context.dbType === 'cf') {
     return get(getFirestoreServiceFactory(context), 'Timestamp.now', () =>
       new Date().toISOString()
