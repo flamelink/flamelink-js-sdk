@@ -26,6 +26,7 @@
     "dist"
   ],
   "dependencies": {
+    "@firebase/firestore-types": "^1.5.0",
     "@flamelink/sdk-app": "^1.0.0-alpha.25",
     "@flamelink/sdk-app-types": "^1.0.0-alpha.25",
     "@flamelink/sdk-schemas-types": "^1.0.0-alpha.25",

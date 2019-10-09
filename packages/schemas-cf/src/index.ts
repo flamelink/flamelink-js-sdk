@@ -4,13 +4,15 @@ import keys from 'lodash/keys'
 import chunk from 'lodash/chunk'
 import castArray from 'lodash/castArray'
 import flamelink from '@flamelink/sdk-app'
+import { DocumentSnapshot } from '@firebase/firestore-types'
 import * as App from '@flamelink/sdk-app-types'
 import {
   FlamelinkFactory,
   Api,
   CF,
   Schema,
-  SchemaFields
+  SchemaFields,
+  SchemaCf
 } from '@flamelink/sdk-schemas-types'
 import {
   applyOptionsForCF,
@@ -239,7 +241,8 @@ export const factory: FlamelinkFactory = context => {
       const docRef = schemasRef.doc()
       const docId = docRef.id
 
-      const payload = Object.assign({}, data, {
+      const payload = {
+        ...data,
         _fl_meta_: {
           createdBy: getCurrentUser(context),
           createdDate: getTimestamp(context),
@@ -258,7 +261,7 @@ export const factory: FlamelinkFactory = context => {
           typeof data.sortable === 'undefined' ? true : Boolean(data.sortable),
         title: data.title || schemaKey,
         type: data.type || 'collection'
-      })
+      }
 
       await docRef.set(payload)
 
@@ -281,10 +284,8 @@ export const factory: FlamelinkFactory = context => {
         return api.add({ schemaKey, data })
       }
 
-      const schemas: firebase.firestore.DocumentSnapshot[] = []
-      snapshot.forEach((doc: firebase.firestore.DocumentSnapshot) =>
-        schemas.push(doc)
-      )
+      const schemas: DocumentSnapshot[] = []
+      snapshot.forEach((doc: DocumentSnapshot) => schemas.push(doc))
 
       const schema = schemas[0]
 

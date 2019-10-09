@@ -3,6 +3,7 @@ import keys from 'lodash/keys'
 import compose from 'compose-then'
 import flamelink from '@flamelink/sdk-app'
 import * as App from '@flamelink/sdk-app-types'
+import { DataSnapshot } from '@firebase/database-types'
 import { FlamelinkFactory, Api, RTDB } from '@flamelink/sdk-content-types'
 import { SchemaFields, SchemaField, Schema } from '@flamelink/sdk-schemas-types'
 import {
@@ -42,7 +43,7 @@ export const factory: FlamelinkFactory = context => {
     async get({ schemaKey, entryId, ...options }: RTDB.Get = {}) {
       const pluckFields = pluckResultFields(options.fields)
       const populateFields = populateEntry(context, schemaKey, options.populate)
-      const snapshot: firebase.database.DataSnapshot = await api.getRaw({
+      const snapshot: DataSnapshot = await api.getRaw({
         ...options,
         schemaKey,
         entryId
@@ -117,7 +118,7 @@ export const factory: FlamelinkFactory = context => {
 
       filteredRef.on(
         options.event || 'value',
-        (snapshot: firebase.database.DataSnapshot) => callback(null, snapshot),
+        (snapshot: DataSnapshot) => callback(null, snapshot),
         (err: Error) => callback(err, null)
       )
 
@@ -133,7 +134,7 @@ export const factory: FlamelinkFactory = context => {
         schemaKey,
         entryId,
         ...options,
-        async callback(err, snapshot: firebase.database.DataSnapshot) {
+        async callback(err, snapshot: DataSnapshot) {
           if (err) {
             return callback(err, null)
           }

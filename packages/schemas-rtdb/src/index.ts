@@ -4,6 +4,7 @@ import keys from 'lodash/keys'
 import castArray from 'lodash/castArray'
 import flamelink from '@flamelink/sdk-app'
 import * as App from '@flamelink/sdk-app-types'
+import { DataSnapshot } from '@firebase/database-types'
 import { FlamelinkFactory, Api, RTDB } from '@flamelink/sdk-schemas-types'
 import {
   applyOptionsForRTDB,
@@ -100,7 +101,7 @@ export const factory: FlamelinkFactory = context => {
 
       filteredRef.on(
         options.event || 'value',
-        (snapshot: firebase.database.DataSnapshot) => callback(null, snapshot),
+        (snapshot: DataSnapshot) => callback(null, snapshot),
         (err: Error) => callback(err, null)
       )
 
