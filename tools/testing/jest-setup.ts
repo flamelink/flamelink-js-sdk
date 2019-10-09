@@ -70,7 +70,7 @@ const startEmulator = (
       logError(`${data}`)
     })
 
-    child.on('error', (err: any) => {
+    child.on('error', (err: Error) => {
       logError(`Emulator failed to start`)
       clearInterval(interval)
       reject(err)

@@ -27,7 +27,7 @@ export interface GridColumns {
 
 export interface FieldConstraint {
   rule: string
-  ruleValue: any
+  ruleValue: unknown
   uniqueKey?: string
 }
 

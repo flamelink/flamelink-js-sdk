@@ -1,7 +1,10 @@
 // eslint-disable-next-line no-redeclare
 declare namespace App {
-  type SubscriptionCallback = (error: Error | null, data: any) => any
-  type UnsubscribeMethod = () => any
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  type FixMe = any
+
+  type SubscriptionCallback = (error: Error | null, data: FixMe) => FixMe
+  type UnsubscribeMethod = () => FixMe
   type StringOrNumber = string | number
 
   type ModuleName =
@@ -13,12 +16,12 @@ declare namespace App {
     | 'storage'
 
   interface Modules {
-    content?: any
-    schemas?: any
-    settings?: any
-    nav?: any
-    users?: any
-    storage?: any
+    content?: FixMe
+    schemas?: FixMe
+    settings?: FixMe
+    nav?: FixMe
+    users?: FixMe
+    storage?: FixMe
   }
 
   type FirebaseService = 'auth' | 'database' | 'firestore' | 'storage'
@@ -27,7 +30,7 @@ declare namespace App {
     schemas?: string[]
   }
 
-  type SetupModule = (context: Context) => any
+  type SetupModule = (context: Context) => FixMe
 
   interface RegisteredModule {
     moduleName: ModuleName
@@ -37,7 +40,7 @@ declare namespace App {
   interface Factory {
     (config: Config): PublicApi
     _registerModule(moduleName: ModuleName, setupModule: SetupModule): void
-    _ensureService(serviceName: FirebaseService, context: Context): any
+    _ensureService(serviceName: FirebaseService, context: Context): FixMe
   }
 
   interface FactoryCreator {
@@ -45,16 +48,16 @@ declare namespace App {
   }
 
   interface PublicApi {
-    content: any
-    schemas: any
-    storage: any
-    nav: any
-    settings: any
-    users: any
+    content: FixMe
+    schemas: FixMe
+    storage: FixMe
+    nav: FixMe
+    settings: FixMe
+    users: FixMe
   }
 
   interface Config {
-    firebaseApp: any
+    firebaseApp: FixMe
     env?: string
     locale?: string
     dbType?: 'rtdb' | 'cf'
@@ -63,8 +66,8 @@ declare namespace App {
 
   interface Context extends Config {
     modules: Modules
-    services: any
-    cache?: any
+    services: FixMe
+    cache?: FixMe
     emitter?: EventEmitter.Emitter
     proxySupported: boolean
     usesAdminApp: boolean
@@ -72,7 +75,7 @@ declare namespace App {
   }
 
   namespace EventEmitter {
-    type Listener = (...args: any[]) => void
+    type Listener = (...args: FixMe[]) => void
 
     interface Events {
       [event: string]: Listener[]
@@ -81,20 +84,20 @@ declare namespace App {
       on(event: string, listener: Listener): () => void
       off(event: string, listener: Listener): void
       offAll(): void
-      emit(event: string, ...args: any[]): void
+      emit(event: string, ...args: FixMe[]): void
       once(event: string, listener: Listener): () => void
     }
   }
 
   namespace PromiseEmitter {
-    type ResolveFn = (data?: any) => any
-    type RejectFn = (error?: any) => any
+    type ResolveFn = (data?: FixMe) => FixMe
+    type RejectFn = (error?: FixMe) => FixMe
 
     type Callback = (
       resolveFn: ResolveFn,
       rejectFn: RejectFn,
       emitter: EventEmitter.Emitter
-    ) => any
+    ) => FixMe
 
     type PromiseState = 'PENDING' | 'FULFILLED' | 'REJECTED'
 
@@ -103,8 +106,8 @@ declare namespace App {
       onRejected: RejectFn
     }
 
-    interface PromiseEmitter<T> extends PromiseLike<any>, EventEmitter.Emitter {
-      then(resolveFn: ResolveFn, rejectFn?: RejectFn): any
+    interface PromiseEmitter<T> extends PromiseLike<FixMe>, EventEmitter.Emitter {
+      then(resolveFn: ResolveFn, rejectFn?: RejectFn): FixMe
     }
   }
 
@@ -121,7 +124,7 @@ declare namespace App {
       startAt?: StringOrNumber
       endAt?: StringOrNumber | StringOrNumber[] | [number, string]
       equalTo?: StringOrNumber
-      [x: string]: any
+      [x: string]: FixMe
     }
 
     interface Options extends OrderByOptions, FilterOptions {
@@ -132,8 +135,8 @@ declare namespace App {
       locale?: string
     }
     interface Snapshot {
-      val(): any
-      [x: string]: any
+      val(): FixMe
+      [x: string]: FixMe
     }
   }
 
@@ -147,7 +150,7 @@ declare namespace App {
       orderBy?: string | string[] | OrderByField | OrderByField[]
     }
 
-    type FilterClause = [string, string, any]
+    type FilterClause = [string, string, FixMe]
 
     interface FilterOptions {
       filters?: FilterClause[]
@@ -159,7 +162,7 @@ declare namespace App {
       endAt?: StringOrNumber | StringOrNumber[]
       endBefore?: StringOrNumber | StringOrNumber[]
       limit?: number
-      [x: string]: any
+      [x: string]: FixMe
     }
 
     interface Options extends OrderByOptions, FilterOptions {
@@ -167,12 +170,12 @@ declare namespace App {
       fields?: string[]
       env?: string
       locale?: string
-      [x: string]: any
+      [x: string]: FixMe
     }
 
     interface DocumentSnapshot {
-      data(): any
-      [x: string]: any
+      data(): FixMe
+      [x: string]: FixMe
     }
 
     type CollectionSnapshotForEach = (doc: DocumentSnapshot) => void
@@ -180,7 +183,7 @@ declare namespace App {
     interface CollectionSnapshot {
       empty: boolean
       forEach(fn: CollectionSnapshotForEach): void
-      [x: string]: any
+      [x: string]: FixMe
     }
   }
 }

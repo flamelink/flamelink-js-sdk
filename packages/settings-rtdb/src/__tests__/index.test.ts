@@ -15,7 +15,7 @@ describe('- RTDB Settings', () => {
   let unsubscribe: UnsubscribeMethod
 
   beforeEach(async () => {
-    const firebaseApp: FirebaseApp = await initializeRealtimeProject({
+    const firebaseApp: Partial<FirebaseApp> = await initializeRealtimeProject({
       projectId: uniqueId('project-')
     })
 

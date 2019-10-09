@@ -519,6 +519,7 @@ Instructions here: https://flamelink.github.io/flamelink-js-sdk/#/getting-starte
             emitter.emit(api.UploadEvents.START)
             const { sizes: userSizes, overwriteSizes } = options
             const settingsImageSizes = await get(context, 'modules.settings', {
+              // eslint-disable-next-line @typescript-eslint/no-empty-function
               getImageSizes() {}
             }).getImageSizes()
 

@@ -1,6 +1,7 @@
 import compose from 'compose-then'
 import flamelink from '@flamelink/sdk-app'
 import * as App from '@flamelink/sdk-app-types'
+import { DataSnapshot } from '@firebase/database-types'
 import { FlamelinkFactory, Api, RTDB } from '@flamelink/sdk-users-types'
 import {
   applyOptionsForRTDB,
@@ -46,7 +47,7 @@ export const factory: FlamelinkFactory = context => {
 
       filteredRef.on(
         options.event || 'value',
-        (snapshot: any) => callback(null, snapshot),
+        (snapshot: DataSnapshot) => callback(null, snapshot),
         (err: Error) => callback(err, null)
       )
 
@@ -120,11 +121,15 @@ export const factory: FlamelinkFactory = context => {
 
       const payload =
         typeof data === 'object'
-          ? Object.assign({}, data, {
-              '__meta__/lastModifiedBy': getCurrentUser(context),
-              '__meta__/lastModifiedDate': getTimestamp(context),
+          ? {
+              ...data,
+              __meta__: {
+                ...(data.__meta__ || {}),
+                lastModifiedBy: getCurrentUser(context),
+                lastModifiedDate: getTimestamp(context)
+              },
               id: uid
-            })
+            }
           : data
 
       return api.ref(uid).update(payload)

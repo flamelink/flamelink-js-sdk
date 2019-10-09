@@ -13,12 +13,12 @@ declare namespace Schemas {
 
     interface Add extends App.RTDB.Options {
       schemaKey: string
-      data: any
+      data: Partial<SchemaRtdb>
     }
 
     interface Update extends App.RTDB.Options {
       schemaKey: string
-      data: any
+      data: Partial<SchemaRtdb>
     }
 
     interface Remove extends App.RTDB.Options {
@@ -38,12 +38,12 @@ declare namespace Schemas {
 
     interface Add extends App.CF.Options {
       schemaKey: string
-      data: any
+      data: Partial<SchemaCf>
     }
 
     interface Update extends App.CF.Options {
       schemaKey: string
-      data: any
+      data: Partial<SchemaCf>
     }
 
     interface Remove extends App.CF.Options {
@@ -86,7 +86,7 @@ declare namespace Schemas {
 
   export interface FieldConstraint {
     rule: string
-    ruleValue: any
+    ruleValue: unknown
     uniqueKey?: string
   }
 
@@ -121,25 +121,23 @@ declare namespace Schemas {
   export type SchemaType = 'single' | 'collection' | 'form'
 
   interface RtdbSchemaMetadata {
-    createdBy: string
-    createdDate: string | object
+    createdBy?: string
+    createdDate?: string
     lastModifiedBy?: string
     lastModifiedDate?: string
   }
 
   interface CfSchemaMetadata {
-    createdBy: string
-    createdDate: string | object
+    createdBy?: string
+    createdDate?: App.FixMe
     docId: string
     env: string
     fl_id: string
     lastModifiedBy?: string
-    lastModifiedDate?: string
+    lastModifiedDate?: App.FixMe
   }
 
-  export interface Schema {
-    __meta__?: RtdbSchemaMetadata
-    _fl_meta_?: CfSchemaMetadata
+  export interface SchemaBase {
     icon?: string
     id: string
     description?: string
@@ -152,20 +150,30 @@ declare namespace Schemas {
     workflow?: string
   }
 
+  export interface SchemaRtdb extends SchemaBase {
+    __meta__: RtdbSchemaMetadata
+  }
+
+  export interface SchemaCf extends SchemaBase {
+    _fl_meta_: CfSchemaMetadata
+  }
+
+  export type Schema = SchemaRtdb | SchemaCf
+
   export interface Api {
-    ref(reference?: string): any
+    ref(reference?: string): App.FixMe
 
-    getRaw(options: RTDB.Get): Promise<any>
-    getRaw(options: CF.Get): Promise<any>
+    getRaw(options: RTDB.Get): Promise<App.FixMe>
+    getRaw(options: CF.Get): Promise<App.FixMe>
 
-    get(options?: RTDB.Get): Promise<any>
-    get(options?: CF.Get): Promise<any>
+    get(options?: RTDB.Get): Promise<App.FixMe>
+    get(options?: CF.Get): Promise<App.FixMe>
 
-    getFieldsRaw?(options: RTDB.Get): Promise<any>
-    getFieldsRaw?(options: CF.Get): Promise<any>
+    getFieldsRaw?(options: RTDB.Get): Promise<App.FixMe>
+    getFieldsRaw?(options: CF.Get): Promise<App.FixMe>
 
-    getFields(options: RTDB.Get): Promise<any>
-    getFields(options: CF.Get): Promise<any>
+    getFields(options: RTDB.Get): Promise<App.FixMe>
+    getFields(options: CF.Get): Promise<App.FixMe>
 
     subscribeRaw(options: RTDB.Subscribe): App.UnsubscribeMethod
     subscribeRaw(options: CF.Subscribe): App.UnsubscribeMethod
@@ -176,14 +184,14 @@ declare namespace Schemas {
     subscribeFields(options?: RTDB.Subscribe): App.UnsubscribeMethod
     subscribeFields(options?: CF.Subscribe): App.UnsubscribeMethod
 
-    add(options: RTDB.Add): Promise<any>
-    add(options: CF.Add): Promise<any>
+    add(options: RTDB.Add): Promise<Partial<SchemaRtdb>>
+    add(options: CF.Add): Promise<Partial<SchemaCf>>
 
-    update(options: RTDB.Update): Promise<any>
-    update(options: CF.Update): Promise<any>
+    update(options: RTDB.Update): Promise<Partial<SchemaRtdb>>
+    update(options: CF.Update): Promise<Partial<SchemaCf>>
 
-    remove(options: RTDB.Remove): Promise<any>
-    remove(options: CF.Remove): Promise<any>
+    remove(options: RTDB.Remove): Promise<App.FixMe>
+    remove(options: CF.Remove): Promise<App.FixMe>
   }
 
   export type FlamelinkFactory = (context: App.Context) => Schemas.Api

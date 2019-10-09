@@ -4,8 +4,16 @@ import keys from 'lodash/keys'
 import chunk from 'lodash/chunk'
 import castArray from 'lodash/castArray'
 import flamelink from '@flamelink/sdk-app'
+import { DocumentSnapshot } from '@firebase/firestore-types'
 import * as App from '@flamelink/sdk-app-types'
-import { FlamelinkFactory, Api, CF } from '@flamelink/sdk-schemas-types'
+import {
+  FlamelinkFactory,
+  Api,
+  CF,
+  Schema,
+  SchemaFields,
+  SchemaCf
+} from '@flamelink/sdk-schemas-types'
 import {
   applyOptionsForCF,
   pluckResultFields,
@@ -135,7 +143,7 @@ export const factory: FlamelinkFactory = context => {
             return callback(null, null)
           }
 
-          const schemas: any = {}
+          const schemas: Record<string, Schema> = {}
 
           if (changeType) {
             snapshot.docChanges().forEach((change: any) => {
@@ -182,7 +190,7 @@ export const factory: FlamelinkFactory = context => {
             return callback(null, null)
           }
 
-          const schemaFields: any = {}
+          const schemaFields: Record<string, SchemaFields> = {}
 
           if (changeType) {
             snapshot.docChanges().forEach((change: any) => {
@@ -233,7 +241,8 @@ export const factory: FlamelinkFactory = context => {
       const docRef = schemasRef.doc()
       const docId = docRef.id
 
-      const payload = Object.assign({}, data, {
+      const payload = {
+        ...data,
         _fl_meta_: {
           createdBy: getCurrentUser(context),
           createdDate: getTimestamp(context),
@@ -252,7 +261,7 @@ export const factory: FlamelinkFactory = context => {
           typeof data.sortable === 'undefined' ? true : Boolean(data.sortable),
         title: data.title || schemaKey,
         type: data.type || 'collection'
-      })
+      }
 
       await docRef.set(payload)
 
@@ -275,19 +284,20 @@ export const factory: FlamelinkFactory = context => {
         return api.add({ schemaKey, data })
       }
 
-      const schemas: any[] = []
-      snapshot.forEach((doc: any) => schemas.push(doc))
+      const schemas: DocumentSnapshot[] = []
+      snapshot.forEach((doc: DocumentSnapshot) => schemas.push(doc))
 
       const schema = schemas[0]
 
-      const payload = Object.assign({}, data, {
+      const payload = {
+        ...data,
         '_fl_meta_.createdBy': schema.get('_fl_meta_.createdBy'),
         '_fl_meta_.createdDate': schema.get('_fl_meta_.createdDate'),
         '_fl_meta_.lastModifiedBy': getCurrentUser(context),
         '_fl_meta_.lastModifiedDate': getTimestamp(context),
         '_fl_meta_.fl_id': schemaKey,
         id: schemaKey
-      })
+      }
 
       await schema.ref.update(payload)
 

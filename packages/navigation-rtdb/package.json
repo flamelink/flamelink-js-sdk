@@ -25,6 +25,7 @@
     "dist"
   ],
   "dependencies": {
+    "@firebase/database-types": "^0.4.4",
     "@flamelink/sdk-app": "^1.0.0-alpha.25",
     "@flamelink/sdk-app-types": "^1.0.0-alpha.25",
     "@flamelink/sdk-navigation-types": "^1.0.0-alpha.25",

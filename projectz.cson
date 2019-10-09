@@ -13,10 +13,12 @@
       "url": "http://flamelink.io"
     },
     "maintainers": [
-      "JP Erasmus <jp@flamelink.io> (https://jperasmus.me)"
+      "JP Erasmus <jp@flamelink.io> (https://jperasmus.me)",
+      "De Wet van der Merwe (https://github.com/dewetvdm)"
     ],
     "contributors": [
-      "JP Erasmus <jp@flamelink.io> (https://jperasmus.me)"
+      "JP Erasmus <jp@flamelink.io> (https://jperasmus.me)",
+      "De Wet van der Merwe (https://github.com/dewetvdm)"
     ]
     "repository": {
       "type": "git",

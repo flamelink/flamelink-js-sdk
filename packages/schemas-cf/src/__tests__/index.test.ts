@@ -1,6 +1,6 @@
 import { FirebaseApp } from '@firebase/app-types'
 import { Context, UnsubscribeMethod } from '@flamelink/sdk-app-types'
-import { Api } from '@flamelink/sdk-schemas-types'
+import { Api, SchemaCf } from '@flamelink/sdk-schemas-types'
 import get from 'lodash/get'
 import set from 'lodash/set'
 import cloneDeep from 'lodash/cloneDeep'
@@ -221,7 +221,7 @@ describe('- CF Schemas', () => {
 
     test('should successfully add a new schema with fields provided', async () => {
       const schemaKey = 'posts'
-      const data = {
+      const data: Partial<SchemaCf> = {
         title: 'Posts',
         description: 'Test posts schema',
         enabled: false,
@@ -243,7 +243,7 @@ describe('- CF Schemas', () => {
         sortable: true,
         title: 'Posts',
         type: 'collection',
-        fields: [] as any[]
+        fields: [] as unknown[]
       }
 
       await api.add({ schemaKey, data })

@@ -25,6 +25,7 @@
     "dist"
   ],
   "dependencies": {
+    "@firebase/firestore-types": "^1.5.0",
     "compose-then": "^1.0.1",
     "lodash": "^4.17.15"
   },

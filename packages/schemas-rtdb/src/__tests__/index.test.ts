@@ -1,6 +1,6 @@
 import { FirebaseApp } from '@firebase/app-types'
 import { Context, UnsubscribeMethod } from '@flamelink/sdk-app-types'
-import { Api } from '@flamelink/sdk-schemas-types'
+import { Api, SchemaRtdb } from '@flamelink/sdk-schemas-types'
 import get from 'lodash/get'
 import uniqueId from 'lodash/uniqueId'
 import { factory as getAPI } from '../index'
@@ -16,7 +16,7 @@ describe('- RTDB Schemas', () => {
   let unsubscribe: UnsubscribeMethod
 
   beforeEach(async () => {
-    const firebaseApp: FirebaseApp = await initializeRealtimeProject({
+    const firebaseApp: Partial<FirebaseApp> = await initializeRealtimeProject({
       projectId: uniqueId('project-')
     })
 
@@ -205,7 +205,7 @@ describe('- RTDB Schemas', () => {
 
     test('should successfully add a new schema with fields provided', async () => {
       const schemaKey = 'posts'
-      const data = {
+      const data: Partial<SchemaRtdb> = {
         title: 'Posts',
         description: 'Test posts schema',
         enabled: false,
@@ -257,8 +257,6 @@ describe('- RTDB Schemas', () => {
         ...getSchema({ dbType: 'rtdb', schemaKey }),
         ...{
           __meta__: {
-            createdBy: expect.any(String),
-            createdDate: expect.any(String),
             lastModifiedBy: expect.any(String),
             lastModifiedDate: expect.any(String)
           },
