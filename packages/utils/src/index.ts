@@ -11,14 +11,14 @@ import memoize from 'lodash/memoize'
 import pick from 'lodash/fp/pick'
 import compose from 'compose-then'
 import * as App from '@flamelink/sdk-app-types'
-import * as FirestoreTypes from '@firebase/firestore-types'
+import { Timestamp } from '@firebase/firestore-types'
 
 if (Symbol['asyncIterator'] === undefined) {
-  ;(Symbol as any)['asyncIterator'] = Symbol.for('asyncIterator')
+  ;(Symbol as App.FixMe)['asyncIterator'] = Symbol.for('asyncIterator')
 }
 
 interface Memo {
-  prepPopulateFields?(args: any): any
+  prepPopulateFields?(args: App.FixMe): App.FixMe
 }
 
 // Create empty memo object to which we can write for memoization
@@ -31,7 +31,7 @@ const memo: Memo = {}
  * @param {Any} `mod` The module being imported
  * @returns The module's default import
  */
-export const getDefaultImport = (mod: any) =>
+export const getDefaultImport = (mod: App.FixMe) =>
   mod && typeof mod === 'object' && 'default' in mod ? mod.default : mod
 
 export function logError(str: string) {
@@ -213,7 +213,7 @@ export const getFirestoreServiceFactory = (context: App.Context): any => {
   return get(context, 'firebaseApp.firebase_.firestore')
 }
 
-export const getAuthServiceFactory = (context: App.Context): any => {
+export const getAuthServiceFactory = (context: App.Context): App.FixMe => {
   if (typeof process !== 'undefined' && process.env.NODE_ENV === 'test') {
     return
   }
@@ -224,9 +224,7 @@ export const getAuthServiceFactory = (context: App.Context): any => {
   return get(context, 'firebaseApp.firebase_.auth')
 }
 
-export const getTimestamp = (
-  context: App.Context
-): string | FirestoreTypes.Timestamp => {
+export const getTimestamp = (context: App.Context): string | Timestamp => {
   if (context.dbType === 'cf') {
     return get(getFirestoreServiceFactory(context), 'Timestamp.now', () =>
       new Date().toISOString()

@@ -187,7 +187,7 @@ export const factory: FlamelinkFactory = context => {
           ? Object.assign({}, data, {
               __meta__: {
                 createdBy: getCurrentUser(context),
-                createdDate: getTimestamp(context)
+                createdDate: getTimestamp(context) as string
               },
               description: data.description || '',
               enabled:
@@ -229,7 +229,7 @@ export const factory: FlamelinkFactory = context => {
               __meta__: {
                 ...(data.__meta__ || {}),
                 lastModifiedBy: getCurrentUser(context),
-                lastModifiedDate: getTimestamp(context)
+                lastModifiedDate: getTimestamp(context) as string
               },
               id: schemaKey
             }
