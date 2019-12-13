@@ -1,6 +1,6 @@
 {
   "name": "@flamelink/sdk-users-rtdb",
-  "version": "1.0.0-alpha.25",
+  "version": "1.0.0-alpha.27",
   "publishConfig": {
     "access": "public"
   },
@@ -26,10 +26,10 @@
   ],
   "dependencies": {
     "@firebase/database-types": "^0.4.4",
-    "@flamelink/sdk-app": "^1.0.0-alpha.25",
-    "@flamelink/sdk-app-types": "^1.0.0-alpha.25",
-    "@flamelink/sdk-users-types": "^1.0.0-alpha.25",
-    "@flamelink/sdk-utils": "^1.0.0-alpha.25",
+    "@flamelink/sdk-app": "^1.0.0-alpha.27",
+    "@flamelink/sdk-app-types": "^1.0.0-alpha.27",
+    "@flamelink/sdk-users-types": "^1.0.0-alpha.27",
+    "@flamelink/sdk-utils": "^1.0.0-alpha.27",
     "compose-then": "^1.0.1"
   },
   "scripts": {
