@@ -129,22 +129,70 @@ export const factory: FlamelinkFactory = context => {
 
     subscribe({ schemaKey, entryId, callback, ...options }: RTDB.Subscribe) {
       const pluckFields = pluckResultFields(options.fields)
+      const populateFields = populateEntry(context, schemaKey, options.populate)
 
       return api.subscribeRaw({
         schemaKey,
         entryId,
         ...options,
         async callback(err, snapshot: DataSnapshot) {
-          if (err) {
+          try {
+            if (err) {
+              return callback(err, null)
+            }
+
+            if (entryId) {
+              const result = await compose(
+                unwrap(entryId),
+                populateFields,
+                pluckFields,
+                wrap(entryId)
+              )(snapshot.val())
+
+              return callback(null, result)
+            }
+
+            const schema: Schema = await get(context, 'modules.schemas').get({
+              schemaKey
+            })
+            const isSingleType = schema && schema.type === 'single'
+
+            // If content type is a single, we need to wrap the object for filters to work correctly
+            if (schemaKey) {
+              const value = isSingleType
+                ? wrap(schemaKey, snapshot.val())
+                : snapshot.val()
+
+              const result = await compose(
+                populateFields,
+                pluckFields
+              )(value)
+
+              return callback(
+                null,
+                isSingleType ? unwrap(schemaKey, result) : result
+              )
+            }
+
+            const withLocales = snapshot.val()
+
+            const withoutLocales = keys(withLocales).reduce(
+              (menus, key) =>
+                Object.assign(menus, {
+                  [key]: withLocales[key][context.locale]
+                }),
+              {}
+            )
+
+            const result = await compose(
+              populateFields,
+              pluckFields
+            )(withoutLocales)
+
+            return callback(null, result)
+          } catch (err) {
             return callback(err, null)
           }
-
-          const value = schemaKey
-            ? wrap(schemaKey, snapshot.val())
-            : snapshot.val()
-          const result = await pluckFields(value)
-
-          return callback(null, schemaKey ? unwrap(schemaKey, result) : result)
         }
       })
     },
