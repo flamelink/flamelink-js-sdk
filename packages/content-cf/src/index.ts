@@ -61,7 +61,7 @@ export const factory: FlamelinkFactory = context => {
       const processRefs = populateEntriesForCF(context, options)
       const pluckFields = pluckResultFields(options.fields)
 
-      const content: any = {}
+      const content: Record<string, unknown> = {}
       snapshot.forEach((doc: any) => {
         const data = doc.data()
         content[get(data, '_fl_meta_.fl_id', doc.id)] = data

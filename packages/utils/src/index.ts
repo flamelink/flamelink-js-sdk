@@ -627,8 +627,8 @@ export const processReferencesForCF = curry(
   async (
     context: App.Context,
     options: App.CF.Options,
-    document: any
-  ): Promise<any> => {
+    document: unknown
+  ): Promise<unknown> => {
     if (!isPlainObject(document) || !get(options, 'populate')) {
       return document
     }
@@ -668,7 +668,7 @@ export const processReferencesForCF = curry(
           const snapshot = await firestoreService.doc(ref.path).get()
 
           if (typeof snapshot.forEach === 'function') {
-            const docs: Promise<any>[] = []
+            const docs: Promise<unknown>[] = []
             snapshot.forEach(async (doc: App.CF.DocumentSnapshot) =>
               docs.push(processRefs(doc.data()))
             )
@@ -712,13 +712,17 @@ export const processReferencesForCF = curry(
           populatedField.fieldValue
         )
       },
-      { ...document }
+      { ...(document as Record<string, unknown>) }
     )
   }
 )
 
 export const populateEntriesForCF = curry(
-  async (context: App.Context, options: App.CF.Options, entries: any) => {
+  async (
+    context: App.Context,
+    options: App.CF.Options,
+    entries: Record<string, unknown> | Record<string, unknown>[]
+  ) => {
     if (Array.isArray(entries)) {
       return Promise.all(
         entries.map(async entry =>
@@ -729,14 +733,14 @@ export const populateEntriesForCF = curry(
 
     if (isPlainObject(entries)) {
       const populatedEntries = await Promise.all(
-        keys(entries).map(async key =>
+        keys(entries as Record<string, unknown>).map(async key =>
           processReferencesForCF(context, options, entries[key])
         )
       )
 
       return populatedEntries.reduce(
-        (chain, entry) =>
-          chain.then(async (acc: any) =>
+        (chain: Promise<Record<string, unknown>>, entry: Record<string, any>) =>
+          chain.then(async (acc: Record<string, unknown>) =>
             Object.assign(acc, {
               [get(entry, '_fl_meta_.fl_id', entry.id)]: entry
             })
