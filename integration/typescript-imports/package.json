@@ -1,12 +1,12 @@
 {
   "name": "integration-package-typescript-imports",
   "private": true,
-  "version": "1.0.0-alpha.27",
+  "version": "1.0.0-alpha.28",
   "scripts": {
     "pretest": "rimraf dist",
     "test": "tsc && node dist/module-imports.js && node dist/full-import.js"
   },
   "dependencies": {
-    "flamelink": "^1.0.0-alpha.27"
+    "flamelink": "^1.0.0-alpha.28"
   }
 }
