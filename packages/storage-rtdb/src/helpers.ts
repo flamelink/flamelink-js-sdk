@@ -68,9 +68,9 @@ export const getStorageRefPath = (
   { width, path }: ImageSize = {}
 ) => {
   if (path) {
-    return `/flamelink/media/sized/${path}/${filename}`
+    return `flamelink/media/sized/${path}/${filename}`
   }
-  return `/flamelink/media/${width ? `sized/${width}/` : ''}${filename}`
+  return `flamelink/media/${width ? `sized/${width}/` : ''}${filename}`
 }
 
 export const setImagePathByClosestSize = (
