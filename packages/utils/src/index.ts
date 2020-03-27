@@ -407,7 +407,7 @@ export const applyLimitAndOffsetsForCF = (
   }, ref)
 
   if (get(options, 'limit')) {
-    newRef = ref.limit ? ref.limit(options.limit) : ref
+    newRef = newRef.limit ? newRef.limit(options.limit) : newRef
   }
 
   return newRef
