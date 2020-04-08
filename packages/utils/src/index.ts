@@ -17,6 +17,10 @@ if (Symbol['asyncIterator'] === undefined) {
   ;(Symbol as App.FixMe)['asyncIterator'] = Symbol.for('asyncIterator')
 }
 
+type UnknownObject = {
+  [key: string]: unknown
+}
+
 interface Memo {
   prepPopulateFields?(args: App.FixMe): App.FixMe
 }
@@ -651,10 +655,11 @@ export const processReferencesForCF = curry(
 
     const populatedFields = await Promise.all(
       fieldsToPopulate.map(async opt => {
-        const { field, populate, subFields } = opt
+        const { field, populate, subFields, fields } = opt
         const val = get(document, field)
 
         const patchUrl = patchFileUrlForCF(context, opt)
+        const pluckFields = pluckResultFields(fields)
 
         const processRefs = processReferencesForCF(context, {
           populate: populateAllTheThings
@@ -700,7 +705,7 @@ export const processReferencesForCF = curry(
           fieldValue = await processRef(val)
         }
 
-        return { fieldKey: field, fieldValue }
+        return { fieldKey: field, fieldValue: pluckFields(fieldValue) }
       })
     )
 
@@ -718,7 +723,7 @@ export const processReferencesForCF = curry(
 )
 
 export const populateEntriesForCF = curry(
-  async (context: App.Context, options: App.CF.Options, entries: any) => {
+  async (context: App.Context, options: App.CF.Options, entries: unknown) => {
     if (Array.isArray(entries)) {
       return Promise.all(
         entries.map(async entry =>
@@ -730,18 +735,20 @@ export const populateEntriesForCF = curry(
     if (isPlainObject(entries)) {
       const populatedEntries = await Promise.all(
         keys(entries).map(async key =>
-          processReferencesForCF(context, options, entries[key])
+          processReferencesForCF(
+            context,
+            options,
+            (entries as UnknownObject)[key]
+          )
         )
       )
 
       return populatedEntries.reduce(
-        (chain, entry) =>
-          chain.then(async (acc: any) =>
-            Object.assign(acc, {
-              [get(entry, '_fl_meta_.fl_id', entry.id)]: entry
-            })
-          ),
-        Promise.resolve({})
+        (acc: unknown, entry) =>
+          Object.assign(acc, {
+            [get(entry, '_fl_meta_.fl_id', entry.id)]: entry
+          }),
+        {}
       )
     }
 
