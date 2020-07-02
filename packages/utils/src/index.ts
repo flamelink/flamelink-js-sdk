@@ -65,6 +65,21 @@ export class FlamelinkError extends Error {
 }
 
 /**
+ * @description Check if a given entry is a Flamelink entry object
+ * @param entry The object to check
+ * @returns {Boolean}
+ */
+export const isFlamelinkEntry = (entry: any): boolean => {
+  if (!isPlainObject(entry)) {
+    return false
+  }
+
+  // Use Flamelink metadata objects for Cloud Firestore or RTDB as check
+  // This can be fleshed out if it causes flase positives for users
+  return entry.hasOwnProperty('_fl_meta_') || entry.hasOwnProperty('__meta__')
+}
+
+/**
  * Based on Gist found here: https://gist.github.com/mudge/5830382
  */
 export class EventEmitter implements App.EventEmitter.Emitter {
@@ -432,6 +447,10 @@ export const pluckResultFields = curry((fields: any, resultSet: any): any => {
       (result, val) => result.concat(pickFields(val)),
       []
     )
+  }
+
+  if (isFlamelinkEntry(resultSet)) {
+    return pickFields(resultSet)
   }
 
   // If resultSet is a POJO, we assume each first-level property is the child from which fields need to be plucked
