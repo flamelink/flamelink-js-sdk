@@ -14,7 +14,7 @@ import {
   RTDB,
   ImageSize,
   FolderObject,
-  FileObject
+  FileObject,
 } from '@flamelink/sdk-storage-types'
 import {
   applyOptionsForRTDB,
@@ -27,7 +27,7 @@ import {
   getStorageServiceFactory,
   PromiseEmitter,
   wrap,
-  unwrap
+  unwrap,
 } from '@flamelink/sdk-utils'
 import {
   getFolderRefPath,
@@ -36,14 +36,14 @@ import {
   getScreenResolution,
   getStorageRefPath,
   setImagePathByClosestSize,
-  getUploadEvents
+  getUploadEvents,
 } from './helpers'
 import {
   DEFAULT_REQUIRED_IMAGE_SIZE,
-  FOLDER_REQUIRED_FIELDS_FOR_STRUCTURING
+  FOLDER_REQUIRED_FIELDS_FOR_STRUCTURING,
 } from './constants'
 
-export const factory: FlamelinkFactory = function(context) {
+export const factory: FlamelinkFactory = function (context) {
   const api: Api = {
     async _getFolderId({ folderName = 'Root' }) {
       if (!folderName) {
@@ -67,7 +67,7 @@ export const factory: FlamelinkFactory = function(context) {
     async _getFolderIdFromOptions(
       { folderId, folderName } = {
         folderId: '',
-        folderName: ''
+        folderName: '',
       }
     ) {
       if (folderId) {
@@ -81,8 +81,8 @@ export const factory: FlamelinkFactory = function(context) {
       const payload = Object.assign({}, filePayload, {
         __meta__: {
           createdBy: getCurrentUser(context),
-          createdDate: getTimestamp(context)
-        }
+          createdDate: getTimestamp(context),
+        },
       })
 
       return api.fileRef(filePayload.id).set(payload)
@@ -109,7 +109,7 @@ export const factory: FlamelinkFactory = function(context) {
 
           const ref = api.ref(filename, {
             path: options.path,
-            width: options.width || options.maxWidth
+            width: options.width || options.maxWidth,
           })
 
           emitter.emit(
@@ -217,16 +217,12 @@ Instructions here: https://flamelink.github.io/flamelink-js-sdk/#/getting-starte
       const pluckFields = pluckResultFields(fieldsToPluck)
       const structureItems = formatStructure(structure, {
         idProperty: 'id',
-        parentProperty: 'parentId'
+        parentProperty: 'parentId',
       })
       const snapshot = await api.getFoldersRaw(options)
 
       if (structure === 'nested' || structure === 'tree') {
-        return compose(
-          pluckFields,
-          structureItems,
-          values
-        )(snapshot.val())
+        return compose(pluckFields, structureItems, values)(snapshot.val())
       }
 
       return pluckFields(snapshot.val())
@@ -274,7 +270,7 @@ Instructions here: https://flamelink.github.io/flamelink-js-sdk/#/getting-starte
         options.mediaType
           ? {
               orderByChild: 'type',
-              equalTo: options.mediaType
+              equalTo: options.mediaType,
             }
           : {}
       )
@@ -283,10 +279,7 @@ Instructions here: https://flamelink.github.io/flamelink-js-sdk/#/getting-starte
       const pluckFields = pluckResultFields(opts.fields)
       const snapshot = await api.getFilesRaw(opts)
 
-      return compose(
-        pluckFields,
-        filterFolders
-      )(snapshot.val())
+      return compose(pluckFields, filterFolders)(snapshot.val())
     },
 
     async getURL({ fileId, ...options }: RTDB.GetURL) {
@@ -323,14 +316,14 @@ Instructions here: https://flamelink.github.io/flamelink-js-sdk/#/getting-starte
             )
           ) {
             storageRefArgs.options = Object.assign(storageRefArgs.options, {
-              path: size.path
+              path: size.path,
             })
           } else {
             logWarning(
               `The provided path (${
                 size.path
               }) has been ignored because it did not match any of the given file's available paths.\nAvailable paths: ${availableFileSizes
-                .map(availableSize => availableSize.path)
+                .map((availableSize) => availableSize.path)
                 .join(', ')}`
             )
           }
@@ -363,7 +356,7 @@ Instructions here: https://flamelink.github.io/flamelink-js-sdk/#/getting-starte
       if (context.usesAdminApp) {
         const signedUrls = await fileRef.getSignedUrl({
           action: 'read',
-          expires: '01-01-2500' // Just expire at some very far time in the future
+          expires: '01-01-2500', // Just expire at some very far time in the future
         })
         return get(signedUrls, '[0]', '')
       }
@@ -435,7 +428,7 @@ Instructions here: https://flamelink.github.io/flamelink-js-sdk/#/getting-starte
       // If sizes are set, delete all the resized images here
       if (Array.isArray(sizes)) {
         await Promise.all(
-          sizes.map(async size => {
+          sizes.map(async (size) => {
             const width = size.width || size.maxWidth
             const { path } = size
 
@@ -461,7 +454,7 @@ Instructions here: https://flamelink.github.io/flamelink-js-sdk/#/getting-starte
             const { sizes: userSizes, overwriteSizes } = options
             const settingsImageSizes = await get(context, 'modules.settings', {
               // eslint-disable-next-line @typescript-eslint/no-empty-function
-              getImageSizes() {}
+              getImageSizes() {},
             }).getImageSizes()
 
             if (settingsImageSizes) {
@@ -480,15 +473,15 @@ Instructions here: https://flamelink.github.io/flamelink-js-sdk/#/getting-starte
             // Flamelink CMS expects file to reside in `240` folder, so size if only `width: 240` should be passed
             if (
               !options.sizes ||
-              ((options.sizes && options.sizes.length === 0) ||
-                (Array.isArray(options.sizes) &&
-                  options.sizes.filter(
-                    size =>
-                      (size.width === DEFAULT_REQUIRED_IMAGE_SIZE ||
-                        size.maxWidth === DEFAULT_REQUIRED_IMAGE_SIZE) &&
-                      !size.height &&
-                      !size.quality
-                  ).length === 0))
+              (options.sizes && options.sizes.length === 0) ||
+              (Array.isArray(options.sizes) &&
+                options.sizes.filter(
+                  (size) =>
+                    (size.width === DEFAULT_REQUIRED_IMAGE_SIZE ||
+                      size.maxWidth === DEFAULT_REQUIRED_IMAGE_SIZE) &&
+                    !size.height &&
+                    !size.quality
+                ).length === 0)
             ) {
               if (Array.isArray(options.sizes)) {
                 options.sizes.push({ width: DEFAULT_REQUIRED_IMAGE_SIZE })
@@ -537,7 +530,7 @@ Instructions here: https://flamelink.github.io/flamelink-js-sdk/#/getting-starte
             if (get(storage, 'TaskEvent')) {
               mainUploadTaskUnsubscribe = uploadTask.on(
                 storage.TaskEvent.STATE_CHANGED,
-                snap => {
+                (snap) => {
                   emitter.emit(
                     api.UploadEvents.MAIN_FILE_UPLOAD_STATE_CHANGED,
                     snap
@@ -564,7 +557,7 @@ Instructions here: https://flamelink.github.io/flamelink-js-sdk/#/getting-starte
               file: get(snapshot, 'metadata.name', ''),
               folderId: api.folderRef(folderId),
               type: mediaType,
-              contentType: get(snapshot, 'metadata.contentType', '')
+              contentType: get(snapshot, 'metadata.contentType', ''),
             }
 
             // If mediaType === 'images', file is resizeable and sizes/widths are set, resize images here
@@ -574,20 +567,20 @@ Instructions here: https://flamelink.github.io/flamelink-js-sdk/#/getting-starte
               Array.isArray(options.sizes)
             ) {
               emitter.emit(api.UploadEvents.SIZED_FILES_UPLOAD_STARTED)
-              filePayload.sizes = options.sizes.map(size => {
+              filePayload.sizes = options.sizes.map((size) => {
                 const { width, height, quality } = size
                 if (width && height && quality) {
                   return Object.assign({}, size, {
                     path: `${width}_${height}_${Math.round(
                       parseFloat(quality.toString()) * 100
-                    )}`
+                    )}`,
                   })
                 }
                 return size
               })
 
               await Promise.all(
-                filePayload.sizes.map(async size => {
+                filePayload.sizes.map(async (size) => {
                   const sizedPromiseEmitter: PromiseEmitter = api._createSizedImage(
                     fileData,
                     filename,
@@ -626,7 +619,7 @@ Instructions here: https://flamelink.github.io/flamelink-js-sdk/#/getting-starte
 
     get UploadEvents() {
       return getUploadEvents(getStorageServiceFactory(context))
-    }
+    },
   }
 
   return api

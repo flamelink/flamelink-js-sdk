@@ -12,7 +12,7 @@ import {
   CF,
   Schema,
   SchemaFields,
-  SchemaCf
+  SchemaCf,
 } from '@flamelink/sdk-schemas-types'
 import {
   applyOptionsForCF,
@@ -25,13 +25,13 @@ import {
   getTimestamp,
   getCurrentUser,
   wrap,
-  unwrap
+  unwrap,
 } from '@flamelink/sdk-utils'
 import { BATCH_WRITE_LIMIT } from './constants'
 
 const SCHEMAS_COLLECTION = 'fl_schemas'
 
-export const factory: FlamelinkFactory = context => {
+export const factory: FlamelinkFactory = (context) => {
   const api: Api = {
     ref(schemaKey) {
       const firestoreService = flamelink._ensureService('firestore', context)
@@ -48,7 +48,7 @@ export const factory: FlamelinkFactory = context => {
 
     getRaw({ schemaKey, ...options }: CF.Get) {
       return applyOptionsForCF(api.ref(schemaKey), options).get({
-        source: options.source || 'default'
+        source: options.source || 'default',
       })
     },
 
@@ -103,7 +103,7 @@ export const factory: FlamelinkFactory = context => {
       return keys(schemas).reduce(
         (acc, key) =>
           Object.assign(acc, {
-            [key]: pluckFields(schemas[key].fields)
+            [key]: pluckFields(schemas[key].fields),
           }),
         {}
       )
@@ -116,7 +116,7 @@ export const factory: FlamelinkFactory = context => {
 
       if (!context.usesAdminApp) {
         args.push({
-          includeMetadataChanges: !!options.includeMetadataChanges
+          includeMetadataChanges: !!options.includeMetadataChanges,
         })
       }
 
@@ -165,7 +165,7 @@ export const factory: FlamelinkFactory = context => {
 
           const plucked = pluckFields(schemas)
           return callback(null, schemaKey ? plucked[schemaKey] : plucked)
-        }
+        },
       })
     },
 
@@ -220,12 +220,12 @@ export const factory: FlamelinkFactory = context => {
             ? pluckFields(schemaFields[schemaKey])
             : keys(schemaFields).reduce((acc, sKey) => {
                 return Object.assign(acc, {
-                  [sKey]: pluckFields(schemaFields[sKey])
+                  [sKey]: pluckFields(schemaFields[sKey]),
                 })
               }, {})
 
           return callback(null, plucked)
-        }
+        },
       })
     },
 
@@ -248,7 +248,7 @@ export const factory: FlamelinkFactory = context => {
           createdDate: getTimestamp(context),
           env: context.env,
           docId,
-          fl_id: schemaKey
+          fl_id: schemaKey,
         },
         description: data.description || '',
         enabled:
@@ -260,7 +260,7 @@ export const factory: FlamelinkFactory = context => {
         sortable:
           typeof data.sortable === 'undefined' ? true : Boolean(data.sortable),
         title: data.title || schemaKey,
-        type: data.type || 'collection'
+        type: data.type || 'collection',
       }
 
       await docRef.set(payload)
@@ -296,7 +296,7 @@ export const factory: FlamelinkFactory = context => {
         '_fl_meta_.lastModifiedBy': getCurrentUser(context),
         '_fl_meta_.lastModifiedDate': getTimestamp(context),
         '_fl_meta_.fl_id': schemaKey,
-        id: schemaKey
+        id: schemaKey,
       }
 
       await schema.ref.update(payload)
@@ -328,7 +328,7 @@ export const factory: FlamelinkFactory = context => {
       }, schemaDocChunks)
 
       return batchQueue.start()
-    }
+    },
   }
 
   /**
@@ -343,7 +343,7 @@ export const factory: FlamelinkFactory = context => {
           ? [null]
           : get(context, 'precache.schemas', [null])
 
-      schemaKeys.forEach(schemaKey => {
+      schemaKeys.forEach((schemaKey) => {
         api.subscribe({
           schemaKey,
           callback(err, schemas) {
@@ -357,7 +357,7 @@ export const factory: FlamelinkFactory = context => {
               }`,
               schemas
             )
-          }
+          },
         })
       })
     }

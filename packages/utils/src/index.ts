@@ -69,7 +69,7 @@ export class FlamelinkError extends Error {
  */
 export class EventEmitter implements App.EventEmitter.Emitter {
   private readonly events: App.EventEmitter.Events = {
-    '*': []
+    '*': [],
   }
 
   public on(event: string, listener: App.EventEmitter.Listener): () => void {
@@ -88,7 +88,7 @@ export class EventEmitter implements App.EventEmitter.Emitter {
     }
 
     this.events[event] = this.events[event].filter(
-      eventListener => eventListener !== listener
+      (eventListener) => eventListener !== listener
     )
   }
 
@@ -100,10 +100,10 @@ export class EventEmitter implements App.EventEmitter.Emitter {
 
   public emit(event: string, ...args: any[]): void {
     if (typeof this.events[event] === 'object') {
-      ;[...this.events[event]].forEach(listener => listener.apply(this, args))
+      ;[...this.events[event]].forEach((listener) => listener.apply(this, args))
     }
 
-    ;[...this.events['*']].forEach(listener =>
+    ;[...this.events['*']].forEach((listener) =>
       listener.apply(this, [event, ...args])
     )
   }
@@ -253,7 +253,7 @@ export const AVAILABLE_FILTER_OPTIONS_FOR_RTDB = [
   'limitToLast',
   'startAt',
   'endAt',
-  'equalTo'
+  'equalTo',
 ]
 
 export const CF_QUERY_CURSORS = ['startAt', 'startAfter', 'endAt', 'endBefore']
@@ -265,10 +265,10 @@ export const hasNonCacheableOptionsForRTDB = (options: any): any => {
     'event',
     'orderByValue',
     'orderByChild',
-    ...AVAILABLE_FILTER_OPTIONS_FOR_RTDB
+    ...AVAILABLE_FILTER_OPTIONS_FOR_RTDB,
   ]
 
-  return optionKeys.some(key => nonCacheableProps.includes(key))
+  return optionKeys.some((key) => nonCacheableProps.includes(key))
 }
 
 export const hasNonCacheableOptionsForCF = (options: any): any => {
@@ -279,10 +279,10 @@ export const hasNonCacheableOptionsForCF = (options: any): any => {
     'source',
     'changeType',
     'limit',
-    ...CF_QUERY_CURSORS
+    ...CF_QUERY_CURSORS,
   ]
 
-  return optionKeys.some(key => nonCacheableProps.includes(key))
+  return optionKeys.some((key) => nonCacheableProps.includes(key))
 }
 
 export const applyOrderByForRTDB = (
@@ -471,7 +471,7 @@ export const formatStructure = curry(
 
     const formattedItems: any[] = isArray(items)
       ? items
-      : keys(items).map(key => items[key])
+      : keys(items).map((key) => items[key])
 
     if (!isArray(formattedItems)) {
       throw new FlamelinkError(
@@ -487,23 +487,24 @@ export const formatStructure = curry(
         previousId = DEFAULT_PARENT_ID
       ): any[] =>
         levelItems
-          .map(item => ({
+          .map((item) => ({
             ...item,
             children: formattedItems.filter(
-              innerItem =>
+              (innerItem) =>
                 get(innerItem, parentProperty) === get(item, idProperty)
-            )
+            ),
           }))
           .filter(
-            item => get(item, parentProperty, DEFAULT_PARENT_ID) === previousId
+            (item) =>
+              get(item, parentProperty, DEFAULT_PARENT_ID) === previousId
           )
-          .map(item => {
+          .map((item) => {
             if (item.children.length === 0) {
               return item
             }
             return {
               ...item,
-              children: mapChildren(item.children, get(item, idProperty))
+              children: mapChildren(item.children, get(item, idProperty)),
             }
           })
       return mapChildren(formattedItems, DEFAULT_PARENT_ID)
@@ -535,29 +536,29 @@ export const prepPopulateFields = (
 ): PopulateFieldOption[] => {
   if (typeof memo.prepPopulateFields === 'undefined') {
     memo.prepPopulateFields = memoize(
-      fields => {
+      (fields) => {
         if (!fields || !isArray(fields)) {
           return []
         }
 
-        return fields.map(option => {
+        return fields.map((option) => {
           if (typeof option === 'string') {
             return {
-              field: option
+              field: option,
             }
           }
 
           return option as PopulateFieldOption
         })
       },
-      fields => JSON.stringify(fields)
+      (fields) => JSON.stringify(fields)
     )
   }
 
   return memo.prepPopulateFields(populate)
 }
 
-const isFileObject = (obj: object) => {
+const isFileObject = (obj: Record<string, unknown>) => {
   return (
     obj.hasOwnProperty('file') &&
     obj.hasOwnProperty('id') &&
@@ -585,7 +586,7 @@ export const patchFileUrlForCF = curry(
 
       const url = await storage.getURL({
         fileId: file.id,
-        size: options.size
+        size: options.size,
       })
       return set(file, 'url', url)
     }
@@ -593,7 +594,7 @@ export const patchFileUrlForCF = curry(
     const processEntry = async (item: any): Promise<any> => {
       if (Array.isArray(item)) {
         return Promise.all(
-          item.map(async innerEntry => processEntry(innerEntry))
+          item.map(async (innerEntry) => processEntry(innerEntry))
         )
       }
 
@@ -603,7 +604,7 @@ export const patchFileUrlForCF = curry(
         }
 
         const processedProps = await Promise.all(
-          keys(item).map(async propKey => {
+          keys(item).map(async (propKey) => {
             return { propKey, propValue: await processEntry(item[propKey]) }
           })
         )
@@ -654,7 +655,7 @@ export const processReferencesForCF = curry(
     }
 
     const populatedFields = await Promise.all(
-      fieldsToPopulate.map(async opt => {
+      fieldsToPopulate.map(async (opt) => {
         const { field, populate, subFields, fields } = opt
         const val = get(document, field)
 
@@ -666,7 +667,7 @@ export const processReferencesForCF = curry(
             ? true
             : Array.isArray(subFields)
             ? subFields
-            : populate
+            : populate,
         })
 
         const processRef = async (ref: { path: string }) => {
@@ -681,17 +682,14 @@ export const processReferencesForCF = curry(
             return Promise.all(docs)
           }
 
-          return await compose(
-            processRefs,
-            patchUrl
-          )(snapshot.data())
+          return await compose(processRefs, patchUrl)(snapshot.data())
         }
 
         let fieldValue = val
 
         if (Array.isArray(val)) {
           fieldValue = await Promise.all(
-            val.map(async innerRef => {
+            val.map(async (innerRef) => {
               if (isRefLike(innerRef)) {
                 return processRef(innerRef)
               }
@@ -726,7 +724,7 @@ export const populateEntriesForCF = curry(
   async (context: App.Context, options: App.CF.Options, entries: unknown) => {
     if (Array.isArray(entries)) {
       return Promise.all(
-        entries.map(async entry =>
+        entries.map(async (entry) =>
           processReferencesForCF(context, options, entry)
         )
       )
@@ -734,7 +732,7 @@ export const populateEntriesForCF = curry(
 
     if (isPlainObject(entries)) {
       const populatedEntries = await Promise.all(
-        keys(entries).map(async key =>
+        keys(entries).map(async (key) =>
           processReferencesForCF(
             context,
             options,
@@ -746,7 +744,7 @@ export const populateEntriesForCF = curry(
       return populatedEntries.reduce(
         (acc: unknown, entry) =>
           Object.assign(acc, {
-            [get(entry, '_fl_meta_.fl_id', entry.id)]: entry
+            [get(entry, '_fl_meta_.fl_id', entry.id)]: entry,
           }),
         {}
       )
@@ -772,7 +770,7 @@ export const createQueue = curry((promiseFn: any, list: any[]) => ({
           return result.concat([itemResult])
         }),
       Promise.resolve([])
-    )
+    ),
 }))
 
 const getPopulateFieldsForSchema = async (
@@ -794,7 +792,7 @@ const getPopulateFieldsForSchema = async (
             populate: await getPopulateFieldsForSchema(
               schemasAPI,
               await schemasAPI.getFields({ schemaKey: field.relation })
-            )
+            ),
           })
         )
 
@@ -806,7 +804,7 @@ const getPopulateFieldsForSchema = async (
             subFields: await getPopulateFieldsForSchema(
               schemasAPI,
               field.options
-            )
+            ),
           })
         )
 
@@ -851,7 +849,7 @@ const getFieldsToPopulate = (
   return preppedPopulateFields.reduce((fields, preppedField) => {
     const schemaField =
       schemaFields &&
-      schemaFields.find(field => field.key === preppedField.field)
+      schemaFields.find((field) => field.key === preppedField.field)
 
     if (!schemaField) {
       return fields
@@ -863,8 +861,8 @@ const getFieldsToPopulate = (
         {
           ...preppedField,
           contentType: schemaField.relation,
-          populateType: 'relational'
-        }
+          populateType: 'relational',
+        },
       ])
     }
 
@@ -934,12 +932,12 @@ export const populateEntry = curry(
         }
 
         const populatedFields = await Promise.all(
-          fieldsToPopulate.map(async populateField => {
+          fieldsToPopulate.map(async (populateField) => {
             const {
               field,
               subFields,
               contentType: innerContentType,
-              populateType
+              populateType,
             } = populateField
 
             switch (populateType) {
@@ -955,7 +953,7 @@ export const populateEntry = curry(
                   }
 
                   return Promise.all(
-                    mediaEntries.map(async innerEntryKey => {
+                    mediaEntries.map(async (innerEntryKey) => {
                       const pluckFields = pluckResultFields(
                         populateField.fields
                       )
@@ -968,12 +966,12 @@ export const populateEntry = curry(
                       const [fileObject, fileURL] = await Promise.all([
                         storageAPI.getFile({
                           ...populateField,
-                          fileId: innerEntryKey
+                          fileId: innerEntryKey,
                         }),
                         storageAPI.getURL({
                           ...populateField,
-                          fileId: innerEntryKey
-                        })
+                          fileId: innerEntryKey,
+                        }),
                       ])
 
                       return await compose(
@@ -996,11 +994,11 @@ export const populateEntry = curry(
                   relationalEntries = castArray(relationalEntries)
 
                   return Promise.all(
-                    relationalEntries.map(async innerEntryKey => {
+                    relationalEntries.map(async (innerEntryKey) => {
                       return contentAPI.get({
                         ...populateField,
                         schemaKey: innerContentType,
-                        entryId: innerEntryKey
+                        entryId: innerEntryKey,
                       })
                     })
                   )
@@ -1020,7 +1018,7 @@ export const populateEntry = curry(
                   }
 
                   const schemaField =
-                    schemaFields && schemaFields.find(f => f.key === field)
+                    schemaFields && schemaFields.find((f) => f.key === field)
 
                   return Promise.all(
                     repeaterFields.map(async (repeaterField, repeaterIndex) => {
@@ -1051,7 +1049,7 @@ export const populateEntry = curry(
                   }
 
                   const schemaField =
-                    schemaFields && schemaFields.find(f => f.key === field)
+                    schemaFields && schemaFields.find((f) => f.key === field)
 
                   const processedFieldsetFields = await Promise.all(
                     keys(fieldsetFields).map(
@@ -1059,7 +1057,7 @@ export const populateEntry = curry(
                         const fieldsetIndexKey = fieldsetIndex.toString()
                         const processedFieldsetField = await processEntry(
                           wrap(fieldsetIndexKey, {
-                            [fieldsetKey]: fieldsetFields[fieldsetKey]
+                            [fieldsetKey]: fieldsetFields[fieldsetKey],
                           }), // entry
                           schemaField.options || [], // schemaFields
                           prepPopulateFields(subFields), // populate fields
@@ -1102,7 +1100,7 @@ export const populateEntry = curry(
     )
 
     const schemaFields: SchemaField[] = await schemasAPI.getFields({
-      schemaKey: contentType
+      schemaKey: contentType,
     })
 
     if (populate === true) {
@@ -1119,7 +1117,7 @@ export const populateEntry = curry(
     return entryKeys.reduce(
       (populatedEntries, entryKey, index) =>
         Object.assign(populatedEntries, {
-          [entryKey]: entries[index][entryKey]
+          [entryKey]: entries[index][entryKey],
         }),
       {}
     )
@@ -1138,7 +1136,7 @@ export const populateEntries = curry(
     }
 
     return Promise.all(
-      entries.map(async entry =>
+      entries.map(async (entry) =>
         populateEntry(context, contentType, populate, entry)
       )
     )

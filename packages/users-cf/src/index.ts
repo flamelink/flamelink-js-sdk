@@ -13,14 +13,14 @@ import {
   getTimestamp,
   getCurrentUser,
   isRefLike,
-  processReferencesForCF
+  processReferencesForCF,
 } from '@flamelink/sdk-utils'
 import { BATCH_WRITE_LIMIT } from './constants'
 
 const USERS_COLLECTION = 'fl_users'
 const PERMISSIONS_COLLECTION = 'fl_permissions'
 
-export const factory: FlamelinkFactory = context => {
+export const factory: FlamelinkFactory = (context) => {
   const api: Api = {
     ref(uid) {
       const firestoreService = flamelink._ensureService('firestore', context)
@@ -30,7 +30,7 @@ export const factory: FlamelinkFactory = context => {
 
     getRaw({ uid, ...options }: CF.Get) {
       return applyOptionsForCF(api.ref(uid), options).get({
-        source: options.source || 'default'
+        source: options.source || 'default',
       })
     },
 
@@ -57,7 +57,7 @@ export const factory: FlamelinkFactory = context => {
 
       if (!context.usesAdminApp) {
         args.push({
-          includeMetadataChanges: !!options.includeMetadataChanges
+          includeMetadataChanges: !!options.includeMetadataChanges,
         })
       }
 
@@ -107,7 +107,7 @@ export const factory: FlamelinkFactory = context => {
 
           const plucked: any = await processRefs(pluckFields(users))
           return callback(null, uid ? plucked[uid] : plucked)
-        }
+        },
       })
     },
 
@@ -140,7 +140,7 @@ export const factory: FlamelinkFactory = context => {
               _fl_meta_: {
                 createdBy: getCurrentUser(context),
                 createdDate: getTimestamp(context),
-                docId: uid
+                docId: uid,
               },
               displayName: data.displayName || '',
               email: data.email || '',
@@ -150,14 +150,11 @@ export const factory: FlamelinkFactory = context => {
               lastName: data.lastName || '',
               ...(data.permissions
                 ? { permissions: api._getPermissionsRef(data.permissions) }
-                : {})
+                : {}),
             })
           : data
 
-      await api
-        .ref()
-        .doc(uid)
-        .set(payload)
+      await api.ref().doc(uid).set(payload)
 
       return payload
     },
@@ -174,7 +171,7 @@ export const factory: FlamelinkFactory = context => {
         '_fl_meta_.lastModifiedDate': getTimestamp(context),
         '_fl_meta_.docId': uid,
         id: uid,
-        permissions: api._getPermissionsRef(data.permissions)
+        permissions: api._getPermissionsRef(data.permissions),
       })
 
       const snapshot = await api.ref(uid).get()
@@ -212,7 +209,7 @@ export const factory: FlamelinkFactory = context => {
       }, usersDocChunks)
 
       return batchQueue.start()
-    }
+    },
   }
 
   return api

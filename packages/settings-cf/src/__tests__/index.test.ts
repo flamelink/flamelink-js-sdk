@@ -5,7 +5,7 @@ import uniqueId from 'lodash/uniqueId'
 import { factory as getAPI } from '../index'
 import {
   initializeFirestoreProject,
-  getBaseContext
+  getBaseContext,
 } from '../../../../tools/testing/firebase'
 import getImageSizes from '../../../../fixtures/image-sizes'
 import getGlobals from '../../../../fixtures/globals'
@@ -16,12 +16,12 @@ describe('- CF Settings', () => {
 
   beforeEach(async () => {
     const firebaseApp: FirebaseApp = await initializeFirestoreProject({
-      projectId: uniqueId('project-')
+      projectId: uniqueId('project-'),
     })
 
     const context: Context = getBaseContext({
       dbType: 'cf',
-      firebaseApp
+      firebaseApp,
     })
 
     api = getAPI(context)
@@ -109,7 +109,7 @@ describe('- CF Settings', () => {
 
             expect(images).toEqual(getImageSizes())
             resolve()
-          }
+          },
         })
       }))
 
@@ -123,7 +123,7 @@ describe('- CF Settings', () => {
 
             expect(globals).toEqual(getGlobals('cf'))
             resolve()
-          }
+          },
         })
       }))
 
@@ -138,7 +138,7 @@ describe('- CF Settings', () => {
             // Default Permission Group is 1 for the Super Admin user
             expect(permissionGroup.path).toEqual('fl_permissions/1')
             resolve()
-          }
+          },
         })
       }))
   })

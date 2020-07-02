@@ -27,10 +27,7 @@ const startEmulator = (
 
     if (isEmulatorRunning(port)) {
       const emulatorPidBuffer = execSync(`lsof -ti :${port}`)
-      const emulatorPID = emulatorPidBuffer
-        .toString()
-        .split(EOL)
-        .join(' ')
+      const emulatorPID = emulatorPidBuffer.toString().split(EOL).join(' ')
 
       logInfo(`Emulator already running: ${emulatorPID}`)
       return resolve(emulatorPID)
@@ -50,7 +47,7 @@ const startEmulator = (
     const child = spawn('java', commandArgs, {
       cwd: path.resolve(__dirname, '..', '..'),
       env: process.env,
-      shell: true
+      shell: true,
     })
 
     const interval = setInterval(() => {
@@ -92,7 +89,11 @@ const setup = async () => {
       ['--host=127.0.0.1', `--port=${FIRESTORE_EMULATOR_PORT}`],
       `${FIRESTORE_EMULATOR_PORT}`
     ),
-    startEmulator('firebase-database-emulator', [], `${DATABASE_EMULATOR_PORT}`)
+    startEmulator(
+      'firebase-database-emulator',
+      [],
+      `${DATABASE_EMULATOR_PORT}`
+    ),
   ])
 }
 

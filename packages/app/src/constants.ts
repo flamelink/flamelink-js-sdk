@@ -6,7 +6,7 @@ export const PUBLIC_MODULES: App.ModuleName[] = [
   'storage',
   'nav',
   'settings',
-  'users'
+  'users',
 ]
 
 export const DEFAULT_ENVIRONMENT = 'production'

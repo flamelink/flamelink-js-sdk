@@ -15,12 +15,12 @@ import {
   getTimestamp,
   getCurrentUser,
   wrap,
-  unwrap
+  unwrap,
 } from '@flamelink/sdk-utils'
 import { getContentRefPath } from './helpers'
 import '@flamelink/sdk-schemas-rtdb'
 
-export const factory: FlamelinkFactory = context => {
+export const factory: FlamelinkFactory = (context) => {
   const api: Api = {
     ref(reference, options) {
       const dbService = flamelink._ensureService('database', context)
@@ -46,7 +46,7 @@ export const factory: FlamelinkFactory = context => {
       const snapshot: DataSnapshot = await api.getRaw({
         ...options,
         schemaKey,
-        entryId
+        entryId,
       })
 
       if (entryId) {
@@ -59,7 +59,7 @@ export const factory: FlamelinkFactory = context => {
       }
 
       const schema: Schema = await get(context, 'modules.schemas').get({
-        schemaKey
+        schemaKey,
       })
       const isSingleType = schema && schema.type === 'single'
 
@@ -69,10 +69,7 @@ export const factory: FlamelinkFactory = context => {
           ? wrap(schemaKey, snapshot.val())
           : snapshot.val()
 
-        const result = await compose(
-          populateFields,
-          pluckFields
-        )(value)
+        const result = await compose(populateFields, pluckFields)(value)
 
         return isSingleType ? unwrap(schemaKey, result) : result
       }
@@ -85,10 +82,7 @@ export const factory: FlamelinkFactory = context => {
         {}
       )
 
-      const result = await compose(
-        populateFields,
-        pluckFields
-      )(withoutLocales)
+      const result = await compose(populateFields, pluckFields)(withoutLocales)
       return result
     },
 
@@ -97,7 +91,7 @@ export const factory: FlamelinkFactory = context => {
         schemaKey,
         ...options,
         orderByChild: field,
-        equalTo: value
+        equalTo: value,
       })
     },
 
@@ -106,7 +100,7 @@ export const factory: FlamelinkFactory = context => {
         schemaKey,
         ...options,
         orderByChild: field,
-        equalTo: value
+        equalTo: value,
       })
     },
 
@@ -153,7 +147,7 @@ export const factory: FlamelinkFactory = context => {
             }
 
             const schema: Schema = await get(context, 'modules.schemas').get({
-              schemaKey
+              schemaKey,
             })
             const isSingleType = schema && schema.type === 'single'
 
@@ -163,10 +157,7 @@ export const factory: FlamelinkFactory = context => {
                 ? wrap(schemaKey, snapshot.val())
                 : snapshot.val()
 
-              const result = await compose(
-                populateFields,
-                pluckFields
-              )(value)
+              const result = await compose(populateFields, pluckFields)(value)
 
               return callback(
                 null,
@@ -179,7 +170,7 @@ export const factory: FlamelinkFactory = context => {
             const withoutLocales = keys(withLocales).reduce(
               (menus, key) =>
                 Object.assign(menus, {
-                  [key]: withLocales[key][context.locale]
+                  [key]: withLocales[key][context.locale],
                 }),
               {}
             )
@@ -193,7 +184,7 @@ export const factory: FlamelinkFactory = context => {
           } catch (err) {
             return callback(err, null)
           }
-        }
+        },
       })
     },
 
@@ -203,17 +194,17 @@ export const factory: FlamelinkFactory = context => {
           throw new FlamelinkError(
             'The "schemas" module is required. Please ensure it is properly imported.'
           )
-        }
+        },
       })
 
       const schemaFields: SchemaFields = await schemasAPI.getFields({
-        schemaKey
+        schemaKey,
       })
 
       const defaultValues = schemaFields.reduce(
-        (acc: object, field: SchemaField) =>
+        (acc: Record<string, unknown>, field: SchemaField) =>
           Object.assign(acc, {
-            [field.key]: get(field, 'defaultValue', null)
+            [field.key]: get(field, 'defaultValue', null),
           }),
         {}
       )
@@ -233,7 +224,7 @@ export const factory: FlamelinkFactory = context => {
         const defaultEntry = await api.get({
           schemaKey,
           entryId,
-          locale: defaultLocale
+          locale: defaultLocale,
         })
 
         if (!defaultEntry) {
@@ -250,9 +241,9 @@ export const factory: FlamelinkFactory = context => {
               ...data,
               __meta__: {
                 createdBy: getCurrentUser(context),
-                createdDate: getTimestamp(context)
+                createdDate: getTimestamp(context),
               },
-              id: entryId
+              id: entryId,
             }
           : data
 
@@ -262,11 +253,11 @@ export const factory: FlamelinkFactory = context => {
         const defaultPayload = {
           __meta__: {
             ...payload.__meta__,
-            createdFromLocale: context.locale
+            createdFromLocale: context.locale,
           },
           id: entryId,
           order: get(payload, 'order', 0),
-          parentId: get(payload, 'parentId', 0)
+          parentId: get(payload, 'parentId', 0),
         }
 
         await api
@@ -304,9 +295,9 @@ export const factory: FlamelinkFactory = context => {
               __meta__: {
                 ...(data.__meta__ || {}),
                 lastModifiedBy: getCurrentUser(context),
-                lastModifiedDate: getTimestamp(context)
+                lastModifiedDate: getTimestamp(context),
               },
-              id: entryId
+              id: entryId,
             }
           : data
 
@@ -322,7 +313,7 @@ export const factory: FlamelinkFactory = context => {
         )
       }
       return api.ref(entryId ? [schemaKey, entryId] : schemaKey).remove()
-    }
+    },
   }
 
   return api

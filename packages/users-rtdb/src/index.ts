@@ -10,11 +10,11 @@ import {
   getTimestamp,
   getCurrentUser,
   wrap,
-  unwrap
+  unwrap,
 } from '@flamelink/sdk-utils'
 import { getUserRefPath } from './helpers'
 
-export const factory: FlamelinkFactory = context => {
+export const factory: FlamelinkFactory = (context) => {
   const api: Api = {
     ref(uid) {
       const dbService = flamelink._ensureService('database', context)
@@ -81,7 +81,7 @@ export const factory: FlamelinkFactory = context => {
             const pluckedMenus = await pluckFields(snapshot.val())
 
             return callback(null, pluckedMenus) // Error-first callback
-          }
+          },
         })
       } catch (err) {
         return callback(err, null)
@@ -94,7 +94,7 @@ export const factory: FlamelinkFactory = context => {
           ? Object.assign({}, data, {
               __meta__: {
                 createdBy: getCurrentUser(context),
-                createdDate: getTimestamp(context)
+                createdDate: getTimestamp(context),
               },
               displayName: data.displayName || '',
               email: data.email || '',
@@ -102,7 +102,7 @@ export const factory: FlamelinkFactory = context => {
               firstName: data.firstName || '',
               id: uid,
               lastName: data.lastName || '',
-              permissions: data.permissions || '1'
+              permissions: data.permissions || '1',
             })
           : data
 
@@ -126,9 +126,9 @@ export const factory: FlamelinkFactory = context => {
               __meta__: {
                 ...(data.__meta__ || {}),
                 lastModifiedBy: getCurrentUser(context),
-                lastModifiedDate: getTimestamp(context)
+                lastModifiedDate: getTimestamp(context),
               },
-              id: uid
+              id: uid,
             }
           : data
 
@@ -142,7 +142,7 @@ export const factory: FlamelinkFactory = context => {
         )
       }
       return api.ref(uid).remove()
-    }
+    },
   }
 
   return api

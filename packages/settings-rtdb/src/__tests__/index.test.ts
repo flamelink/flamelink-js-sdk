@@ -5,7 +5,7 @@ import uniqueId from 'lodash/uniqueId'
 import { factory as getAPI } from '../index'
 import {
   initializeRealtimeProject,
-  getBaseContext
+  getBaseContext,
 } from '../../../../tools/testing/firebase'
 import getImageSizes from '../../../../fixtures/image-sizes'
 import getGlobals from '../../../../fixtures/globals'
@@ -16,7 +16,7 @@ describe('- RTDB Settings', () => {
 
   beforeEach(async () => {
     const firebaseApp: Partial<FirebaseApp> = await initializeRealtimeProject({
-      projectId: uniqueId('project-')
+      projectId: uniqueId('project-'),
     })
 
     const context: Context = getBaseContext({ dbType: 'rtdb', firebaseApp })
@@ -101,7 +101,7 @@ describe('- RTDB Settings', () => {
 
             expect(images).toEqual(getImageSizes())
             resolve()
-          }
+          },
         })
       }))
 
@@ -115,7 +115,7 @@ describe('- RTDB Settings', () => {
 
             expect(globals).toEqual(getGlobals('rtdb'))
             resolve()
-          }
+          },
         })
       }))
 
@@ -130,7 +130,7 @@ describe('- RTDB Settings', () => {
             // Default Permission Group is 1 for the Super Admin user
             expect(permissionGroup).toEqual(1)
             resolve()
-          }
+          },
         })
       }))
   })

@@ -124,7 +124,7 @@ const firebaseConfig = {
   databaseURL: '<your-database-url>',
   projectId: '<your-project-id>',
   storageBucket: '<your-storage-bucket-code>',
-  messagingSenderId: '<your-messenger-id>'
+  messagingSenderId: '<your-messenger-id>',
 }
 
 const firebaseApp = firebase.initializeApp(firebaseConfig)
@@ -134,7 +134,7 @@ const app = flamelink({
   dbType: 'rtdb', // can be either 'rtdb' or 'cf' for Realtime DB or Cloud Firestore
   env: 'production', // optional, default shown
   locale: 'en-US', // optional, default shown
-  precache: true // optional, default shown. Currently it only precaches "schemas" for better performance
+  precache: true, // optional, default shown. Currently it only precaches "schemas" for better performance
 })
 ```
 
@@ -150,13 +150,13 @@ const serviceAccount = require('path/to/serviceAccountKey.json')
 const firebaseConfig = {
   credential: admin.credential.cert(serviceAccount),
   databaseURL: '<your-database-url>',
-  storageBucket: '<your-storage-bucket-code>' // required if you want to use any Storage Bucket functionality
+  storageBucket: '<your-storage-bucket-code>', // required if you want to use any Storage Bucket functionality
 }
 
 const firebaseApp = admin.initializeApp(config)
 
 const app = flamelink({
-  firebaseApp // required
+  firebaseApp, // required
   // same options as above
 })
 ```

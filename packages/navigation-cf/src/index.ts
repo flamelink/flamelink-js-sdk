@@ -13,14 +13,14 @@ import {
   FlamelinkError,
   createQueue,
   getTimestamp,
-  getCurrentUser
+  getCurrentUser,
 } from '@flamelink/sdk-utils'
 import { structureItems } from './helpers'
 import { BATCH_WRITE_LIMIT, REQUIRED_FIELDS_FOR_STRUCTURING } from './constants'
 
 const NAVIGATION_COLLECTION = 'fl_navigation'
 
-export const factory: FlamelinkFactory = context => {
+export const factory: FlamelinkFactory = (context) => {
   const api: Api = {
     ref(navigationKey) {
       const firestoreService = flamelink._ensureService('firestore', context)
@@ -37,7 +37,7 @@ export const factory: FlamelinkFactory = context => {
 
     getRaw({ navigationKey, ...options }: CF.Get) {
       return applyOptionsForCF(api.ref(navigationKey), options).get({
-        source: options.source || 'default'
+        source: options.source || 'default',
       })
     },
 
@@ -64,7 +64,7 @@ export const factory: FlamelinkFactory = context => {
       const plucked = keys(navigation).reduce((acc: any, key: string) => {
         const nav: any = navigation[key]
         return Object.assign(acc, {
-          [key]: structureNavItems(pluckFields(nav))
+          [key]: structureNavItems(pluckFields(nav)),
         })
       }, {})
 
@@ -100,7 +100,7 @@ export const factory: FlamelinkFactory = context => {
 
       if (!context.usesAdminApp) {
         args.push({
-          includeMetadataChanges: !!options.includeMetadataChanges
+          includeMetadataChanges: !!options.includeMetadataChanges,
         })
       }
 
@@ -165,10 +165,7 @@ export const factory: FlamelinkFactory = context => {
             const nav: any = navigation[key]
             return chain.then(async (acc: any) =>
               Object.assign(acc, {
-                [key]: await compose(
-                  pluckFields,
-                  structureNavItems
-                )(nav)
+                [key]: await compose(pluckFields, structureNavItems)(nav),
               })
             )
           }, Promise.resolve({}))
@@ -177,7 +174,7 @@ export const factory: FlamelinkFactory = context => {
             null,
             navigationKey ? plucked[navigationKey] : plucked
           )
-        }
+        },
       })
     },
 
@@ -201,11 +198,11 @@ export const factory: FlamelinkFactory = context => {
                 createdDate: getTimestamp(context),
                 env: context.env,
                 docId,
-                fl_id: navigationKey
+                fl_id: navigationKey,
               },
               items: castArray(data.items) || [],
               id: navigationKey,
-              title: data.title || navigationKey
+              title: data.title || navigationKey,
             })
           : data
 
@@ -227,7 +224,7 @@ export const factory: FlamelinkFactory = context => {
               '_fl_meta_.lastModifiedBy': getCurrentUser(context),
               '_fl_meta_.lastModifiedDate': getTimestamp(context),
               '_fl_meta_.fl_id': navigationKey,
-              id: navigationKey
+              id: navigationKey,
             })
           : data
 
@@ -268,7 +265,7 @@ export const factory: FlamelinkFactory = context => {
       }, navigationDocChunks)
 
       return batchQueue.start()
-    }
+    },
   }
 
   return api

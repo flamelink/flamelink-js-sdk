@@ -10,10 +10,10 @@ describe('utils', () => {
     })
 
     it('should allow subscription to any event', () => {
-      return new Promise(resolve => {
+      return new Promise((resolve) => {
         const testEvent = 'ice-cream'
         const testPayload = { flavour: 'vanilla' }
-        eventEmitter.on(testEvent, payload => {
+        eventEmitter.on(testEvent, (payload) => {
           expect(payload).toBe(testPayload)
           resolve()
         })
@@ -23,10 +23,10 @@ describe('utils', () => {
     })
 
     it('should allow subscription to any event once', () => {
-      return new Promise(resolve => {
+      return new Promise((resolve) => {
         const testEvent = 'ice-cream'
         const testPayload = { flavour: 'vanilla' }
-        eventEmitter.once(testEvent, payload => {
+        eventEmitter.once(testEvent, (payload) => {
           expect(payload).toBe(testPayload)
           resolve()
         })
@@ -45,7 +45,7 @@ describe('utils', () => {
         resolve()
       })
 
-      promiseEmitter.on(testEvent, payload => {
+      promiseEmitter.on(testEvent, (payload) => {
         expect(payload).toBe(testPayload)
       })
 

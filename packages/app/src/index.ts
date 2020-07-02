@@ -4,13 +4,13 @@ import {
   getModule,
   ensureValidContext,
   isAdminApp,
-  isNodeEnvironment
+  isNodeEnvironment,
 } from './helpers'
 import {
   PUBLIC_MODULES,
   DEFAULT_ENVIRONMENT,
   DEFAULT_LOCALE,
-  DEFAULT_DB_TYPE
+  DEFAULT_DB_TYPE,
 } from './constants'
 
 const createFlamelinkFactory: App.FactoryCreator = () => {
@@ -28,7 +28,7 @@ const createFlamelinkFactory: App.FactoryCreator = () => {
 
       Object.defineProperty(context.modules, moduleName, {
         value: moduleApi,
-        writable: false
+        writable: false,
       })
     })
   }
@@ -46,7 +46,7 @@ const createFlamelinkFactory: App.FactoryCreator = () => {
       precache: typeof config.precache === 'undefined' ? true : config.precache,
       proxySupported: typeof Proxy !== 'undefined',
       usesAdminApp: isAdminApp(config.firebaseApp),
-      isNodeEnvironment: isNodeEnvironment()
+      isNodeEnvironment: isNodeEnvironment(),
     }
 
     ensureValidContext(context)
@@ -54,10 +54,12 @@ const createFlamelinkFactory: App.FactoryCreator = () => {
     initRegisteredModules(context)
 
     const api: App.PublicApi = PUBLIC_MODULES.reduce((acc: any, moduleName) => {
-      return Object.assign(acc, {
-        get [moduleName]() {
+      return Object.defineProperty(acc, moduleName, {
+        enumerable: true,
+        configurable: false,
+        get() {
           return getModule(moduleName, context)
-        }
+        },
       })
     }, {})
 
@@ -70,7 +72,7 @@ const createFlamelinkFactory: App.FactoryCreator = () => {
   ) => {
     registeredModules.push({
       moduleName,
-      setupModule
+      setupModule,
     })
   }
 

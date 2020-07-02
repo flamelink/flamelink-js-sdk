@@ -7,7 +7,7 @@ import { factory as getAPI } from '../index'
 import { EventEmitter } from '@flamelink/sdk-utils/src'
 import {
   initializeRealtimeProject,
-  getBaseContext
+  getBaseContext,
 } from '../../../../tools/testing/firebase'
 import { getAllSchemas, getSchema } from '../../../../fixtures/schemas'
 
@@ -17,13 +17,13 @@ describe('- RTDB Schemas', () => {
 
   beforeEach(async () => {
     const firebaseApp: Partial<FirebaseApp> = await initializeRealtimeProject({
-      projectId: uniqueId('project-')
+      projectId: uniqueId('project-'),
     })
 
     const context: Context = getBaseContext({
       dbType: 'rtdb',
       firebaseApp,
-      emitter: new EventEmitter()
+      emitter: new EventEmitter(),
     })
 
     api = getAPI(context)
@@ -64,7 +64,7 @@ describe('- RTDB Schemas', () => {
       const expected = Object.keys(allSchemas).reduce(
         (acc, schemaKey) =>
           Object.assign(acc, {
-            [schemaKey]: get(allSchemas, `${schemaKey}.fields`, [])
+            [schemaKey]: get(allSchemas, `${schemaKey}.fields`, []),
           }),
         {}
       )
@@ -95,7 +95,7 @@ describe('- RTDB Schemas', () => {
 
             expect(schemas).toEqual(getAllSchemas({ dbType: 'rtdb' }))
             resolve()
-          }
+          },
         })
       }))
 
@@ -111,7 +111,7 @@ describe('- RTDB Schemas', () => {
 
             expect(schemas).toEqual(getSchema({ dbType: 'rtdb', schemaKey }))
             resolve()
-          }
+          },
         })
       }))
 
@@ -127,7 +127,7 @@ describe('- RTDB Schemas', () => {
 
             expect(schemas).toEqual(null)
             resolve()
-          }
+          },
         })
       }))
   })
@@ -139,7 +139,7 @@ describe('- RTDB Schemas', () => {
         const expected = Object.keys(allSchemas).reduce(
           (acc, schemaKey) =>
             Object.assign(acc, {
-              [schemaKey]: get(allSchemas, `${schemaKey}.fields`, [])
+              [schemaKey]: get(allSchemas, `${schemaKey}.fields`, []),
             }),
           {}
         )
@@ -151,7 +151,7 @@ describe('- RTDB Schemas', () => {
 
             expect(schemas).toEqual(expected)
             resolve()
-          }
+          },
         })
       }))
 
@@ -169,7 +169,7 @@ describe('- RTDB Schemas', () => {
               getSchema({ dbType: 'rtdb', schemaKey }).fields
             )
             resolve()
-          }
+          },
         })
       }))
 
@@ -185,7 +185,7 @@ describe('- RTDB Schemas', () => {
 
             expect(schemas).toEqual(null)
             resolve()
-          }
+          },
         })
       }))
   })
@@ -209,12 +209,12 @@ describe('- RTDB Schemas', () => {
         title: 'Posts',
         description: 'Test posts schema',
         enabled: false,
-        type: 'collection'
+        type: 'collection',
       }
       const expected = {
         __meta__: {
           createdBy: expect.any(String),
-          createdDate: expect.any(String)
+          createdDate: expect.any(String),
         },
         description: 'Test posts schema',
         enabled: false,
@@ -223,7 +223,7 @@ describe('- RTDB Schemas', () => {
         id: 'posts',
         sortable: true,
         title: 'Posts',
-        type: 'collection'
+        type: 'collection',
       }
 
       await api.add({ schemaKey, data })
@@ -251,18 +251,18 @@ describe('- RTDB Schemas', () => {
       const schemaKey = 'products'
       const data = {
         description: 'Updated description',
-        enabled: false
+        enabled: false,
       }
       const expected = {
         ...getSchema({ dbType: 'rtdb', schemaKey }),
         ...{
           __meta__: {
             lastModifiedBy: expect.any(String),
-            lastModifiedDate: expect.any(String)
+            lastModifiedDate: expect.any(String),
           },
           description: 'Updated description',
-          enabled: false
-        }
+          enabled: false,
+        },
       }
 
       await api.update({ schemaKey, data })

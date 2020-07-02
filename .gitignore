@@ -53,3 +53,4 @@ typings/
 
 # Build files
 dist
+package-lock.json

@@ -9,7 +9,7 @@ import { factory as getAPI } from '../index'
 import { EventEmitter } from '../../../utils/src/index'
 import {
   initializeFirestoreProject,
-  getBaseContext
+  getBaseContext,
 } from '../../../../tools/testing/firebase'
 import { getAllSchemas, getSchema } from '../../../../fixtures/schemas'
 
@@ -19,13 +19,13 @@ describe('- CF Schemas', () => {
 
   beforeEach(async () => {
     const firebaseApp: FirebaseApp = await initializeFirestoreProject({
-      projectId: uniqueId('project-')
+      projectId: uniqueId('project-'),
     })
 
     const context: Context = getBaseContext({
       dbType: 'cf',
       firebaseApp,
-      emitter: new EventEmitter()
+      emitter: new EventEmitter(),
     })
 
     api = getAPI(context)
@@ -69,7 +69,7 @@ describe('- CF Schemas', () => {
       const expected = Object.keys(allSchemas).reduce(
         (acc, schemaKey) =>
           Object.assign(acc, {
-            [schemaKey]: get(allSchemas, `${schemaKey}.fields`, [])
+            [schemaKey]: get(allSchemas, `${schemaKey}.fields`, []),
           }),
         {}
       )
@@ -105,7 +105,7 @@ describe('- CF Schemas', () => {
 
             expect(schemas).toEqual(expected)
             resolve()
-          }
+          },
         })
       }))
 
@@ -123,11 +123,11 @@ describe('- CF Schemas', () => {
               getSchema({
                 dbType: 'cf',
                 schemaKey,
-                docId: 'EBNiExsNqIJ3n4UKVEYg'
+                docId: 'EBNiExsNqIJ3n4UKVEYg',
               })
             )
             resolve()
-          }
+          },
         })
       }))
 
@@ -143,7 +143,7 @@ describe('- CF Schemas', () => {
 
             expect(schemas).toEqual(null)
             resolve()
-          }
+          },
         })
       }))
   })
@@ -155,7 +155,7 @@ describe('- CF Schemas', () => {
         const expected = Object.keys(allSchemas).reduce(
           (acc, schemaKey) =>
             Object.assign(acc, {
-              [schemaKey]: get(allSchemas, `${schemaKey}.fields`, [])
+              [schemaKey]: get(allSchemas, `${schemaKey}.fields`, []),
             }),
           {}
         )
@@ -167,7 +167,7 @@ describe('- CF Schemas', () => {
 
             expect(schemas).toEqual(expected)
             resolve()
-          }
+          },
         })
       }))
 
@@ -185,7 +185,7 @@ describe('- CF Schemas', () => {
               getSchema({ dbType: 'cf', schemaKey }).fields
             )
             resolve()
-          }
+          },
         })
       }))
 
@@ -201,7 +201,7 @@ describe('- CF Schemas', () => {
 
             expect(schemas).toEqual(null)
             resolve()
-          }
+          },
         })
       }))
   })
@@ -225,7 +225,7 @@ describe('- CF Schemas', () => {
         title: 'Posts',
         description: 'Test posts schema',
         enabled: false,
-        type: 'collection'
+        type: 'collection',
       }
       const expected = {
         _fl_meta_: {
@@ -233,7 +233,7 @@ describe('- CF Schemas', () => {
           createdDate: expect.anything(), // CF timestamps not working well for emulators
           docId: expect.any(String),
           env: expect.any(String),
-          fl_id: 'posts'
+          fl_id: 'posts',
         },
         description: 'Test posts schema',
         enabled: false,
@@ -243,7 +243,7 @@ describe('- CF Schemas', () => {
         sortable: true,
         title: 'Posts',
         type: 'collection',
-        fields: [] as unknown[]
+        fields: [] as unknown[],
       }
 
       await api.add({ schemaKey, data })
@@ -275,7 +275,7 @@ describe('- CF Schemas', () => {
       const schemaKey = 'products'
       const data = {
         description: 'Updated description',
-        enabled: false
+        enabled: false,
       }
       const expected = {
         ...getSchema({ dbType: 'cf', schemaKey }),
@@ -284,17 +284,17 @@ describe('- CF Schemas', () => {
             createdBy: expect.any(String),
             createdDate: expect.objectContaining({
               nanoseconds: expect.any(Number),
-              seconds: expect.any(Number)
+              seconds: expect.any(Number),
             }),
             lastModifiedBy: expect.any(String),
             lastModifiedDate: expect.anything(),
             docId: expect.any(String),
             env: expect.any(String),
-            fl_id: 'products'
+            fl_id: 'products',
           },
           description: 'Updated description',
-          enabled: false
-        }
+          enabled: false,
+        },
       }
 
       await api.update({ schemaKey, data })
@@ -321,18 +321,18 @@ describe('- CF Schemas', () => {
             createdBy: expect.any(String),
             createdDate: expect.objectContaining({
               nanoseconds: expect.any(Number),
-              seconds: expect.any(Number)
+              seconds: expect.any(Number),
             }),
             lastModifiedBy: expect.any(String),
             lastModifiedDate: expect.objectContaining({
               nanoseconds: expect.any(Number),
-              seconds: expect.any(Number)
+              seconds: expect.any(Number),
             }),
             docId: expect.any(String),
             env: expect.any(String),
-            fl_id: expect.any(String)
-          }
-        }
+            fl_id: expect.any(String),
+          },
+        },
       }
       expect(before).toEqual(expected)
 

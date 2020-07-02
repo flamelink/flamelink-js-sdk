@@ -26,7 +26,7 @@ const modulePkgs = {
   schemas: schemasPkg,
   settings: settingsPkg,
   storage: storagePkg,
-  users: usersPkg
+  users: usersPkg,
 }
 
 const external = Object.keys(pkg.dependencies || {})
@@ -34,9 +34,10 @@ const external = Object.keys(pkg.dependencies || {})
 const plugins = [
   resolveModule(),
   typescriptPlugin({
-    typescript
+    typescript,
+    check: false,
   }),
-  commonjs()
+  commonjs(),
 ]
 
 const umdPlugins = [
@@ -44,9 +45,9 @@ const umdPlugins = [
   terser(),
   gzipPlugin(),
   gzipPlugin({
-    customCompression: content => compress(Buffer.from(content)),
-    fileName: '.br'
-  })
+    customCompression: (content) => compress(Buffer.from(content)),
+    fileName: '.br',
+  }),
 ]
 
 const moduleNames = [
@@ -56,7 +57,7 @@ const moduleNames = [
   'schemas',
   'settings',
   'storage',
-  'users'
+  'users',
 ]
 
 const getOptionTemplate = ({ input, cjs, esm }) => {
@@ -65,15 +66,15 @@ const getOptionTemplate = ({ input, cjs, esm }) => {
     output: [
       {
         file: cjs,
-        format: 'cjs'
+        format: 'cjs',
       },
       {
         file: esm,
-        format: 'esm'
-      }
+        format: 'esm',
+      },
     ],
     plugins,
-    external
+    external,
   }
 }
 
@@ -88,7 +89,7 @@ const getUmdTemplate = ({ moduleName, input, outputFile }) => {
       extend: true,
       esModule: false,
       globals: {
-        '@flamelink/sdk-app': LIBRARY_NAME
+        '@flamelink/sdk-app': LIBRARY_NAME,
       },
       /**
        * use iife to avoid below error in the old Safari browser
@@ -102,11 +103,11 @@ const getUmdTemplate = ({ moduleName, input, outputFile }) => {
       throw new Error(
         'Cannot instantiate "flamelink-${moduleName}.js" - be sure to load flamelink-app.js first.'
       );
-    }`
+    }`,
     },
     inlineDynamicImports: true,
     external: ['@flamelink/sdk-app'],
-    plugins: umdPlugins
+    plugins: umdPlugins,
   }
 }
 
@@ -121,10 +122,10 @@ export default [
       format: 'umd',
       name: LIBRARY_NAME,
       esModule: false,
-      sourcemap: true
+      sourcemap: true,
     },
     inlineDynamicImports: true,
-    plugins: umdPlugins
+    plugins: umdPlugins,
   },
 
   /**
@@ -137,10 +138,10 @@ export default [
       format: 'umd',
       name: LIBRARY_NAME,
       esModule: false,
-      sourcemap: true
+      sourcemap: true,
     },
     inlineDynamicImports: true,
-    plugins: umdPlugins
+    plugins: umdPlugins,
   },
 
   /**
@@ -150,7 +151,7 @@ export default [
     input: 'src/index.node.ts',
     output: [{ file: pkg.main, format: 'cjs' }],
     plugins,
-    external
+    external,
   },
 
   /**
@@ -159,18 +160,18 @@ export default [
   getOptionTemplate({
     input: `src/index.ts`,
     cjs: pkg.browser,
-    esm: pkg.module
+    esm: pkg.module,
   }),
 
-  ...flatMap(moduleNames, moduleName => {
+  ...flatMap(moduleNames, (moduleName) => {
     const modulePkg = modulePkgs[moduleName]
 
     const options = [
       getOptionTemplate({
         input: `${moduleName}/index.ts`,
         cjs: resolve(moduleName, modulePkg.main),
-        esm: resolve(moduleName, modulePkg.module)
-      })
+        esm: resolve(moduleName, modulePkg.module),
+      }),
     ]
 
     if (moduleName !== 'app') {
@@ -181,7 +182,7 @@ export default [
         getUmdTemplate({
           moduleName,
           input: `${moduleName}/index.ts`,
-          outputFile: `flamelink-${moduleName}.js`
+          outputFile: `flamelink-${moduleName}.js`,
         }),
 
         /**
@@ -190,7 +191,7 @@ export default [
         getUmdTemplate({
           moduleName,
           input: `cf/${moduleName}/index.ts`,
-          outputFile: `flamelink-${moduleName}-cf.js`
+          outputFile: `flamelink-${moduleName}-cf.js`,
         }),
 
         /**
@@ -199,7 +200,7 @@ export default [
         getUmdTemplate({
           moduleName,
           input: `rtdb/${moduleName}/index.ts`,
-          outputFile: `flamelink-${moduleName}-rtdb.js`
+          outputFile: `flamelink-${moduleName}-rtdb.js`,
         }),
 
         /**
@@ -208,7 +209,7 @@ export default [
         getOptionTemplate({
           input: `cf/${moduleName}/index.ts`,
           cjs: resolve('cf', moduleName, modulePkg.main),
-          esm: resolve('cf', moduleName, modulePkg.module)
+          esm: resolve('cf', moduleName, modulePkg.module),
         }),
 
         /**
@@ -217,11 +218,11 @@ export default [
         getOptionTemplate({
           input: `rtdb/${moduleName}/index.ts`,
           cjs: resolve('rtdb', moduleName, modulePkg.main),
-          esm: resolve('rtdb', moduleName, modulePkg.module)
+          esm: resolve('rtdb', moduleName, modulePkg.module),
         })
       )
     }
 
     return options
-  })
+  }),
 ]
