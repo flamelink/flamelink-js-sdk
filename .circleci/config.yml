@@ -3,7 +3,7 @@ executors:
     parameters:
       image:
         type: string
-        default: 'latest'
+        default: "latest"
     docker:
       - image: circleci/node:<< parameters.image >>-browsers
 
@@ -46,7 +46,7 @@ aliases:
       name: Run tests
       command: yarn test:ci
       environment:
-        DEBUG: '*'
+        DEBUG: "*"
 
   attach_to_bootstrap: &attach_to_bootstrap
     attach_workspace:
@@ -82,7 +82,7 @@ jobs:
   bootstrap_latest:
     executor:
       name: node
-      image: '11' # temporarily set to v11 while Firebase fixes v12 support
+      image: "14"
     steps:
       - checkout
       - <<: *assert_changed_files
@@ -93,12 +93,12 @@ jobs:
       - persist_to_workspace:
           root: packages
           paths:
-            - '*'
+            - "*"
 
-  bootstrap_v8:
+  bootstrap_v12:
     executor:
       name: node
-      image: '8'
+      image: "12"
     steps:
       - checkout
       - <<: *assert_changed_files
@@ -109,12 +109,12 @@ jobs:
       - persist_to_workspace:
           root: packages
           paths:
-            - '*'
+            - "*"
 
   bootstrap_v10:
     executor:
       name: node
-      image: '10'
+      image: "10"
     steps:
       - checkout
       - <<: *assert_changed_files
@@ -125,12 +125,12 @@ jobs:
       - persist_to_workspace:
           root: packages
           paths:
-            - '*'
+            - "*"
 
   lint:
     executor:
       name: node
-      image: '11' # temporarily set to v11 while Firebase fixes v12 support
+      image: "14"
     steps:
       - checkout
       - <<: *restore_cache
@@ -138,22 +138,22 @@ jobs:
       - <<: *persist_cache
       - run: yarn lint
 
-  unit_tests_node8:
+  unit_tests_node12:
     executor:
       name: node
-      image: '8'
+      image: "12"
     <<: *test_template
 
   unit_tests_node10:
     executor:
       name: node
-      image: '10'
+      image: "10"
     <<: *test_template
 
   unit_tests_node_latest:
     executor:
       name: node
-      image: '11' # temporarily set to v11 while Firebase fixes v12 support
+      image: "14"
     <<: *test_template
 
 workflows:
@@ -173,10 +173,10 @@ workflows:
           <<: *ignore_docs
           requires:
             - bootstrap_v10
-      - bootstrap_v8:
+      - bootstrap_v12:
           requires:
             - unit_tests_node10
-      - unit_tests_node8:
+      - unit_tests_node12:
           <<: *ignore_docs
           requires:
-            - bootstrap_v8
+            - bootstrap_v12
