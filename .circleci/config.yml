@@ -79,22 +79,6 @@ aliases:
 version: 2.1
 
 jobs:
-  bootstrap_latest:
-    executor:
-      name: node
-      image: "14"
-    steps:
-      - checkout
-      - <<: *assert_changed_files
-      - <<: *restore_cache
-      - <<: *install_node_modules
-      - <<: *persist_cache
-      - <<: *bootstrap_and_build
-      - persist_to_workspace:
-          root: packages
-          paths:
-            - "*"
-
   bootstrap_v12:
     executor:
       name: node
@@ -130,7 +114,7 @@ jobs:
   lint:
     executor:
       name: node
-      image: "14"
+      image: "12"
     steps:
       - checkout
       - <<: *restore_cache
@@ -150,33 +134,20 @@ jobs:
       image: "10"
     <<: *test_template
 
-  unit_tests_node_latest:
-    executor:
-      name: node
-      image: "14"
-    <<: *test_template
-
 workflows:
   version: 2
   build-test:
     jobs:
       - lint
-      - bootstrap_latest
-      - unit_tests_node_latest:
-          <<: *ignore_docs
-          requires:
-            - bootstrap_latest
-      - bootstrap_v10:
-          requires:
-            - unit_tests_node_latest
-      - unit_tests_node10:
-          <<: *ignore_docs
-          requires:
-            - bootstrap_v10
-      - bootstrap_v12:
-          requires:
-            - unit_tests_node10
+      - bootstrap_v12
       - unit_tests_node12:
           <<: *ignore_docs
           requires:
             - bootstrap_v12
+      - bootstrap_v10:
+          requires:
+            - unit_tests_node12
+      - unit_tests_node10:
+          <<: *ignore_docs
+          requires:
+            - bootstrap_v10
