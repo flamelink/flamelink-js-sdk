@@ -20,22 +20,19 @@ export const firebase = firebaseTesting
  * @param {object} auth the object to use for authentication (typically {uid: some-uid})
  * @return {object} the app.
  */
-export const getFirestoreService = function(auth: any) {
+export const getFirestoreService = function (auth: any) {
   return firebaseTesting
     .initializeTestApp({ projectId: projectName, auth })
     .firestore()
 }
 
-export const initializeRealtimeProject = async function(
+export const initializeRealtimeProject = async function (
   config: firebase.app.App['options']
 ): Promise<firebase.app.App> {
   const firebaseApp = firebase.initializeAdminApp(
     Object.assign({ databaseName: 'default' }, config)
   )
-  await firebaseApp
-    .database()
-    .ref(RTDB_NAMESPACE)
-    .set(seedRtdb())
+  await firebaseApp.database().ref(RTDB_NAMESPACE).set(seedRtdb())
 
   return firebaseApp
 }
@@ -81,20 +78,20 @@ const seedCfCollection = async (
   const collectionRef = cf.collection(name)
 
   return Promise.all(
-    docs.map(async doc => {
+    docs.map(async (doc) => {
       return seedCfDoc(cf, collectionRef, doc)
     })
   )
 }
 
-export const initializeFirestoreProject = async function(
+export const initializeFirestoreProject = async function (
   config: any
 ): Promise<any> {
   const firebaseApp = firebase.initializeAdminApp(config)
   const cf = firebaseApp.firestore()
   const seedData: any = seedCf()
   await Promise.all(
-    Object.keys(seedData).map(name => {
+    Object.keys(seedData).map((name) => {
       const docs: any[] = seedData[name]
       return seedCfCollection(cf, name, docs)
     })
@@ -104,7 +101,7 @@ export const initializeFirestoreProject = async function(
 }
 
 export const cleanup = async function cleanup() {
-  return Promise.all(firebaseTesting.apps().map(app => app.delete()))
+  return Promise.all(firebaseTesting.apps().map((app) => app.delete()))
 }
 
 export const getBaseContext = (extras = {}) => ({
@@ -115,5 +112,5 @@ export const getBaseContext = (extras = {}) => ({
   proxySupported: true,
   usesAdminApp: true,
   firebaseApp: {},
-  ...extras
+  ...extras,
 })

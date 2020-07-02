@@ -9,7 +9,7 @@ describe('App Helpers', () => {
         services: {},
         proxySupported: true,
         usesAdminApp: true,
-        firebaseApp: null
+        firebaseApp: null,
       })
       contentModule.get()
       expect(console.error).toHaveBeenCalledWith(

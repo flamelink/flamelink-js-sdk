@@ -35,7 +35,7 @@ declare namespace Storage {
 
   interface UploadOptions {
     stringEncoding?: string
-    metadata?: object
+    metadata?: Record<string, unknown>
     folderId?: App.StringOrNumber
     folderName?: string
     sizes?: Storage.ImageSize[]

@@ -8,7 +8,7 @@ import { applyOptionsForCF, pluckResultFields } from '@flamelink/sdk-utils'
 const SETTINGS_COLLECTION = 'fl_settings'
 const LOCALES_COLLECTION = 'fl_locales'
 
-export const factory: FlamelinkFactory = context => {
+export const factory: FlamelinkFactory = (context) => {
   const api: Api = {
     ref(settingsKey) {
       const firestoreService = flamelink._ensureService('firestore', context)
@@ -20,7 +20,7 @@ export const factory: FlamelinkFactory = context => {
 
     getRaw({ settingsKey, ...options }: CF.Get = {}) {
       return applyOptionsForCF(api.ref(settingsKey), options).get({
-        source: options.source || 'default'
+        source: options.source || 'default',
       })
     },
 
@@ -71,7 +71,7 @@ export const factory: FlamelinkFactory = context => {
       const snapshot = await firestoreService
         .collection(LOCALES_COLLECTION)
         .get({
-          source: 'default'
+          source: 'default',
         })
 
       if (snapshot.empty) {
@@ -91,14 +91,14 @@ export const factory: FlamelinkFactory = context => {
     async getGlobals(options: CF.Get = {}) {
       return api.get({
         ...options,
-        settingsKey: 'globals'
+        settingsKey: 'globals',
       })
     },
 
     async getImageSizes(options: CF.Get = {}) {
       const generalSettings = await api.get({
         ...options,
-        settingsKey: 'general'
+        settingsKey: 'general',
       })
 
       return get(generalSettings, 'imageSizes')
@@ -107,7 +107,7 @@ export const factory: FlamelinkFactory = context => {
     async getDefaultPermissionsGroup(options: CF.Get = {}) {
       const generalSettings = await api.get({
         ...options,
-        settingsKey: 'general'
+        settingsKey: 'general',
       })
 
       return get(generalSettings, 'defaultPermissionsGroup')
@@ -120,7 +120,7 @@ export const factory: FlamelinkFactory = context => {
 
       if (!context.usesAdminApp) {
         args.push({
-          includeMetadataChanges: !!options.includeMetadataChanges
+          includeMetadataChanges: !!options.includeMetadataChanges,
         })
       }
 
@@ -145,7 +145,7 @@ export const factory: FlamelinkFactory = context => {
 
           if (settingsKey) {
             const docData = await pluckFields({
-              [settingsKey]: snapshot.data()
+              [settingsKey]: snapshot.data(),
             })
             return callback(null, docData[settingsKey])
           }
@@ -175,7 +175,7 @@ export const factory: FlamelinkFactory = context => {
           }
 
           return callback(null, pluckFields(entries))
-        }
+        },
       })
     },
 
@@ -194,7 +194,7 @@ export const factory: FlamelinkFactory = context => {
           }
 
           return options.callback(null, get(data, 'imageSizes', data))
-        }
+        },
       })
     },
 
@@ -212,9 +212,9 @@ export const factory: FlamelinkFactory = context => {
             null,
             get(data, 'defaultPermissionsGroup', data)
           )
-        }
+        },
       })
-    }
+    },
   }
 
   return api

@@ -6,11 +6,11 @@ import {
   applyOptionsForRTDB,
   pluckResultFields,
   wrap,
-  unwrap
+  unwrap,
 } from '@flamelink/sdk-utils'
 import { getSettingsRefPath } from './helpers'
 
-export const factory: FlamelinkFactory = context => {
+export const factory: FlamelinkFactory = (context) => {
   const api: Api = {
     ref(ref) {
       const dbService = flamelink._ensureService('database', context)
@@ -67,7 +67,7 @@ export const factory: FlamelinkFactory = context => {
     async getDefaultPermissionsGroup(options = {}) {
       return api.get({
         ...options,
-        settingsKey: 'general/defaultPermissionsGroup'
+        settingsKey: 'general/defaultPermissionsGroup',
       })
     },
 
@@ -108,7 +108,7 @@ export const factory: FlamelinkFactory = context => {
               ? unwrap(settingsKey, result)
               : result
           )
-        }
+        },
       })
     },
 
@@ -123,9 +123,9 @@ export const factory: FlamelinkFactory = context => {
     subscribeDefaultPermissionsGroup(options: RTDB.Subscribe) {
       return api.subscribe({
         ...options,
-        settingsKey: 'general/defaultPermissionsGroup'
+        settingsKey: 'general/defaultPermissionsGroup',
       })
-    }
+    },
   }
 
   return api

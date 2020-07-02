@@ -4,7 +4,7 @@ const getProducts = ({
   dbType,
   env,
   docId,
-  schemaKey
+  schemaKey,
 }: GetSchemaArgs): Schema => ({
   ...(dbType === 'cf'
     ? {
@@ -12,7 +12,7 @@ const getProducts = ({
           createdBy: 'LKJcOW4CiwS8pijpqmhQcDl9TvX2',
           createdDate: {
             nanoseconds: 609000000,
-            seconds: 1554974072
+            seconds: 1554974072,
           },
           docId: docId || 'products',
           env: env || 'production',
@@ -20,17 +20,17 @@ const getProducts = ({
           lastModifiedBy: 'LKJcOW4CiwS8pijpqmhQcDl9TvX2',
           lastModifiedDate: {
             nanoseconds: 609000000,
-            seconds: 1554974072
-          }
-        }
+            seconds: 1554974072,
+          },
+        },
       }
     : {
         __meta__: {
           createdBy: 'LKJcOW4CiwS8pijpqmhQcDl9TvX2',
           createdDate: '2018-05-27T11:11:04.813Z',
           lastModifiedBy: 'LKJcOW4CiwS8pijpqmhQcDl9TvX2',
-          lastModifiedDate: '2019-01-23T18:26:40.923Z'
-        }
+          lastModifiedDate: '2019-01-23T18:26:40.923Z',
+        },
       }),
   description: 'Products',
   enabled: true,
@@ -41,10 +41,10 @@ const getProducts = ({
           rule: 'presence',
           ruleValue: {
             allowEmpty: false,
-            message: 'Please provide a name for the product'
+            message: 'Please provide a name for the product',
           },
-          uniqueKey: 'H1_HfGu1m'
-        }
+          uniqueKey: 'H1_HfGu1m',
+        },
       ],
       defaultValue: '',
       description: 'Product Name',
@@ -52,13 +52,13 @@ const getProducts = ({
         lg: 6,
         md: 12,
         sm: 12,
-        xs: 12
+        xs: 12,
       },
       id: 1527419441379,
       key: 'name',
       show: true,
       title: 'Name',
-      type: 'text'
+      type: 'text',
     },
     {
       constraints: [
@@ -66,17 +66,17 @@ const getProducts = ({
           rule: 'presence',
           ruleValue: {
             allowEmpty: true,
-            message: 'Please select a provider'
+            message: 'Please select a provider',
           },
-          uniqueKey: 'r1tLNwJX7'
-        }
+          uniqueKey: 'r1tLNwJX7',
+        },
       ],
       description: 'Service Provider for Product',
       gridColumns: {
         lg: 3,
         md: 3,
         sm: 12,
-        xs: 12
+        xs: 12,
       },
       id: 1531044854516,
       key: 'provider',
@@ -85,17 +85,17 @@ const getProducts = ({
         {
           label: 'Amazon',
           uniqueKey: 'Hym4EDyQQ',
-          value: 'amazon'
+          value: 'amazon',
         },
         {
           label: 'Google',
           uniqueKey: 'BJWSEwkXm',
-          value: 'google'
-        }
+          value: 'google',
+        },
       ],
       show: true,
       title: 'Provider',
-      type: 'select'
+      type: 'select',
     },
     {
       constraints: [
@@ -103,10 +103,10 @@ const getProducts = ({
           rule: 'presence',
           ruleValue: {
             allowEmpty: false,
-            message: 'Please select a category'
+            message: 'Please select a category',
           },
-          uniqueKey: 'B1n0WIOyQ'
-        }
+          uniqueKey: 'B1n0WIOyQ',
+        },
       ],
       description: '',
       fieldSeparator: '-',
@@ -114,7 +114,7 @@ const getProducts = ({
         lg: 6,
         md: 6,
         sm: 12,
-        xs: 12
+        xs: 12,
       },
       hidden: false,
       id: 1527435664316,
@@ -124,7 +124,7 @@ const getProducts = ({
       relationalFieldsToShow: ['name'],
       show: true,
       title: 'Product Category',
-      type: 'select-relational'
+      type: 'select-relational',
     },
     {
       description: 'Product Images',
@@ -132,7 +132,7 @@ const getProducts = ({
         lg: 3,
         md: 3,
         sm: 12,
-        xs: 12
+        xs: 12,
       },
       id: 1542622420490,
       key: 'images',
@@ -140,7 +140,7 @@ const getProducts = ({
       mediaTypes: ['images'],
       show: false,
       title: 'Images',
-      type: 'media'
+      type: 'media',
     },
     {
       defaultValue: '',
@@ -149,14 +149,14 @@ const getProducts = ({
         lg: 12,
         md: 12,
         sm: 12,
-        xs: 12
+        xs: 12,
       },
       hidden: false,
       id: 1542622300649,
       key: 'description',
       show: false,
       title: 'Description',
-      type: 'wysiwyg-cke'
+      type: 'wysiwyg-cke',
     },
     {
       defaultValue: '',
@@ -165,28 +165,28 @@ const getProducts = ({
         lg: 3,
         md: 3,
         sm: 3,
-        xs: 9
+        xs: 9,
       },
       id: 1541691889255,
       key: 'price',
       show: false,
       title: 'Price',
-      type: 'number'
-    }
+      type: 'number',
+    },
   ],
   group: 'Group Name',
   icon: '',
   id: 'products',
   sortable: true,
   title: 'products',
-  type: 'collection'
+  type: 'collection',
 })
 
 const getProductCategory = ({
   dbType,
   docId,
   env,
-  schemaKey
+  schemaKey,
 }: GetSchemaArgs): Schema => ({
   ...(dbType === 'cf'
     ? {
@@ -194,7 +194,7 @@ const getProductCategory = ({
           createdBy: 'LKJcOW4CiwS8pijpqmhQcDl9TvX2',
           createdDate: {
             nanoseconds: 609000000,
-            seconds: 1554974072
+            seconds: 1554974072,
           },
           docId: docId || 'productCategory',
           env: env || 'production',
@@ -202,17 +202,17 @@ const getProductCategory = ({
           lastModifiedBy: 'LKJcOW4CiwS8pijpqmhQcDl9TvX2',
           lastModifiedDate: {
             nanoseconds: 609000000,
-            seconds: 1554974072
-          }
-        }
+            seconds: 1554974072,
+          },
+        },
       }
     : {
         __meta__: {
           createdBy: 'LKJcOW4CiwS8pijpqmhQcDl9TvX2',
           createdDate: '2018-05-27T11:10:08.894Z',
           lastModifiedBy: 'LKJcOW4CiwS8pijpqmhQcDl9TvX2',
-          lastModifiedDate: '2018-12-30T13:28:21.645Z'
-        }
+          lastModifiedDate: '2018-12-30T13:28:21.645Z',
+        },
       }),
   description: 'Product Categories',
   enabled: true,
@@ -224,26 +224,26 @@ const getProductCategory = ({
         lg: 6,
         md: 12,
         sm: 12,
-        xs: 12
+        xs: 12,
       },
       id: 1527419392376,
       key: 'name',
       show: false,
       title: 'Name',
-      type: 'text'
-    }
+      type: 'text',
+    },
   ],
   group: 'Group Name',
   icon: '',
   id: 'productCategory',
   sortable: true,
   title: 'Product Category',
-  type: 'collection'
+  type: 'collection',
 })
 
 const getSchemas = (args: GetSchemaArgs): Schemas => ({
   products: getProducts(args),
-  productCategory: getProductCategory(args)
+  productCategory: getProductCategory(args),
 })
 
 export const getAllSchemas = (args: GetSchemaArgs) => getSchemas(args)

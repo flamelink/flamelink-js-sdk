@@ -6,9 +6,9 @@ import pkg from './package.json'
 const plugins = [
   resolveModule(),
   typescript({
-    typescript: require('typescript')
+    typescript: require('typescript'),
   }),
-  commonjs()
+  commonjs(),
 ]
 
 const external = Object.keys(Object.assign({}, pkg.dependencies))
@@ -18,11 +18,10 @@ export default [
    * Node.js Build
    */
   {
-    // input: './src/index.node.ts',
     input: './src/index.ts',
     output: [{ file: pkg.main, format: 'cjs' }],
     plugins,
-    external
+    external,
   },
   /**
    * Browser Builds
@@ -31,9 +30,9 @@ export default [
     input: './src/index.ts',
     output: [
       { file: pkg.browser, format: 'cjs' },
-      { file: pkg.module, format: 'esm' }
+      { file: pkg.module, format: 'esm' },
     ],
     plugins,
-    external
-  }
+    external,
+  },
 ]

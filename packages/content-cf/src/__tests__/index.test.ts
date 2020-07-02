@@ -3,7 +3,7 @@ import { FirebaseApp } from '@firebase/app-types'
 import * as Content from '@flamelink/sdk-content-types'
 import {
   initializeFirestoreProject,
-  getBaseContext
+  getBaseContext,
 } from '../../../../tools/testing/firebase'
 import { factory as getAPI } from '../index'
 
@@ -14,13 +14,13 @@ let api: Content.Api
 describe('Content Module > CF', () => {
   beforeAll(async () => {
     firebaseApp = await initializeFirestoreProject({
-      projectId: 'my-test-project'
+      projectId: 'my-test-project',
     })
 
     context = getBaseContext({
       firebaseApp,
       dbType: 'cf',
-      precache: false
+      precache: false,
     })
 
     api = getAPI(context)

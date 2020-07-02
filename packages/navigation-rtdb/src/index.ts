@@ -12,11 +12,11 @@ import {
   getTimestamp,
   getCurrentUser,
   wrap,
-  unwrap
+  unwrap,
 } from '@flamelink/sdk-utils'
 import { structureItems, getNavigationRefPath } from './helpers'
 
-export const factory: FlamelinkFactory = context => {
+export const factory: FlamelinkFactory = (context) => {
   const api: Api = {
     ref(navigationRef) {
       const dbService = flamelink._ensureService('database', context)
@@ -128,7 +128,7 @@ export const factory: FlamelinkFactory = context => {
             const withoutLocales = keys(withLocales).reduce(
               (menus, key) =>
                 Object.assign(menus, {
-                  [key]: withLocales[key][context.locale]
+                  [key]: withLocales[key][context.locale],
                 }),
               {}
             )
@@ -138,12 +138,12 @@ export const factory: FlamelinkFactory = context => {
             const result = keys(pluckedMenus).reduce((menus, key) => {
               const nav = pluckedMenus[key]
               return Object.assign(menus, {
-                [key]: structureItems(options, nav)
+                [key]: structureItems(options, nav),
               })
             }, {})
 
             return callback(null, result) // Error-first callback
-          }
+          },
         })
       } catch (err) {
         return callback(err, null)
@@ -156,11 +156,11 @@ export const factory: FlamelinkFactory = context => {
           ? Object.assign({}, data, {
               __meta__: {
                 createdBy: getCurrentUser(context),
-                createdDate: getTimestamp(context)
+                createdDate: getTimestamp(context),
               },
               items: castArray(data.items) || [],
               id: navigationKey,
-              title: data.title || navigationKey
+              title: data.title || navigationKey,
             })
           : data
 
@@ -186,9 +186,9 @@ export const factory: FlamelinkFactory = context => {
               __meta__: {
                 ...(data.__meta__ || {}),
                 lastModifiedBy: getCurrentUser(context),
-                lastModifiedDate: getTimestamp(context)
+                lastModifiedDate: getTimestamp(context),
               },
-              id: navigationKey
+              id: navigationKey,
             }
           : data
 
@@ -204,7 +204,7 @@ export const factory: FlamelinkFactory = context => {
         )
       }
       return api.ref(navigationKey).remove()
-    }
+    },
   }
 
   return api

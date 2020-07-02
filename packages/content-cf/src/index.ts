@@ -16,7 +16,7 @@ import {
   createQueue,
   getTimestamp,
   getCurrentUser,
-  populateEntriesForCF
+  populateEntriesForCF,
 } from '@flamelink/sdk-utils'
 import { BATCH_WRITE_LIMIT } from './constants'
 import '@flamelink/sdk-schemas-cf'
@@ -24,7 +24,7 @@ import '@flamelink/sdk-schemas-cf'
 const CONTENT_COLLECTION = 'fl_content'
 const SCHEMAS_COLLECTION = 'fl_schemas'
 
-export const factory: FlamelinkFactory = context => {
+export const factory: FlamelinkFactory = (context) => {
   const api: Api = {
     ref(ref, options) {
       const firestoreService = flamelink._ensureService('firestore', context)
@@ -47,7 +47,7 @@ export const factory: FlamelinkFactory = context => {
         api.ref([schemaKey, entryId], options),
         options
       ).get({
-        source: options.source || 'default'
+        source: options.source || 'default',
       })
     },
 
@@ -69,10 +69,7 @@ export const factory: FlamelinkFactory = context => {
 
       const [schema, result] = await Promise.all([
         get(context, 'modules.schemas').get({ schemaKey }),
-        compose(
-          pluckFields,
-          processRefs
-        )(content)
+        compose(pluckFields, processRefs)(content),
       ])
 
       const isSingleType = get(schema, 'type') === 'single'
@@ -94,7 +91,7 @@ export const factory: FlamelinkFactory = context => {
       return api.get({
         schemaKey,
         ...options,
-        filters: (filters || []).concat([[field, '==', value]])
+        filters: (filters || []).concat([[field, '==', value]]),
       })
     },
 
@@ -108,7 +105,7 @@ export const factory: FlamelinkFactory = context => {
 
       if (!context.usesAdminApp) {
         args.push({
-          includeMetadataChanges: !!options.includeMetadataChanges
+          includeMetadataChanges: !!options.includeMetadataChanges,
         })
       }
 
@@ -163,10 +160,7 @@ export const factory: FlamelinkFactory = context => {
             })
           }
 
-          const result = await compose(
-            pluckFields,
-            processRefs
-          )(content)
+          const result = await compose(pluckFields, processRefs)(content)
 
           // Handle content for single type schemas
           if (schemaKey && !entryId) {
@@ -181,7 +175,7 @@ export const factory: FlamelinkFactory = context => {
           }
 
           return callback(null, entryId ? result[entryId] : result)
-        }
+        },
       })
     },
 
@@ -197,19 +191,19 @@ export const factory: FlamelinkFactory = context => {
           throw new FlamelinkError(
             'The "schemas" module is required. Please ensure it is properly imported.'
           )
-        }
+        },
       })
 
       const schema: Schema = await schemasAPI.get({
-        schemaKey
+        schemaKey,
       })
 
       const schemaFields: SchemaFields = get(schema, 'fields', [])
 
       const defaultValues = schemaFields.reduce(
-        (acc: object, field: SchemaField) =>
+        (acc: Record<string, unknown>, field: SchemaField) =>
           Object.assign(acc, {
-            [field.key]: get(field, 'defaultValue', null)
+            [field.key]: get(field, 'defaultValue', null),
           }),
         {}
       )
@@ -230,7 +224,7 @@ export const factory: FlamelinkFactory = context => {
           const defaultEntry = await api.get({
             schemaKey,
             entryId,
-            locale: defaultLocale
+            locale: defaultLocale,
           })
 
           if (!defaultEntry) {
@@ -262,9 +256,9 @@ export const factory: FlamelinkFactory = context => {
                 locale: context.locale,
                 schema: schemaKey,
                 schemaType: get(schema, 'type', 'collection'),
-                schemaRef
+                schemaRef,
               },
-              id: docId
+              id: docId,
             }
           : data
 
@@ -278,11 +272,11 @@ export const factory: FlamelinkFactory = context => {
             ...payload._fl_meta_,
             docId: defaultDocId,
             locale: defaultLocale,
-            createdFromLocale: context.locale
+            createdFromLocale: context.locale,
           },
           id: defaultDocId,
           order: get(payload, 'order', 0),
-          parentId: get(payload, 'parentId', 0)
+          parentId: get(payload, 'parentId', 0),
         }
 
         await defaultDocRef.set(defaultPayload)
@@ -305,7 +299,7 @@ export const factory: FlamelinkFactory = context => {
               '_fl_meta_.lastModifiedBy': getCurrentUser(context),
               '_fl_meta_.lastModifiedDate': getTimestamp(context),
               '_fl_meta_.fl_id': entryId,
-              id: entryId
+              id: entryId,
             }
           : data
 
@@ -346,7 +340,7 @@ export const factory: FlamelinkFactory = context => {
       }, contentDocChunks)
 
       return batchQueue.start()
-    }
+    },
   }
 
   return api

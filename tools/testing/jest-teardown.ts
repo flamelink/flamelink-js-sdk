@@ -8,10 +8,7 @@ const stopEmulator = async (emulator: string) => {
 
   try {
     const emulatorPidBuffer = execSync(`pgrep -f ${emulator}`)
-    const emulatorPIDs = emulatorPidBuffer
-      .toString()
-      .split(EOL)
-      .join(' ')
+    const emulatorPIDs = emulatorPidBuffer.toString().split(EOL).join(' ')
 
     dbug(`Stopping emulator processes: ${emulatorPIDs}`)
 
@@ -35,7 +32,7 @@ const teardown = async () => {
 
   await Promise.all([
     stopEmulator('cloud-firestore-emulator'),
-    stopEmulator('firebase-database-emulator')
+    stopEmulator('firebase-database-emulator'),
   ])
 }
 

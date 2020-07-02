@@ -20,5 +20,5 @@ import 'flamelink/rtdb/users'
 
 flamelink({
   firebaseApp: {},
-  dbType: 'rtdb'
+  dbType: 'rtdb',
 })

@@ -9,10 +9,10 @@ export const structureItems = curry((options: any, nav: any) => {
         options.structure,
         {
           idProperty: 'uuid',
-          parentProperty: 'parentIndex'
+          parentProperty: 'parentIndex',
         },
         nav.items
-      )
+      ),
     })
   }
 

@@ -17,7 +17,7 @@ export const getModule = (moduleName: App.ModuleName, context: App.Context) => {
               logError(
                 `Oh no! Looks like you have not imported the "${moduleName}" module.`
               )
-          }
+          },
         }
       )
     : null

@@ -18,8 +18,8 @@ export default (): SeedCF => ({
         dbType: 'cf',
         schemaKey: 'products',
         env: 'production',
-        docId: 'EBNiExsNqIJ3n4UKVEYg'
-      })
+        docId: 'EBNiExsNqIJ3n4UKVEYg',
+      }),
     },
     {
       docId: 'GxQ6VZnnQOabHNBlLZFE',
@@ -27,14 +27,14 @@ export default (): SeedCF => ({
         dbType: 'cf',
         schemaKey: 'productCategory',
         env: 'production',
-        docId: 'GxQ6VZnnQOabHNBlLZFE'
-      })
-    }
+        docId: 'GxQ6VZnnQOabHNBlLZFE',
+      }),
+    },
   ],
   fl_settings: [
     {
       docId: 'defaultLocale',
-      doc: {}
+      doc: {},
     },
     {
       docId: 'general',
@@ -42,27 +42,27 @@ export default (): SeedCF => ({
         _fl_meta_: {
           docId: 'general',
           lastModifiedBy: 'LKJcOW4CiwS8pijpqmhQcDl9TvX2',
-          lastModifiedDate: 'April 5, 2019 at 4:26:42 PM UTC+2'
+          lastModifiedDate: 'April 5, 2019 at 4:26:42 PM UTC+2',
         },
         defaultPermissionsGroup: {
           type: 'ref',
-          val: '/fl_permissions/1'
+          val: '/fl_permissions/1',
         },
         id: 'general',
-        imageSizes: getImageSizes()
-      }
+        imageSizes: getImageSizes(),
+      },
     },
     {
       docId: 'globals',
-      doc: getGlobals('cf')
-    }
+      doc: getGlobals('cf'),
+    },
   ],
   fl_users: [
     {
       docId: 'LKJcOW4CiwS8pijpqmhQcDl9TvX2',
       doc: {
         _fl_meta_: {
-          docId: 'LKJcOW4CiwS8pijpqmhQcDl9TvX2'
+          docId: 'LKJcOW4CiwS8pijpqmhQcDl9TvX2',
         },
         displayName: 'JP Erasmus',
         email: 'jperasmus11@gmail.com',
@@ -72,9 +72,9 @@ export default (): SeedCF => ({
         lastName: 'Erasmus',
         permissions: {
           type: 'ref',
-          val: '/fl_permissions/1'
-        }
-      }
-    }
-  ]
+          val: '/fl_permissions/1',
+        },
+      },
+    },
+  ],
 })
