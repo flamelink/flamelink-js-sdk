@@ -207,6 +207,8 @@ These amazing people have contributed code to this project:
 <li><a href="https://github.com/dewetvdm">De Wet van der Merwe</a> — <a href="https://github.com/flamelink/flamelink-js-sdk/commits?author=dewetvdm" title="View the GitHub contributions of De Wet van der Merwe on repository flamelink/flamelink-js-sdk">view contributions</a></li>
 <li><a href="http://github.com/apps/dependabot">dependabot[bot]</a> — <a href="https://github.com/flamelink/flamelink-js-sdk/commits?author=dependabot[bot]" title="View the GitHub contributions of dependabot[bot] on repository flamelink/flamelink-js-sdk">view contributions</a></li></ul>
 
+<a href="https://github.com/flamelink/flamelink-js-sdk/blob/master/CONTRIBUTING.md#files">Discover how you can contribute by heading on over to the <code>CONTRIBUTING.md</code> file.</a>
+
 <!-- /BACKERS -->
 
 <!-- LICENSE/ -->
