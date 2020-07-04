@@ -86,7 +86,8 @@ yarn install-emulators
 The Firebase emulators have a hard dependency on at least Java 1.8, so make sure you have the JDK installed on your local machine. On MacOS I used homebrew which seems to work fine:
 
 ```sh
-brew install openjdk
+brew tap AdoptOpenJDK/openjdk
+brew cask install adoptopenjdk8
 ```
 
 Take note of the homebrew output in your terminal because you might need to run additional commands like setting up a symlink for the `java` command to work.
