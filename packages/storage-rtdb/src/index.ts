@@ -4,6 +4,7 @@ import isPlainObject from 'lodash/isPlainObject'
 import find from 'lodash/find'
 import get from 'lodash/get'
 import set from 'lodash/set'
+import isString from 'lodash/isString'
 import resizeImage from 'browser-image-resizer'
 import flamelink from '@flamelink/sdk-app'
 import * as App from '@flamelink/sdk-app-types'
@@ -96,10 +97,21 @@ export const factory: FlamelinkFactory = function (context) {
       return new PromiseEmitter(async (resolve, reject, emitter) => {
         if (options && (options.path || options.width || options.maxWidth)) {
           const storage = getStorageServiceFactory(context)
+          const requiredOptions = {
+            maxWidth: options.width || options.maxWidth || 9999,
+            maxHeight: options.height || options.maxHeight || 9999,
+            quality: isString(options.quality)
+              ? parseFloat(options.quality)
+              : options.quality,
+          }
 
           emitter.emit(api.UploadEvents.RESIZE_IMAGE_STARTED, filename, options)
 
-          const resizedImage = await resizeImage(fileData, options)
+          const resizedImage = await resizeImage(fileData, {
+            ...options,
+            ...requiredOptions,
+            debug: false,
+          })
 
           emitter.emit(
             api.UploadEvents.RESIZE_IMAGE_FINISHED,
@@ -117,8 +129,10 @@ export const factory: FlamelinkFactory = function (context) {
             filename,
             options
           )
-          const uploadMethod = context.usesAdminApp ? 'upload' : 'put'
-          const uploadTask: UploadTask = ref[uploadMethod](resizedImage)
+          const uploadMethod = context.usesAdminApp ? 'save' : 'put'
+          const uploadTask: UploadTask = context.usesAdminApp
+            ? ref.file[uploadMethod](resizedImage)
+            : ref[uploadMethod](resizedImage)
 
           let unsubscribe
 
@@ -499,7 +513,7 @@ Instructions here: https://flamelink.github.io/flamelink-js-sdk/#/getting-starte
                 : id
             const storageRef = api.ref(filename, options as ImageSize)
             const updateMethod = context.usesAdminApp
-              ? 'upload'
+              ? 'save'
               : typeof fileData === 'string'
               ? 'putString'
               : 'put'
@@ -522,7 +536,10 @@ Instructions here: https://flamelink.github.io/flamelink-js-sdk/#/getting-starte
             }
 
             // Upload original file to storage bucket
-            const uploadTask: UploadTask = storageRef[updateMethod](...args)
+            const uploadTask: UploadTask = storageRef[updateMethod]
+              ? storageRef[updateMethod](...args)
+              : storageRef.file[updateMethod](...args)
+
             emitter.emit(api.UploadEvents.MAIN_FILE_UPLOAD_STARTED)
 
             let mainUploadTaskUnsubscribe
@@ -539,7 +556,14 @@ Instructions here: https://flamelink.github.io/flamelink-js-sdk/#/getting-starte
               )
             }
 
-            const snapshot = await uploadTask
+            let snapshot = {}
+            if (context.usesAdminApp) {
+              await uploadTask
+              const metadata = await storageRef.getMetadata()
+              snapshot = { metadata: get(metadata, '0', metadata) }
+            } else {
+              snapshot = await uploadTask
+            }
 
             if (typeof mainUploadTaskUnsubscribe === 'function') {
               mainUploadTaskUnsubscribe()
@@ -552,15 +576,18 @@ Instructions here: https://flamelink.github.io/flamelink-js-sdk/#/getting-starte
             )
               ? 'images'
               : 'files'
+
+            const folderRef = api.folderRef(folderId)
             const filePayload: FileObject = {
               id,
               file: get(snapshot, 'metadata.name', ''),
-              folderId: api.folderRef(folderId),
+              folderId: get(folderRef, 'key', folderRef),
               type: mediaType,
               contentType: get(snapshot, 'metadata.contentType', ''),
             }
 
             // If mediaType === 'images', file is resizeable and sizes/widths are set, resize images here
+            // TODO resize images server side
             if (
               mediaType === 'images' &&
               updateMethod === 'put' &&
@@ -604,6 +631,15 @@ Instructions here: https://flamelink.github.io/flamelink-js-sdk/#/getting-starte
 
             // Write to db
             emitter.emit(api.UploadEvents.DB_PERSIST_STARTED)
+            if (filePayload.sizes && filePayload.sizes.length) {
+              filePayload.sizes = filePayload.sizes.filter(
+                (size) =>
+                  size.height &&
+                  size.quality &&
+                  size.width !== DEFAULT_REQUIRED_IMAGE_SIZE
+              )
+            }
+
             await api._setFile(filePayload)
             emitter.emit(api.UploadEvents.DB_PERSIST_FINISHED)
 

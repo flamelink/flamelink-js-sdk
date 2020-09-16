@@ -6,6 +6,7 @@ declare namespace Storage {
     width?: App.StringOrNumber
     maxWidth?: App.StringOrNumber
     height?: App.StringOrNumber
+    maxHeight?: App.StringOrNumber
     quality?: App.StringOrNumber
     path?: string
   }
