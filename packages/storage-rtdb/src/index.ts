@@ -102,7 +102,7 @@ export const factory: FlamelinkFactory = function (context) {
             maxHeight: options.height || options.maxHeight || 9999,
             quality: isString(options.quality)
               ? parseFloat(options.quality)
-              : options.quality
+              : options.quality,
           }
 
           emitter.emit(api.UploadEvents.RESIZE_IMAGE_STARTED, filename, options)
@@ -110,7 +110,7 @@ export const factory: FlamelinkFactory = function (context) {
           const resizedImage = await resizeImage(fileData, {
             ...options,
             ...requiredOptions,
-            debug: false
+            debug: false,
           })
 
           emitter.emit(
