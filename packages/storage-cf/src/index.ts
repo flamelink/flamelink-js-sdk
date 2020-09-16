@@ -132,8 +132,10 @@ export const factory: FlamelinkFactory = function (context) {
             filename,
             options
           )
-          const uploadMethod = context.usesAdminApp ? 'upload' : 'put'
-          const uploadTask: UploadTask = ref[uploadMethod](resizedImage)
+          const uploadMethod = context.usesAdminApp ? 'save' : 'put'
+          const uploadTask: UploadTask = context.usesAdminApp
+            ? ref.file[uploadMethod](resizedImage)
+            : ref[uploadMethod](resizedImage)
 
           let unsubscribe
 
@@ -574,7 +576,7 @@ Instructions here: https://flamelink.github.io/flamelink-js-sdk/#/getting-starte
                 : id
             const storageRef = api.ref(filename, options as ImageSize)
             const updateMethod = context.usesAdminApp
-              ? 'upload'
+              ? 'save'
               : typeof fileData === 'string'
               ? 'putString'
               : 'put'
@@ -597,7 +599,10 @@ Instructions here: https://flamelink.github.io/flamelink-js-sdk/#/getting-starte
             }
 
             // Upload original file to storage bucket
-            const uploadTask: UploadTask = storageRef[updateMethod](...args)
+            const uploadTask: UploadTask = storageRef[updateMethod]
+              ? storageRef[updateMethod](...args)
+              : storageRef.file[updateMethod](...args)
+
             emitter.emit(api.UploadEvents.MAIN_FILE_UPLOAD_STARTED)
 
             let mainUploadTaskUnsubscribe
@@ -614,7 +619,14 @@ Instructions here: https://flamelink.github.io/flamelink-js-sdk/#/getting-starte
               )
             }
 
-            const snapshot = await uploadTask
+            let snapshot = {}
+            if (context.usesAdminApp) {
+              await uploadTask
+              const metadata = await storageRef.getMetadata()
+              snapshot = { metadata: get(metadata, '0', metadata) }
+            } else {
+              snapshot = await uploadTask
+            }
 
             if (typeof mainUploadTaskUnsubscribe === 'function') {
               mainUploadTaskUnsubscribe()
