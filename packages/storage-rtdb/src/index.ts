@@ -576,10 +576,12 @@ Instructions here: https://flamelink.github.io/flamelink-js-sdk/#/getting-starte
             )
               ? 'images'
               : 'files'
+
+            const folderRef = api.folderRef(folderId)
             const filePayload: FileObject = {
               id,
               file: get(snapshot, 'metadata.name', ''),
-              folderId: api.folderRef(folderId),
+              folderId: get(folderRef, 'key', folderRef),
               type: mediaType,
               contentType: get(snapshot, 'metadata.contentType', ''),
             }
