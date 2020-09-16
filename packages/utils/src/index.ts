@@ -240,7 +240,12 @@ export const getAuthServiceFactory = (context: App.Context): App.FixMe => {
   if (context.usesAdminApp) {
     return get(context, 'firebaseApp.firebaseInternals_.firebase_.auth')
   }
-  return get(context, 'firebaseApp.firebase_.auth')
+
+  return get(
+    context,
+    'firebaseApp.firebase_.auth',
+    get(context, 'firebaseApp.auth')
+  )
 }
 
 export const getTimestamp = (context: App.Context): string | Timestamp => {
