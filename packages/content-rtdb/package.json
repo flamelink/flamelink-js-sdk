@@ -1,6 +1,6 @@
 {
   "name": "@flamelink/sdk-content-rtdb",
-  "version": "1.0.0-alpha.31",
+  "version": "1.0.0-alpha.32",
   "publishConfig": {
     "access": "public"
   },
@@ -26,11 +26,11 @@
   ],
   "dependencies": {
     "@firebase/database-types": "^0.4.4",
-    "@flamelink/sdk-app": "^1.0.0-alpha.31",
+    "@flamelink/sdk-app": "^1.0.0-alpha.32",
     "@flamelink/sdk-app-types": "^1.0.0-alpha.27",
     "@flamelink/sdk-content-types": "^1.0.0-alpha.27",
-    "@flamelink/sdk-schemas-rtdb": "^1.0.0-alpha.31",
-    "@flamelink/sdk-utils": "^1.0.0-alpha.31"
+    "@flamelink/sdk-schemas-rtdb": "^1.0.0-alpha.32",
+    "@flamelink/sdk-utils": "^1.0.0-alpha.32"
   },
   "scripts": {
     "prebuild": "rimraf dist",

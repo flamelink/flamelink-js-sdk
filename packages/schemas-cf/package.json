@@ -1,6 +1,6 @@
 {
   "name": "@flamelink/sdk-schemas-cf",
-  "version": "1.0.0-alpha.31",
+  "version": "1.0.0-alpha.32",
   "publishConfig": {
     "access": "public"
   },
@@ -27,10 +27,10 @@
   ],
   "dependencies": {
     "@firebase/firestore-types": "^1.5.0",
-    "@flamelink/sdk-app": "^1.0.0-alpha.31",
+    "@flamelink/sdk-app": "^1.0.0-alpha.32",
     "@flamelink/sdk-app-types": "^1.0.0-alpha.27",
     "@flamelink/sdk-schemas-types": "^1.0.0-alpha.27",
-    "@flamelink/sdk-utils": "^1.0.0-alpha.31",
+    "@flamelink/sdk-utils": "^1.0.0-alpha.32",
     "compose-then": "^1.0.1"
   },
   "scripts": {

@@ -124,7 +124,7 @@ const firebaseConfig = {
   databaseURL: '<your-database-url>',
   projectId: '<your-project-id>',
   storageBucket: '<your-storage-bucket-code>',
-  messagingSenderId: '<your-messenger-id>',
+  messagingSenderId: '<your-messenger-id>'
 }
 
 const firebaseApp = firebase.initializeApp(firebaseConfig)
@@ -134,7 +134,7 @@ const app = flamelink({
   dbType: 'rtdb', // can be either 'rtdb' or 'cf' for Realtime DB or Cloud Firestore
   env: 'production', // optional, default shown
   locale: 'en-US', // optional, default shown
-  precache: true, // optional, default shown. Currently it only precaches "schemas" for better performance
+  precache: true // optional, default shown. Currently it only precaches "schemas" for better performance
 })
 ```
 
@@ -150,13 +150,13 @@ const serviceAccount = require('path/to/serviceAccountKey.json')
 const firebaseConfig = {
   credential: admin.credential.cert(serviceAccount),
   databaseURL: '<your-database-url>',
-  storageBucket: '<your-storage-bucket-code>', // required if you want to use any Storage Bucket functionality
+  storageBucket: '<your-storage-bucket-code>' // required if you want to use any Storage Bucket functionality
 }
 
 const firebaseApp = admin.initializeApp(config)
 
 const app = flamelink({
-  firebaseApp, // required
+  firebaseApp // required
   // same options as above
 })
 ```
@@ -205,6 +205,7 @@ These amazing people have contributed code to this project:
 
 <ul><li><a href="http://jperasmus.me">JP Erasmus</a> — <a href="https://github.com/flamelink/flamelink-js-sdk/commits?author=jperasmus" title="View the GitHub contributions of JP Erasmus on repository flamelink/flamelink-js-sdk">view contributions</a></li>
 <li><a href="https://github.com/dewetvdm">De Wet van der Merwe</a> — <a href="https://github.com/flamelink/flamelink-js-sdk/commits?author=dewetvdm" title="View the GitHub contributions of De Wet van der Merwe on repository flamelink/flamelink-js-sdk">view contributions</a></li>
+<li><a href="flamelink.io">De Wet van der Merwe</a> — <a href="https://github.com/flamelink/flamelink-js-sdk/commits?author=gitdubz" title="View the GitHub contributions of De Wet van der Merwe on repository flamelink/flamelink-js-sdk">view contributions</a></li>
 <li><a href="http://github.com/apps/dependabot">dependabot[bot]</a> — <a href="https://github.com/flamelink/flamelink-js-sdk/commits?author=dependabot[bot]" title="View the GitHub contributions of dependabot[bot] on repository flamelink/flamelink-js-sdk">view contributions</a></li></ul>
 
 <a href="https://github.com/flamelink/flamelink-js-sdk/blob/master/CONTRIBUTING.md#files">Discover how you can contribute by heading on over to the <code>CONTRIBUTING.md</code> file.</a>
