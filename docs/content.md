@@ -312,7 +312,13 @@ This method can be used to save data for a single given entry without overwritin
 app.content.update({
   schemaKey: 'blogPosts',
   entryId: '1502966447501',
-  data: { title: 'new-title' }
+  data: {
+    title: 'new-title', // single field value
+    'seo.description': 'some description', // single nested field value
+    author: { // the entire field - this will overwrite/replace the entire author object
+      firstName: 'John'
+    }
+  }
 })
 ```
 
