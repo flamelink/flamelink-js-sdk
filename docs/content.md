@@ -287,6 +287,33 @@ app.content.add({
 
 ?> It is important to note that this method will set the entry's `id` as well as the `createdBy` and `createdDate` metadata for you.
 
+Adding a new entry with media
+
+```javascript
+app.storage
+  .upload(imageAsFile)
+  .then(fileObject => {
+    app.storage
+      .fileRef(fileObject.id)
+      .then(imageRef => {
+        app.content
+          .add({
+            schemaKey: 'blogPost',
+            data: {
+              title: 'New Post',
+              image: [imageRef]
+            }
+          })
+          .then(result => {
+            console.log(result)
+          })
+          .catch(error => console.error('Error adding entry', error))
+      })
+      .catch(error => console.error('Error retrieving image reference', error))
+  })
+  .catch(error => console.error('Error uploading file', error))
+```
+
 ### Option properties
 
 | Type       | Property    | Required | Description                                              |
@@ -315,7 +342,8 @@ app.content.update({
   data: {
     title: 'new-title', // single field value
     'seo.description': 'some description', // single nested field value
-    author: { // the entire field - this will overwrite/replace the entire author object
+    author: {
+      // the entire field - this will overwrite/replace the entire author object
       firstName: 'John'
     }
   }
@@ -323,6 +351,25 @@ app.content.update({
 ```
 
 ?> It is important to note that this method will set the entry's `id` as well as the `lastModifiedBy` and `lastModifiedDate` metadata for you.
+
+Updating an existing entry with media
+
+```javascript
+app.storage.upload(imageAsFile).then(fileObject => {
+  app.storage.fileRef(fileObject.id).then(imageRef => {
+    app.content.update({
+      schemaKey: 'blogPost',
+      entryId: 'xxxxxxxxxxxx'
+      data: {
+        title: 'New Post',
+        image: [imageRef],
+      },
+    }).then(result => {
+      console.log(result)
+    }).catch(error => console.error('Error updating entry', error))
+  }).catch(error => console.error('Error retrieving image reference', error))
+}).catch(error => console.error('Error uploading file', error));
+```
 
 ### Option properties
 
