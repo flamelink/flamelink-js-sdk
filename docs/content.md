@@ -89,6 +89,63 @@ app.content.get({
 })
 ```
 
+_Retrieve all your blog posts for a given `category` that is **not a relational** field value using filters._
+_Read more about [using filters and ordering data](https://flamelink.github.io/flamelink-js-sdk/#/api-overview?id=sorting-filtering-and-ordering-data)_
+
+```javascript
+app.content.get({
+  schemaKey: 'blogPosts',
+  populate: true,
+  filters: [['category', '==' 'Some Category']]
+})
+```
+
+_Retrieve all your blog posts for a given **relational** `category` field value using filters._
+_Read more about [using filters and ordering data](https://flamelink.github.io/flamelink-js-sdk/#/api-overview?id=sorting-filtering-and-ordering-data)_
+
+```javascript
+// get the category by name
+app.content
+  .get({
+    schemaKey: 'category',
+    filters: [['name', '==', 'Super Awesome']]
+  })
+  .then(category => {
+    // get the category reference
+    for (let id in category) {
+      app.content
+        .ref(['category', id]) // [schemaKey, entryId]
+        .get()
+        .then(categoryRef => {
+          // get the blog posts filtered on the category reference
+          app.content
+            .get({
+              schemaKey: 'blogPosts',
+              populate: true,
+              filters: [['category', '==', categoryRef.docs[0].ref]]
+            })
+            .then(blogPosts => console.log('All the blog posts:', blogPosts))
+            .catch(error =>
+              console.error(
+                'Something went wrong retrieving posts for the given category',
+                error
+              )
+            )
+        })
+        .catch(error =>
+          console.error(
+            'Something went wrong retrieving the category ref',
+            error
+          )
+        )
+      break
+    }
+  })
+  .catch(error =>
+    console.error('Something went wrong retrieving a category', error)
+  )
+```
+
 _Retrieve only blog posts for entries that were updated_
 
 ```javascript
@@ -184,6 +241,81 @@ const unsubscribe = app.content.subscribe({
     console.log('All the blog posts:', blogPosts)
   }
 })
+
+// later when you want to unsubscribe
+unsubscribe()
+```
+
+_To subscribe to all your blog posts for a given `category` that is **not a relational** field value using filters_
+_Read more about [using filters and ordering data](https://flamelink.github.io/flamelink-js-sdk/#/api-overview?id=sorting-filtering-and-ordering-data)_
+
+```javascript
+const unsubscribe = app.content.subscribe({
+  schemaKey: 'blogPosts',
+  populate: true,
+  filters: ['category', '==' 'Some Category']
+  callback(error, blogPosts) {
+    if (error) {
+      return console.error(
+        'Something went wrong while retrieving all the content. Details:',
+        error
+      )
+    }
+    console.log('All the blog posts for "Some Category":', blogPosts)
+  }
+})
+
+// later when you want to unsubscribe
+unsubscribe()
+```
+
+_To subscribe to all your blog posts for a given relational `category` field value using filters_
+_Read more about [using filters and ordering data](https://flamelink.github.io/flamelink-js-sdk/#/api-overview?id=sorting-filtering-and-ordering-data)_
+
+```javascript
+let unsubscribe = () => {}
+
+// get the category by name
+app.content
+  .get({
+    schemaKey: 'category',
+    filters: [['name', '==', 'Super Awesome']]
+  })
+  .then(category => {
+    // get the category reference
+    for (let id in category) {
+      app.content
+        .ref(['category', id]) // [schemaKey, entryId]
+        .get()
+        .then(categoryRef => {
+          // subscribe to the blog posts filtered on the category reference
+          unsubscribe = app.content.subscribe({
+            schemaKey: 'blogPosts',
+            populate: true,
+            filters: [['category', '==', categoryRef.docs[0].ref]],
+            callback(error, blogPosts) {
+              if (error) {
+                return console.error(
+                  'Something went wrong while retrieving all the content. Details:',
+                  error
+                )
+              }
+              console.log('All the blog posts for "Some Category":', blogPosts)
+            }
+          })
+        })
+        .catch(error =>
+          console.error(
+            'Something went wrong retrieving the category ref',
+            error
+          )
+        )
+      break
+    }
+  })
+  .catch(error =>
+    console.error('Something went wrong retrieving a category', error)
+  )
 
 // later when you want to unsubscribe
 unsubscribe()
@@ -315,7 +447,8 @@ app.content.update({
   data: {
     title: 'new-title', // single field value
     'seo.description': 'some description', // single nested field value
-    author: { // the entire field - this will overwrite/replace the entire author object
+    author: {
+      // the entire field - this will overwrite/replace the entire author object
       firstName: 'John'
     }
   }
