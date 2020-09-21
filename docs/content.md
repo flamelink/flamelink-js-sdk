@@ -351,7 +351,7 @@ app.storage.upload(imageAsFile).then(fileObject => {
       schemaKey: 'blogPost',
       entryId: 'xxxxxxxxxxxx'
       data: {
-        title: 'New Post',
+        title: 'Updated Title',
         image: [imageRef],
       },
     }).then(result => {
