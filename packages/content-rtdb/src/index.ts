@@ -188,7 +188,13 @@ export const factory: FlamelinkFactory = (context) => {
       })
     },
 
-    async add({ schemaKey, entryId = Date.now().toString(), data }: RTDB.Add) {
+    async add({
+      schemaKey,
+      entryId = Date.now().toString(),
+      data,
+      env,
+      locale
+    }: RTDB.Add) {
       const schemasAPI = get(context, 'modules.schemas', {
         getFields() {
           throw new FlamelinkError(
@@ -220,7 +226,7 @@ export const factory: FlamelinkFactory = (context) => {
 
       defaultLocale = defaultLocaleSnapshot.val()
 
-      if (defaultLocale && defaultLocale !== context.locale) {
+      if (defaultLocale && defaultLocale !== (locale || context.locale)) {
         const defaultEntry = await api.get({
           schemaKey,
           entryId,
@@ -247,13 +253,18 @@ export const factory: FlamelinkFactory = (context) => {
             }
           : data
 
-      await api.ref([schemaKey, entryId]).set(payload)
+      await api
+        .ref([schemaKey, entryId], {
+          locale,
+          env
+        })
+        .set(payload)
 
       if (createDefaultEntry) {
         const defaultPayload = {
           __meta__: {
             ...payload.__meta__,
-            createdFromLocale: context.locale,
+            createdFromLocale: locale || context.locale,
           },
           id: entryId,
           order: get(payload, 'order', 0),
@@ -261,14 +272,17 @@ export const factory: FlamelinkFactory = (context) => {
         }
 
         await api
-          .ref([schemaKey, entryId], { locale: defaultLocale })
+          .ref([schemaKey, entryId], {
+            locale: defaultLocale,
+            env: env || context.env
+          })
           .set(defaultPayload)
       }
 
       return payload
     },
 
-    async update({ schemaKey, entryId, data }: RTDB.Update) {
+    async update({ schemaKey, entryId, data, env, locale }: RTDB.Update) {
       if (
         typeof schemaKey !== 'string' ||
         !entryId ||
@@ -279,13 +293,15 @@ export const factory: FlamelinkFactory = (context) => {
         )
       }
 
-      const snapshot = await api.ref([schemaKey, entryId]).once('value')
+      const snapshot = await api
+        .ref([schemaKey, entryId], { env, locale })
+        .once('value')
 
       if (!snapshot.val()) {
         logWarning(
           `No entry existed for schema "${schemaKey}" with ID "${entryId}" - creating new entry instead.`
         )
-        return api.add({ schemaKey, entryId, data })
+        return api.add({ schemaKey, entryId, data, env, locale })
       }
 
       const payload =
@@ -296,12 +312,13 @@ export const factory: FlamelinkFactory = (context) => {
                 ...(data.__meta__ || {}),
                 lastModifiedBy: getCurrentUser(context),
                 lastModifiedDate: getTimestamp(context),
+                createdFromLocale: null,
               },
               id: entryId,
             }
           : data
 
-      await api.ref([schemaKey, entryId]).update(payload)
+      await api.ref([schemaKey, entryId], { env, locale }).update(payload)
 
       return payload
     },
