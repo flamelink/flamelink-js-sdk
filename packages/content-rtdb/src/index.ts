@@ -193,7 +193,7 @@ export const factory: FlamelinkFactory = (context) => {
       entryId = Date.now().toString(),
       data,
       env,
-      locale
+      locale,
     }: RTDB.Add) {
       const schemasAPI = get(context, 'modules.schemas', {
         getFields() {
@@ -256,7 +256,7 @@ export const factory: FlamelinkFactory = (context) => {
       await api
         .ref([schemaKey, entryId], {
           locale,
-          env
+          env,
         })
         .set(payload)
 
@@ -274,7 +274,7 @@ export const factory: FlamelinkFactory = (context) => {
         await api
           .ref([schemaKey, entryId], {
             locale: defaultLocale,
-            env: env || context.env
+            env: env || context.env,
           })
           .set(defaultPayload)
       }
