@@ -179,7 +179,7 @@ export const factory: FlamelinkFactory = (context) => {
       })
     },
 
-    async add({ schemaKey, entryId, data }: CF.Add) {
+    async add({ schemaKey, entryId, data, env, locale }: CF.Add) {
       if (!schemaKey) {
         throw new FlamelinkError(
           `Please provide the content entry's "schemaKey"`
@@ -220,7 +220,7 @@ export const factory: FlamelinkFactory = (context) => {
       if (defaultLocaleDoc.exists) {
         defaultLocale = defaultLocaleDoc.data().key
 
-        if (defaultLocale !== context.locale) {
+        if (defaultLocale !== (locale || context.locale)) {
           const defaultEntry = await api.get({
             schemaKey,
             entryId,
@@ -251,9 +251,9 @@ export const factory: FlamelinkFactory = (context) => {
                 createdBy: getCurrentUser(context),
                 createdDate: getTimestamp(context),
                 docId,
-                env: context.env,
+                env: env || context.env,
                 fl_id: entryId || docId,
-                locale: context.locale,
+                locale: locale || context.locale,
                 schema: schemaKey,
                 schemaType: get(schema, 'type', 'collection'),
                 schemaRef,
@@ -272,7 +272,7 @@ export const factory: FlamelinkFactory = (context) => {
             ...payload._fl_meta_,
             docId: defaultDocId,
             locale: defaultLocale,
-            createdFromLocale: context.locale,
+            createdFromLocale: locale || context.locale,
           },
           id: defaultDocId,
           order: get(payload, 'order', 0),
@@ -285,7 +285,7 @@ export const factory: FlamelinkFactory = (context) => {
       return payload
     },
 
-    async update({ schemaKey, entryId, data }: CF.Update) {
+    async update({ schemaKey, entryId, data, env, locale }: CF.Update) {
       if (!schemaKey || !entryId || typeof data !== 'object') {
         throw new FlamelinkError(
           '"update" called with the incorrect arguments. Check the docs for details.'
@@ -303,13 +303,21 @@ export const factory: FlamelinkFactory = (context) => {
             }
           : data
 
-      const snapshot = await api.ref([schemaKey, entryId]).get()
+      const snapshot = await api
+        .ref([schemaKey, entryId], { env, locale })
+        .get()
 
       if (snapshot.empty) {
         logWarning(
           `No entry existed for schema "${schemaKey}" with ID "${entryId}" - creating new entry instead.`
         )
-        return api.add({ schemaKey, entryId, data })
+        return api.add({ schemaKey, entryId, data, env, locale })
+      } else {
+        if (typeof payload === 'object') {
+          payload[
+            '_fl_meta_.createdFromLocale'
+          ] = context.firebaseApp.firestore.FieldValue.delete()
+        }
       }
 
       const content: any[] = []
