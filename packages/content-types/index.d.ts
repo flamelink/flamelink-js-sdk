@@ -52,6 +52,7 @@ declare namespace Content {
 
     interface Add extends App.CF.Options {
       schemaKey: string
+      entryId?: string
       data: any
     }
 
