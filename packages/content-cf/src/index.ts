@@ -17,6 +17,7 @@ import {
   getTimestamp,
   getCurrentUser,
   populateEntriesForCF,
+  getFirestoreServiceFactory,
 } from '@flamelink/sdk-utils'
 import { BATCH_WRITE_LIMIT } from './constants'
 import '@flamelink/sdk-schemas-cf'
@@ -317,10 +318,12 @@ export const factory: FlamelinkFactory = (context) => {
         )
         return api.add({ schemaKey, entryId, data, env, locale })
       } else {
+        const firestoreService = getFirestoreServiceFactory(context)
+
         if (typeof payload === 'object') {
           payload[
             '_fl_meta_.createdFromLocale'
-          ] = context.firebaseApp.firestore.FieldValue.delete()
+          ] = firestoreService.FieldValue.delete()
         }
       }
 
