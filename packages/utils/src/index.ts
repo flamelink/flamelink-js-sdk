@@ -222,14 +222,24 @@ export const getStorageServiceFactory = (context: App.Context): any => {
   if (context.usesAdminApp) {
     return get(context, 'firebaseApp.firebaseInternals_.firebase_.storage')
   }
-  return get(context, 'firebaseApp.firebase_.storage')
+
+  return get(
+    context,
+    'firebaseApp.firebase_.storage',
+    get(context, 'firebaseApp.storage')
+  )
 }
 
 export const getFirestoreServiceFactory = (context: App.Context): any => {
   if (context.usesAdminApp) {
     return get(context, 'firebaseApp.firebaseInternals_.firebase_.firestore')
   }
-  return get(context, 'firebaseApp.firebase_.firestore')
+
+  return get(
+    context,
+    'firebaseApp.firebase_.firestore',
+    get(context, 'firebaseApp.firestore')
+  )
 }
 
 export const getAuthServiceFactory = (context: App.Context): App.FixMe => {
