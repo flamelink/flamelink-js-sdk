@@ -227,14 +227,18 @@ export const factory: FlamelinkFactory = (context) => {
       defaultLocale = defaultLocaleSnapshot.val()
 
       if (defaultLocale && defaultLocale !== (locale || context.locale)) {
-        const defaultEntry = await api.get({
-          schemaKey,
-          entryId,
-          locale: defaultLocale,
-        })
-
-        if (!defaultEntry) {
+        if (!entryId) {
           createDefaultEntry = true
+        } else {
+          const defaultEntry = await api.get({
+            schemaKey,
+            entryId,
+            locale: defaultLocale,
+          })
+
+          if (!defaultEntry) {
+            createDefaultEntry = true
+          }
         }
       }
 
