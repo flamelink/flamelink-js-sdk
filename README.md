@@ -20,7 +20,7 @@
 
 > Easily integrate with your Flamelink CMS.
 
-**Official Flamelink JavaScript SDK for both the Firebase Realtime database and Cloud Firestore**
+**Official Flamelink JavaScript SDK for both the <ins>Firebase Realtime Database</ins> and <ins>Cloud Firestore</ins>**
 
 **_PLEASE NOTE: THIS PACKAGE IS CURRENTLY IN DEVELOPMENT - PLEASE USE WITH CAUTION OR USE THE [LEGACY STABLE VERSION](https://flamelink.github.io/flamelink) (ONLY SUPPORTS RTDB)_**
 
