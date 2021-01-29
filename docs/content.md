@@ -15,7 +15,7 @@ This method does not _watch_ for real-time db changes, but is intended to retrie
 _To get all entries for a specific content type:_
 
 ```javascript
-const blogPost = await app.content.get({ schemaKey: 'blogPosts' })
+const blogPosts = await app.content.get({ schemaKey: 'blogPosts' })
 console.log('All the blog posts:', blogPosts)
 ```
 
