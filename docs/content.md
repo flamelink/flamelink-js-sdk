@@ -253,7 +253,7 @@ _Read more about [using filters and ordering data](https://flamelink.github.io/f
 const unsubscribe = app.content.subscribe({
   schemaKey: 'blogPosts',
   populate: true,
-  filters: ['category', '==' 'Some Category']
+  filters: ['category', '==', 'Some Category']
   callback(error, blogPosts) {
     if (error) {
       return console.error(
