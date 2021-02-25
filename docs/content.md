@@ -96,7 +96,7 @@ _Read more about [using filters and ordering data](https://flamelink.github.io/f
 app.content.get({
   schemaKey: 'blogPosts',
   populate: true,
-  filters: [['category', '==' 'Some Category']]
+  filters: [['category', '==', 'Some Category']]
 })
 ```
 
