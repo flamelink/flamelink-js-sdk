@@ -22,8 +22,6 @@
 
 **Official Flamelink JavaScript SDK for both the <ins>Firebase Realtime Database</ins> and <ins>Cloud Firestore</ins>**
 
-**_PLEASE NOTE: THIS PACKAGE IS CURRENTLY IN DEVELOPMENT - PLEASE USE WITH CAUTION OR USE THE [LEGACY STABLE VERSION](https://flamelink.github.io/flamelink) (ONLY SUPPORTS RTDB)_**
-
 <!-- DESCRIPTION/ -->
 
 This SDK is intended for use in a browser or Node.js environment.
