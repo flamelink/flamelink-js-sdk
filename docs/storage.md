@@ -422,7 +422,7 @@ See the [API overview](/api-overview?id=fields) for details regarding some of th
 
 #### .getURL() examples
 
-*To retrieve a sized image with a width of `1024`, height of `9999` and a quality of `1` for the given file ID.*
+*To retrieve a sized image with a width of `1024`, height of `9999` and a quality of `75%` for the given file ID.*
 
 ?> If the given size exists for the particular image, it will be returned, otherwise the first available size bigger than the given size, ultimately falling back to the original image if nothing exists.
 
@@ -432,6 +432,19 @@ app.storage.getURL({
   size: {
     width: 1024,
     height: 9999,
+    quality: 0.75
+  }
+})
+```
+
+To get the closest image size for your query, omit the `height` property as shown below.
+In this instance the file returned will have a width if `1024` and not `1010` and a height of `9999` and quality of `75%`
+
+```javascript
+app.storage.getURL({
+  fileId: '1505670341980',
+  size: {
+    width: 1010,
     quality: 0.75
   }
 })
