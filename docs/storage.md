@@ -438,7 +438,7 @@ app.storage.getURL({
 ```
 
 To get the closest image size for your query, omit the `height` property as shown below.
-In this instance the file returned will have a width if `1024` and not `1010` and a height of `9999` and quality of `75%`
+In this instance the file returned will have a width of `1024` and not `1010` and a height of `9999` and quality of `75%`
 
 ```javascript
 app.storage.getURL({
