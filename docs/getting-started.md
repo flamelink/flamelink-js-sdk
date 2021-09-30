@@ -30,33 +30,36 @@ or with a `<script>` tag hosted from any of these CDN's
 
 Add the following script tag to the `<body>` of your index.html file:
 
+<!---
 ```html
 <script src="//cdn.jsdelivr.net/npm/flamelink/flamelink.js"></script>
 ```
 
 This will always load the latest version of this SDK for you. If you want to load a specific version, you can specify the version number as well (1.0.0 in the example):
+-->
 
 ```html
-<script src="//cdn.jsdelivr.net/npm/flamelink@1.0.0/flamelink.js"></script>
+<script src="//cdn.jsdelivr.net/npm/flamelink@1.0.0-alpha.34/flamelink.js"></script>
 ```
 
 > See the [jsDelivr website](https://www.jsdelivr.com/?query=flamelink) for more options
 
+
 ### unpkg
 
 Add the following script tag to the `<body>` of your index.html file:
-
+<!---
 ```html
 <script src="//unpkg.com/flamelink/flamelink.js"></script>
 ```
 
 This will always load the latest version of this SDK for you. If you want to load a specific version, you can specify the version number as well (1.0.0 in the example):
-
+--->
 ```html
-<script src="//unpkg.com/flamelink@1.0.0/flamelink.js"></script>
+<script src="//unpkg.com/flamelink@1.0.0-alpha.34/flamelink.js"></script>
 ```
 
-> See the [unpkg website](https://unpkg.com) for more options
+> See the [unpkg website](https://unpkg.com/flamelink/) for more options
 
 ## Usage
 
