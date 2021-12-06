@@ -69,10 +69,7 @@ export const factory: FlamelinkFactory = (context) => {
           ? wrap(schemaKey, snapshot.val())
           : snapshot.val()
 
-        const result = await compose(
-          populateFields,
-          pluckFields
-        )(value)
+        const result = await compose(populateFields, pluckFields)(value)
 
         return isSingleType ? unwrap(schemaKey, result) : result
       }
@@ -85,10 +82,7 @@ export const factory: FlamelinkFactory = (context) => {
         {}
       )
 
-      const result = await compose(
-        populateFields,
-        pluckFields
-      )(withoutLocales)
+      const result = await compose(populateFields, pluckFields)(withoutLocales)
       return result
     },
 
@@ -163,10 +157,7 @@ export const factory: FlamelinkFactory = (context) => {
                 ? wrap(schemaKey, snapshot.val())
                 : snapshot.val()
 
-              const result = await compose(
-                populateFields,
-                pluckFields
-              )(value)
+              const result = await compose(populateFields, pluckFields)(value)
 
               return callback(
                 null,

@@ -70,10 +70,7 @@ export const factory: FlamelinkFactory = (context) => {
 
       const [schema, result] = await Promise.all([
         get(context, 'modules.schemas').get({ schemaKey }),
-        compose(
-          pluckFields,
-          processRefs
-        )(content),
+        compose(pluckFields, processRefs)(content),
       ])
 
       const isSingleType = get(schema, 'type') === 'single'
@@ -164,10 +161,7 @@ export const factory: FlamelinkFactory = (context) => {
             })
           }
 
-          const result = await compose(
-            pluckFields,
-            processRefs
-          )(content)
+          const result = await compose(pluckFields, processRefs)(content)
 
           // Handle content for single type schemas
           if (schemaKey && !entryId) {
