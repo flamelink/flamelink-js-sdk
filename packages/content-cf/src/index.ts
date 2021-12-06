@@ -70,7 +70,10 @@ export const factory: FlamelinkFactory = (context) => {
 
       const [schema, result] = await Promise.all([
         get(context, 'modules.schemas').get({ schemaKey }),
-        compose(pluckFields, processRefs)(content),
+        compose(
+          pluckFields,
+          processRefs
+        )(content),
       ])
 
       const isSingleType = get(schema, 'type') === 'single'
@@ -161,7 +164,10 @@ export const factory: FlamelinkFactory = (context) => {
             })
           }
 
-          const result = await compose(pluckFields, processRefs)(content)
+          const result = await compose(
+            pluckFields,
+            processRefs
+          )(content)
 
           // Handle content for single type schemas
           if (schemaKey && !entryId) {
@@ -180,7 +186,7 @@ export const factory: FlamelinkFactory = (context) => {
       })
     },
 
-    async add({ schemaKey, entryId, data, env, locale }: CF.Add) {
+    async add({ schemaKey, entryId, data, status, env, locale }: CF.Add) {
       if (!schemaKey) {
         throw new FlamelinkError(
           `Please provide the content entry's "schemaKey"`
@@ -262,6 +268,7 @@ export const factory: FlamelinkFactory = (context) => {
                 schema: schemaKey,
                 schemaType: get(schema, 'type', 'collection'),
                 schemaRef,
+                ...(status ? { status } : {}),
               },
               id: docId,
             }
@@ -290,7 +297,7 @@ export const factory: FlamelinkFactory = (context) => {
       return payload
     },
 
-    async update({ schemaKey, entryId, data, env, locale }: CF.Update) {
+    async update({ schemaKey, entryId, data, status, env, locale }: CF.Update) {
       if (!schemaKey || !entryId || typeof data !== 'object') {
         throw new FlamelinkError(
           '"update" called with the incorrect arguments. Check the docs for details.'
@@ -304,6 +311,7 @@ export const factory: FlamelinkFactory = (context) => {
               '_fl_meta_.lastModifiedBy': getCurrentUser(context),
               '_fl_meta_.lastModifiedDate': getTimestamp(context),
               '_fl_meta_.fl_id': entryId,
+              ...(status ? { '_fl_meta_,status': status } : {}),
               id: entryId,
             }
           : data
@@ -316,7 +324,7 @@ export const factory: FlamelinkFactory = (context) => {
         logWarning(
           `No entry existed for schema "${schemaKey}" with ID "${entryId}" - creating new entry instead.`
         )
-        return api.add({ schemaKey, entryId, data, env, locale })
+        return api.add({ schemaKey, entryId, data, status, env, locale })
       } else {
         const firestoreService = getFirestoreServiceFactory(context)
 

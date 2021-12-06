@@ -21,12 +21,18 @@ declare namespace Content {
       schemaKey: string
       entryId?: string
       data: any
+      status?: string
+      env?: string
+      locale?: string
     }
 
     interface Update extends App.RTDB.Options {
       schemaKey: string
       entryId: string
       data: any
+      status?: string
+      env?: string
+      locale?: string
     }
 
     interface Remove extends App.RTDB.Options {
@@ -55,12 +61,18 @@ declare namespace Content {
       schemaKey: string
       entryId?: string
       data: any
+      status?: string
+      env?: string
+      locale?: string
     }
 
     interface Update extends App.CF.Options {
       schemaKey: string
       entryId: string
       data: any
+      status?: string
+      env?: string
+      locale?: string
     }
 
     interface Remove extends App.CF.Options {

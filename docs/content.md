@@ -430,6 +430,7 @@ app.storage.upload(imageAsFile).then(fileObject => {
         title: 'New Post',
         image: [imageRef],
       },
+      status: 'draft',
     }).then(result => {
       console.log(result)
     }).catch(error => console.error('Error adding entry', error))
@@ -439,10 +440,13 @@ app.storage.upload(imageAsFile).then(fileObject => {
 
 ### Option properties
 
-| Type       | Property    | Required | Description                                              |
-| ---------- | ----------- | -------- | -------------------------------------------------------- |
-| `{string}` | `schemaKey` | required | The content type reference for the entry you want to set |
-| `{object}` | `data`      | required | Payload object for the new entry                         |
+| Type       | Property    | Required | Description                                                         |
+| ---------- | ----------- | -------- | --------------------------------------------------------------------|
+| `{string}` | `schemaKey` | required | The content type reference for the entry you want to set            |
+| `{object}` | `data`      | required | Payload object for the new entry                                    |
+| `{string}` | `status`    | optional | The workflow status for the entry e.g draft, review, publish        |
+| `{string}` | `env`       | optional | The environment the entry should target, defaults to settings env   |
+| `{string}` | `locale`    | optional | The locale the entry should target, defaults to settings locale     |
 
 See the [API overview](/api-overview?id=fields) for details regarding some of these options.
 
@@ -487,6 +491,7 @@ app.storage.upload(imageAsFile).then(fileObject => {
         title: 'Updated Title',
         image: [imageRef],
       },
+      status: 'publish',
     }).then(result => {
       console.log(result)
     }).catch(error => console.error('Error updating entry', error))
@@ -496,11 +501,14 @@ app.storage.upload(imageAsFile).then(fileObject => {
 
 ### Option properties
 
-| Type       | Property    | Required | Description                                                 |
-| ---------- | ----------- | -------- | ----------------------------------------------------------- |
-| `{string}` | `schemaKey` | required | The content type reference for the entry you want to update |
-| `{string}` | `entryId`   | required | The entry ID/reference for given content type to update     |
-| `{object}` | `data`      | required | Payload object to update at the given entry's reference     |
+| Type       | Property    | Required | Description                                                         |
+| ---------- | ----------- | -------- | --------------------------------------------------------------------|
+| `{string}` | `schemaKey` | required | The content type reference for the entry you want to update         |
+| `{string}` | `entryId`   | required | The entry ID/reference for given content type to update             |
+| `{object}` | `data`      | required | Payload object to update at the given entry's reference             |
+| `{string}` | `status`    | optional | The workflow status for the entry e.g draft, review, publish        |
+| `{string}` | `env`       | optional | The environment the entry should target, defaults to settings env   |
+| `{string}` | `locale`    | optional | The locale the entry should target, defaults to settings locale     |
 
 See the [API overview](/api-overview?id=fields) for details regarding some of these options.
 
