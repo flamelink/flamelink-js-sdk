@@ -35,11 +35,11 @@ Add the following script tag to the `<body>` of your index.html file:
 <script src="//cdn.jsdelivr.net/npm/flamelink@next/flamelink.js"></script>
 ```
 
-This will always load the latest version of this SDK for you. If you want to load a specific version, you can specify the version number as well (1.0.0-alpha.34 in the example):
+This will always load the latest version of this SDK for you. If you want to load a specific version, you can specify the version number as well (1.0.0-rc.1 in the example):
 
 
 ```html
-<script src="//cdn.jsdelivr.net/npm/flamelink@1.0.0-alpha.34/flamelink.js"></script>
+<script src="//cdn.jsdelivr.net/npm/flamelink@1.0.0-rc.1/flamelink.js"></script>
 ```
 
 > See the [jsDelivr website](https://www.jsdelivr.com/?query=flamelink) for more options
@@ -53,10 +53,10 @@ Add the following script tag to the `<body>` of your index.html file:
 <script src="//unpkg.com/flamelink@next/flamelink.js"></script>
 ```
 
-This will always load the latest version of this SDK for you. If you want to load a specific version, you can specify the version number as well (1.0.0-alpha.34 in the example):
+This will always load the latest version of this SDK for you. If you want to load a specific version, you can specify the version number as well (1.0.0-rc.1 in the example):
 
 ```html
-<script src="//unpkg.com/flamelink@1.0.0-alpha.34/flamelink.js"></script>
+<script src="//unpkg.com/flamelink@1.0.0-rc.1/flamelink.js"></script>
 ```
 
 > See the [unpkg website](https://unpkg.com/flamelink/) for more options
