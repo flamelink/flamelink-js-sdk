@@ -1,6 +1,6 @@
 {
   "name": "@flamelink/sdk-storage-rtdb",
-  "version": "1.0.0-alpha.34",
+  "version": "1.0.0-rc.1",
   "publishConfig": {
     "access": "public"
   },
@@ -26,9 +26,9 @@
   ],
   "dependencies": {
     "@firebase/storage-types": "^0.3.3",
-    "@flamelink/sdk-app": "^1.0.0-alpha.34",
-    "@flamelink/sdk-app-types": "^1.0.0-alpha.34",
-    "@flamelink/sdk-storage-types": "^1.0.0-alpha.34",
+    "@flamelink/sdk-app": "^1.0.0-rc.1",
+    "@flamelink/sdk-app-types": "^1.0.0-rc.1",
+    "@flamelink/sdk-storage-types": "^1.0.0-rc.1",
     "@flamelink/sdk-utils": "^1.0.0-alpha.34",
     "browser-image-resizer": "^1.2.0",
     "compose-then": "^1.0.1",
