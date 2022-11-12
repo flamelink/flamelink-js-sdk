@@ -16,9 +16,9 @@ export default function getRollupConfig(pkg = pkgIsRequired()) {
     resolveModule(),
     typescript({
       typescript: require('typescript'),
-      useTsconfigDeclarationDir: true
+      useTsconfigDeclarationDir: true,
     }),
-    commonjs()
+    commonjs(),
   ]
 
   const external = Object.keys(Object.assign({}, pkg.dependencies))
@@ -28,10 +28,10 @@ export default function getRollupConfig(pkg = pkgIsRequired()) {
       input: 'src/index.ts',
       output: [
         { dir: 'dist/cjs', format: 'cjs' },
-        { dir: 'dist/esm', format: 'esm' }
+        { dir: 'dist/esm', format: 'esm' },
       ],
       plugins,
-      external
-    }
+      external,
+    },
   ]
 }

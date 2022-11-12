@@ -1,5 +1,6 @@
 {
   "name": "Flamelink CMS JS SDK",
+  "$schema": "../node_modules/nx/schemas/project-schema.json",
   "platforms": ["Web"],
   "content": "README.md",
   "pages": {

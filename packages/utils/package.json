@@ -33,6 +33,6 @@
     "prebuild": "rimraf dist",
     "build": "rollup -c",
     "dev": "rollup -c -w",
-    "test": "jest"
+    "test": "jest --passWithNoTests"
   }
 }
