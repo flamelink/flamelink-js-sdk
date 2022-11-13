@@ -81,7 +81,6 @@
     "create-package": "lerna create",
     "generate-dependency-graph": "yarn nx graph --file=.dependency-graph.json",
     "generate-readme": "projectz compile",
-    "dev": "lerna exec --parallel --ignore '@flamelink/sdk-*-types' --ignore 'integration-package-*' yarn run dev",
     "test:integration": "lerna exec --parallel --stream --scope 'integration-package-*' yarn run test",
     "test:unit": "jest --detectOpenHandles --passWithNoTests",
     "test:ci": "yarn test:integration && yarn test:unit",
@@ -105,8 +104,8 @@
   "contributors": [
     "JP Erasmus <jp@flamelink.io> (http://jperasmus.me)",
     "De Wet van der Merwe (https://github.com/dewetvdm)",
+    "dependabot[bot] (http://github.com/apps/dependabot)",
     "Sinan Bolel (http://sinanbolel.com)",
-    "De Wet van der Merwe (flamelink.io)",
-    "dependabot[bot] (http://github.com/apps/dependabot)"
+    "De Wet van der Merwe (flamelink.io)"
   ]
 }
