@@ -37,8 +37,11 @@ jobs:
       - name: Lint packages
         run: yarn lint
 
+      - name: Lint Nx workspace
+        run: npx nx workspace-lint
+
+      - name: Build packages
+        run: npx nx affected --target=build --parallel=3
+
       - name: Test packages
         run: yarn test:ci
-
-      - run: npx nx workspace-lint
-      - run: npx nx affected --target=build --parallel=3
