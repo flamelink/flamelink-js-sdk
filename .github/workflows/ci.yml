@@ -31,10 +31,14 @@ jobs:
       - name: Install dependencies
         run: yarn
 
+      - name: Install emulators
+        run: yarn install-emulators
+
       - name: Lint packages
         run: yarn lint
 
+      - name: Test packages
+        run: yarn test:ci
+
       - run: npx nx workspace-lint
-      - run: npx nx format:check
-      - run: npx nx affected --target=test --parallel=3 --ci --code-coverage
       - run: npx nx affected --target=build --parallel=3

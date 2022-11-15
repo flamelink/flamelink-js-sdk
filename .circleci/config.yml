@@ -44,7 +44,7 @@ aliases:
   run_tests: &run_tests
     run:
       name: Run tests
-      command: yarn lerna run test
+      command: yarn test:ci
       environment:
         DEBUG: "*"
 
