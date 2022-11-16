@@ -12,8 +12,8 @@ import {
 import { getAllSchemas, getSchema } from '../../../../fixtures/schemas'
 
 describe('- RTDB Schemas', () => {
-  let api: Api
-  let unsubscribe: UnsubscribeMethod
+  let api: Api | null
+  let unsubscribe: UnsubscribeMethod | null
 
   beforeEach(async () => {
     const firebaseApp: Partial<FirebaseApp> = await initializeRealtimeProject({
@@ -40,21 +40,21 @@ describe('- RTDB Schemas', () => {
 
   describe('- "get"', () => {
     test('should return all schemas if no "schemaKey" is provided', () => {
-      return expect(api.get()).resolves.toEqual(
+      return expect(api?.get()).resolves.toEqual(
         getAllSchemas({ dbType: 'rtdb' })
       )
     })
 
     test('should return a specific schema if a "schemaKey" is provided for an existing schema', () => {
       const schemaKey = 'products'
-      return expect(api.get({ schemaKey })).resolves.toEqual(
+      return expect(api?.get({ schemaKey })).resolves.toEqual(
         getSchema({ dbType: 'rtdb', schemaKey })
       )
     })
 
     test('should return `null` if a "schemaKey" is provided for a non-existing schema', () => {
       const schemaKey = 'this-schema-does-not-exist'
-      return expect(api.get({ schemaKey })).resolves.toEqual(null)
+      return expect(api?.get({ schemaKey })).resolves.toEqual(null)
     })
   })
 
@@ -68,138 +68,140 @@ describe('- RTDB Schemas', () => {
           }),
         {}
       )
-      return expect(api.getFields({})).resolves.toEqual(expected)
+      return expect(api?.getFields({})).resolves.toEqual(expected)
     })
 
     test(`should return a specific schema's fields if a "schemaKey" is provided for an existing schema`, () => {
       const schemaKey = 'products'
-      return expect(api.getFields({ schemaKey })).resolves.toEqual(
+      return expect(api?.getFields({ schemaKey })).resolves.toEqual(
         getSchema({ dbType: 'rtdb', schemaKey }).fields
       )
     })
 
     test('should return `null` if a "schemaKey" is provided for a non-existing schema', () => {
       const schemaKey = 'this-schema-does-not-exist'
-      return expect(api.getFields({ schemaKey })).resolves.toEqual(null)
+      return expect(api?.getFields({ schemaKey })).resolves.toEqual(null)
     })
   })
 
   describe(' - "subscribe"', () => {
-    test('should return all schemas if no "schemaKey" is provided', () =>
-      new Promise((resolve, reject) => {
-        unsubscribe = api.subscribe({
+    test('should return all schemas if no "schemaKey" is provided', (done) => {
+      unsubscribe =
+        api?.subscribe({
           callback(err, schemas) {
             if (err) {
-              return reject(err)
+              return fail(err)
             }
 
             expect(schemas).toEqual(getAllSchemas({ dbType: 'rtdb' }))
-            resolve()
+            done()
           },
-        })
-      }))
+        }) ?? null
+    })
 
-    test('should return a specific schema if a "schemaKey" is provided for an existing schema', () =>
-      new Promise((resolve, reject) => {
-        const schemaKey = 'products'
-        unsubscribe = api.subscribe({
+    test('should return a specific schema if a "schemaKey" is provided for an existing schema', (done) => {
+      const schemaKey = 'products'
+      unsubscribe =
+        api?.subscribe({
           schemaKey,
           callback(err, schemas) {
             if (err) {
-              return reject(err)
+              return fail(err)
             }
 
             expect(schemas).toEqual(getSchema({ dbType: 'rtdb', schemaKey }))
-            resolve()
+            done()
           },
-        })
-      }))
+        }) ?? null
+    })
 
-    test('should return `null` if a "schemaKey" is provided for a non-existing schema', () =>
-      new Promise((resolve, reject) => {
-        const schemaKey = 'this-schema-key-does-not-exist'
-        unsubscribe = api.subscribe({
+    test('should return `null` if a "schemaKey" is provided for a non-existing schema', (done) => {
+      const schemaKey = 'this-schema-key-does-not-exist'
+      unsubscribe =
+        api?.subscribe({
           schemaKey,
           callback(err, schemas) {
             if (err) {
-              return reject(err)
+              return fail(err)
             }
 
             expect(schemas).toEqual(null)
-            resolve()
+            done()
           },
-        })
-      }))
+        }) ?? null
+    })
   })
 
   describe(' - "subscribeFields"', () => {
-    test('should return all schemas if no "schemaKey" is provided', () =>
-      new Promise((resolve, reject) => {
-        const allSchemas = getAllSchemas({ dbType: 'rtdb' })
-        const expected = Object.keys(allSchemas).reduce(
-          (acc, schemaKey) =>
-            Object.assign(acc, {
-              [schemaKey]: get(allSchemas, `${schemaKey}.fields`, []),
-            }),
-          {}
-        )
-        unsubscribe = api.subscribeFields({
+    test('should return all schemas if no "schemaKey" is provided', (done) => {
+      const allSchemas = getAllSchemas({ dbType: 'rtdb' })
+      const expected = Object.keys(allSchemas).reduce(
+        (acc, schemaKey) =>
+          Object.assign(acc, {
+            [schemaKey]: get(allSchemas, `${schemaKey}.fields`, []),
+          }),
+        {}
+      )
+      unsubscribe =
+        api?.subscribeFields({
           callback(err, schemas) {
             if (err) {
-              return reject(err)
+              return fail(err)
             }
 
             expect(schemas).toEqual(expected)
-            resolve()
+            done()
           },
-        })
-      }))
+        }) ?? null
+    })
 
-    test('should return a specific schema if a "schemaKey" is provided for an existing schema', () =>
-      new Promise((resolve, reject) => {
-        const schemaKey = 'products'
-        unsubscribe = api.subscribeFields({
+    test('should return a specific schema if a "schemaKey" is provided for an existing schema', (done) => {
+      const schemaKey = 'products'
+      unsubscribe =
+        api?.subscribeFields({
           schemaKey,
           callback(err, schemas) {
             if (err) {
-              return reject(err)
+              return fail(err)
             }
 
             expect(schemas).toEqual(
               getSchema({ dbType: 'rtdb', schemaKey }).fields
             )
-            resolve()
+            done()
           },
-        })
-      }))
+        }) ?? null
+    })
 
-    test('should return `null` if a "schemaKey" is provided for a non-existing schema', () =>
-      new Promise((resolve, reject) => {
-        const schemaKey = 'this-schema-key-does-not-exist'
-        unsubscribe = api.subscribeFields({
+    test('should return `null` if a "schemaKey" is provided for a non-existing schema', (done) => {
+      const schemaKey = 'this-schema-key-does-not-exist'
+      unsubscribe =
+        api?.subscribeFields({
           schemaKey,
           callback(err, schemas) {
             if (err) {
-              return reject(err)
+              return fail(err)
             }
 
             expect(schemas).toEqual(null)
-            resolve()
+            done()
           },
-        })
-      }))
+        }) ?? null
+    })
   })
 
   describe('- "add"', () => {
     test('should throw an error if no "schemaKey" is provided', () => {
       return expect(
-        api.add({ schemaKey: undefined, data: {} })
+        // @ts-expect-error intentional-incorrect-type
+        api?.add({ schemaKey: undefined, data: {} })
       ).rejects.toThrowError()
     })
 
     test('should throw an error if no "data" object is provided', () => {
       return expect(
-        api.add({ schemaKey: 'something', data: undefined })
+        // @ts-expect-error intentional-incorrect-type
+        api?.add({ schemaKey: 'something', data: undefined })
       ).rejects.toThrow()
     })
 
@@ -226,9 +228,9 @@ describe('- RTDB Schemas', () => {
         type: 'collection',
       }
 
-      await api.add({ schemaKey, data })
+      await api?.add({ schemaKey, data })
 
-      return expect(api.get({ schemaKey })).resolves.toEqual(
+      return expect(api?.get({ schemaKey })).resolves.toEqual(
         expect.objectContaining(expected)
       )
     })
@@ -237,13 +239,15 @@ describe('- RTDB Schemas', () => {
   describe('- "update"', () => {
     test('should throw an error if no "schemaKey" is provided', () => {
       return expect(
-        api.update({ schemaKey: undefined, data: {} })
+        // @ts-expect-error intentional-incorrect-type
+        api?.update({ schemaKey: undefined, data: {} })
       ).rejects.toThrowError()
     })
 
     test('should throw an error if no "data" object is provided', () => {
       return expect(
-        api.update({ schemaKey: 'something', data: undefined })
+        // @ts-expect-error intentional-incorrect-type
+        api?.update({ schemaKey: 'something', data: undefined })
       ).rejects.toThrowError()
     })
 
@@ -265,9 +269,9 @@ describe('- RTDB Schemas', () => {
         },
       }
 
-      await api.update({ schemaKey, data })
+      await api?.update({ schemaKey, data })
 
-      return expect(api.get({ schemaKey })).resolves.toEqual(
+      return expect(api?.get({ schemaKey })).resolves.toEqual(
         expect.objectContaining(expected)
       )
     })
@@ -275,18 +279,18 @@ describe('- RTDB Schemas', () => {
 
   describe('- "remove"', () => {
     test('should throw an error if no "schemaKey" is provided', () => {
-      return expect(() => api.remove({ schemaKey: undefined })).toThrowError()
+      return expect(() => api?.remove({ schemaKey: undefined })).toThrowError()
     })
 
     test('should successfully remove an existing schema', async () => {
       const schemaKey = 'productCategory'
 
-      const before = await api.get({ schemaKey })
+      const before = await api?.get({ schemaKey })
       expect(before).toEqual(getSchema({ dbType: 'rtdb', schemaKey }))
 
-      await api.remove({ schemaKey })
+      await api?.remove({ schemaKey })
 
-      return expect(api.get({ schemaKey })).resolves.toEqual(null)
+      return expect(api?.get({ schemaKey })).resolves.toEqual(null)
     })
   })
 })

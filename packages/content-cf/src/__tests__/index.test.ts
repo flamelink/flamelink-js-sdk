@@ -7,9 +7,9 @@ import {
 } from '../../../../tools/testing/firebase'
 import { factory as getAPI } from '../index'
 
-let firebaseApp: FirebaseApp
-let context: Context
-let api: Content.Api
+let firebaseApp: FirebaseApp | null
+let context: Context | null
+let api: Content.Api | null
 
 describe('Content Module > CF', () => {
   beforeAll(async () => {
@@ -24,7 +24,7 @@ describe('Content Module > CF', () => {
     })
 
     api = getAPI(context)
-  }, 10000)
+  })
 
   afterAll(() => {
     firebaseApp = null
@@ -33,8 +33,8 @@ describe('Content Module > CF', () => {
   })
 
   test('should be possible to retrieve a reference', async () => {
-    const ref = api.ref()
+    const ref = api?.ref()
     // TODO: Figure out how to check if the response object is a Firestore CollectionReference/DocumentReference
     expect(ref).toEqual(expect.any(Object))
-  }, 100000)
+  })
 })
