@@ -21,8 +21,8 @@
     "real-time"
   ],
   "engines": {
-    "yarn": "^1.5.2",
-    "node": ">=8.0.0"
+    "yarn": "^1.22.5",
+    "node": ">=14.0.0"
   },
   "repository": {
     "type": "git",
@@ -52,7 +52,7 @@
     "glob": "7.1.6",
     "husky": "^3.0.8",
     "jest": "^24.9.0",
-    "lerna": "3.16.5",
+    "lerna": "^6.0.3",
     "lint-staged": "^9.4.2",
     "lodash": "4.17.21",
     "npm-run-all": "4.1.5",
@@ -74,13 +74,13 @@
     }
   },
   "scripts": {
-    "bootstrap": "lerna bootstrap",
     "clean": "lerna clean",
+    "repair": "lerna repair",
     "lerna": "lerna",
+    "nx": "nx",
     "create-package": "lerna create",
+    "generate-dependency-graph": "yarn nx graph --file=.dependency-graph.json",
     "generate-readme": "projectz compile",
-    "dev": "lerna exec --parallel --ignore '@flamelink/sdk-*-types' --ignore 'integration-package-*' yarn run dev",
-    "build": "lerna run build",
     "test:integration": "lerna exec --parallel --stream --scope 'integration-package-*' yarn run test",
     "test:unit": "jest --detectOpenHandles --passWithNoTests",
     "test:ci": "yarn test:integration && yarn test:unit",
@@ -90,9 +90,9 @@
     "install-cf-emulator": "firebase setup:emulators:firestore",
     "install-rtdb-emulator": "firebase setup:emulators:database",
     "install-emulators": "npm-run-all --parallel install-cf-emulator install-rtdb-emulator",
-    "publish:canary": "lerna run build && lerna publish --conventional-commits --canary --dist-tag dev",
-    "publish:next": "lerna run build && lerna publish --dist-tag next",
-    "publish:latest": "lerna run build && lerna publish --dist-tag",
+    "publish:canary": "lerna run build && lerna publish --no-private --conventional-commits --canary --dist-tag dev",
+    "publish:next": "lerna run build && lerna publish --no-private --dist-tag next",
+    "publish:latest": "lerna run build && lerna publish --no-private --dist-tag",
     "lint": "eslint --cache --ext ts 'packages/**/*.ts' --ext ts 'integration/**/*.ts' --ext ts 'tools/**/*.ts' --ext ts 'fixtures/**/*.ts' --ignore-pattern '**/*.d.ts'",
     "lint:fix": "yarn run lint --fix",
     "serve-docs": "docsify serve docs -o true -p 4000"
@@ -104,7 +104,8 @@
   "contributors": [
     "JP Erasmus <jp@flamelink.io> (http://jperasmus.me)",
     "De Wet van der Merwe (https://github.com/dewetvdm)",
-    "dependabot[bot] (http://github.com/apps/dependabot)",
-    "De Wet van der Merwe (flamelink.io)"
+    "De Wet van der Merwe (flamelink.io)",
+    "Sinan Bolel (http://sinanbolel.com)",
+    "dependabot[bot] (http://github.com/apps/dependabot)"
   ]
 }

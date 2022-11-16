@@ -9,30 +9,26 @@ describe('utils', () => {
       eventEmitter = new EventEmitter()
     })
 
-    it('should allow subscription to any event', () => {
-      return new Promise((resolve) => {
-        const testEvent = 'ice-cream'
-        const testPayload = { flavour: 'vanilla' }
-        eventEmitter.on(testEvent, (payload) => {
-          expect(payload).toBe(testPayload)
-          resolve()
-        })
-
-        eventEmitter.emit(testEvent, testPayload)
+    it('should allow subscription to any event', (done) => {
+      const testEvent = 'ice-cream'
+      const testPayload = { flavour: 'vanilla' }
+      eventEmitter.on(testEvent, (payload) => {
+        expect(payload).toBe(testPayload)
+        done()
       })
+
+      eventEmitter.emit(testEvent, testPayload)
     })
 
-    it('should allow subscription to any event once', () => {
-      return new Promise((resolve) => {
-        const testEvent = 'ice-cream'
-        const testPayload = { flavour: 'vanilla' }
-        eventEmitter.once(testEvent, (payload) => {
-          expect(payload).toBe(testPayload)
-          resolve()
-        })
-
-        eventEmitter.emit(testEvent, testPayload)
+    it('should allow subscription to any event once', (done) => {
+      const testEvent = 'ice-cream'
+      const testPayload = { flavour: 'vanilla' }
+      eventEmitter.once(testEvent, (payload) => {
+        expect(payload).toBe(testPayload)
+        done()
       })
+
+      eventEmitter.emit(testEvent, testPayload)
     })
   })
 
@@ -40,7 +36,10 @@ describe('utils', () => {
     it('should allow subscription to any event while resolving like a Promise', async () => {
       const testPayload = { hey: 'ho' }
       const testEvent = 'greet'
-      const promiseEmitter = new PromiseEmitter((resolve, reject, emitter) => {
+
+      expect.assertions(1)
+
+      const promiseEmitter = new PromiseEmitter((resolve, _reject, emitter) => {
         emitter.emit(testEvent, testPayload)
         resolve()
       })

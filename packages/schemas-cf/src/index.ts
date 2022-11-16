@@ -12,7 +12,6 @@ import {
   CF,
   Schema,
   SchemaFields,
-  SchemaCf,
 } from '@flamelink/sdk-schemas-types'
 import {
   applyOptionsForCF,

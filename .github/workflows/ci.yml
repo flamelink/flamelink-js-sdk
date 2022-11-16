@@ -1,0 +1,47 @@
+name: CI
+on:
+  push:
+    branches:
+      - master
+  pull_request:
+
+jobs:
+  main:
+    runs-on: ubuntu-latest
+
+    strategy:
+      matrix:
+        node-version: [14.x, 16.x, 18.x]
+
+    steps:
+      - uses: actions/checkout@v2
+        with:
+          fetch-depth: 0
+
+      - name: Use Node.js ${{ matrix.node-version }}
+        uses: actions/setup-node@v3
+        with:
+          node-version: ${{ matrix.node-version }}
+          cache: "yarn"
+
+      - uses: nrwl/nx-set-shas@v3
+        with:
+          main-branch-name: "master"
+
+      - name: Install dependencies
+        run: yarn
+
+      - name: Install emulators
+        run: yarn install-emulators
+
+      - name: Lint packages
+        run: yarn lint
+
+      - name: Lint Nx workspace
+        run: npx nx workspace-lint
+
+      - name: Build packages
+        run: npx nx affected --target=build --parallel=3
+
+      - name: Test packages
+        run: yarn test:ci

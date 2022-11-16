@@ -21,10 +21,10 @@ aliases:
       paths:
         - ~/.cache
 
-  bootstrap_and_build: &bootstrap_and_build
+  build_packages: &build_packages
     run:
-      name: Bootstrap and Build
-      command: yarn bootstrap && yarn build
+      name: Build all packages
+      command: yarn lerna run build
 
   install_node_modules: &install_node_modules
     run:
@@ -79,33 +79,33 @@ aliases:
 version: 2.1
 
 jobs:
-  bootstrap_v12:
+  build_nodejs_v16:
     executor:
       name: node
-      image: "12"
+      image: "16"
     steps:
       - checkout
       - <<: *assert_changed_files
       - <<: *restore_cache
       - <<: *install_node_modules
       - <<: *persist_cache
-      - <<: *bootstrap_and_build
+      - <<: *build_packages
       - persist_to_workspace:
           root: packages
           paths:
             - "*"
 
-  bootstrap_v10:
+  build_nodejs_v14:
     executor:
       name: node
-      image: "10"
+      image: "14"
     steps:
       - checkout
       - <<: *assert_changed_files
       - <<: *restore_cache
       - <<: *install_node_modules
       - <<: *persist_cache
-      - <<: *bootstrap_and_build
+      - <<: *build_packages
       - persist_to_workspace:
           root: packages
           paths:
@@ -114,7 +114,7 @@ jobs:
   lint:
     executor:
       name: node
-      image: "12"
+      image: "14"
     steps:
       - checkout
       - <<: *restore_cache
@@ -122,16 +122,16 @@ jobs:
       - <<: *persist_cache
       - run: yarn lint
 
-  unit_tests_node12:
+  unit_tests_nodejs_v16:
     executor:
       name: node
-      image: "12"
+      image: "16"
     <<: *test_template
 
-  unit_tests_node10:
+  unit_tests_nodejs_v14:
     executor:
       name: node
-      image: "10"
+      image: "14"
     <<: *test_template
 
 workflows:
@@ -139,15 +139,15 @@ workflows:
   build-test:
     jobs:
       - lint
-      - bootstrap_v12
-      - unit_tests_node12:
+      - build_nodejs_v16
+      - unit_tests_nodejs_v16:
           <<: *ignore_docs
           requires:
-            - bootstrap_v12
-      - bootstrap_v10:
+            - build_nodejs_v16
+      - build_nodejs_v14:
           requires:
-            - unit_tests_node12
-      - unit_tests_node10:
+            - unit_tests_nodejs_v16
+      - unit_tests_nodejs_v14:
           <<: *ignore_docs
           requires:
-            - bootstrap_v10
+            - build_nodejs_v14

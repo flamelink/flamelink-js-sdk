@@ -50,6 +50,7 @@ typings/
 !.github
 !.nojekyll
 !.opensource
+!.vscode/extensions.json
 
 # Build files
 dist

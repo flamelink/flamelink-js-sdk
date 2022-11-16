@@ -1,7 +1,7 @@
 {
   "name": "flamelink",
   "version": "1.0.0-rc.1",
-  "description": "Universal Javascript SDK for integrating with your Flamelink CMS",
+  "description": "Universal JavaScript SDK for integrating with your Flamelink project",
   "author": "Flamelink <feedback@flamelink.io> (https://flamelink.io)",
   "homepage": "https://flamelink.github.io/flamelink-js-sdk/",
   "license": "MIT",
@@ -37,7 +37,7 @@
     "/flamelink*.map"
   ],
   "engines": {
-    "node": ">=6.0.0"
+    "node": ">=12"
   },
   "main": "dist/index.node.cjs.js",
   "browser": "dist/index.cjs.js",
@@ -65,5 +65,16 @@
     "build": "rollup -c",
     "dev": "rollup -c -w",
     "test": "jest"
+  },
+  "nx": {
+    "targets": {
+      "build": {
+        "outputs": [
+          "{projectRoot}/dist",
+          "{projectRoot}/flamelink-*",
+          "{projectRoot}/flamelink.*"
+        ]
+      }
+    }
   }
 }

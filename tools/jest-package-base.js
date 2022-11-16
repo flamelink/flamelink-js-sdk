@@ -8,8 +8,8 @@ module.exports = function getJestConfig() {
     globalTeardown: resolve(__dirname, './testing/jest-teardown.ts'),
     roots: ['<rootDir>/src'],
     transform: {
-      '^.+\\.tsx?$': 'ts-jest'
+      '^.+\\.tsx?$': 'ts-jest',
     },
-    testRegex: '(/__tests__/.*|(\\.|/)(test|spec))\\.tsx?$'
+    testRegex: '(/__tests__/.*|(\\.|/)(test|spec))\\.tsx?$',
   }
 }
