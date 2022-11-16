@@ -1,6 +1,6 @@
 const glob = require('glob')
 
-const pkgs = glob.sync(`./packages/*`).map(p => p.replace(/^\./, `<rootDir>`))
+const pkgs = glob.sync(`./packages/*`).map((p) => p.replace(/^\./, `<rootDir>`))
 
 module.exports = {
   notify: !process.env.CI,
@@ -12,12 +12,13 @@ module.exports = {
     '**/*.{js,ts}',
     '!**/node_modules/**',
     '!**/dist/**',
-    '!**/index.cdn.ts'
+    '!**/index.cdn.ts',
   ],
-  roots: pkgs.filter(p => !p.endsWith('-types')).map(p => `${p}/src`),
+  roots: pkgs.filter((p) => !p.endsWith('-types')).map((p) => `${p}/src`),
   modulePaths: ['<rootDir>'],
   transform: {
-    '^.+\\.tsx?$': 'ts-jest'
+    '^.+\\.tsx?$': 'ts-jest',
   },
-  testRegex: '(/__tests__/.*|(\\.|/)(test|spec))\\.[jt]sx?$'
+  testRegex: '(/__tests__/.*|(\\.|/)(test|spec))\\.[jt]sx?$',
+  testTimeout: 15000,
 }
