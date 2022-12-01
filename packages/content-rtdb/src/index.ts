@@ -310,7 +310,9 @@ export const factory: FlamelinkFactory = (context) => {
         .ref([schemaKey, entryId], { env, locale })
         .once('value')
 
-      if (!snapshot.val()) {
+      const currentEntry = snapshot.val()
+
+      if (!currentEntry) {
         logWarning(
           `No entry existed for schema "${schemaKey}" with ID "${entryId}" - creating new entry instead.`
         )
@@ -322,6 +324,7 @@ export const factory: FlamelinkFactory = (context) => {
           ? {
               ...data,
               __meta__: {
+                ...(currentEntry.__meta__ || {}),
                 ...(data.__meta__ || {}),
                 lastModifiedBy: getCurrentUser(context),
                 lastModifiedDate: getTimestamp(context),

@@ -298,6 +298,15 @@ export const factory: FlamelinkFactory = (context) => {
         )
       }
 
+      const snapshot = await api
+        .ref([schemaKey, entryId], { env, locale })
+        .get()
+
+      let existingEntry
+      if (!snapshot.empty && snapshot.data) {
+        existingEntry = snapshot.data()
+      }
+
       const payload =
         typeof data === 'object'
           ? {
@@ -305,14 +314,10 @@ export const factory: FlamelinkFactory = (context) => {
               '_fl_meta_.lastModifiedBy': getCurrentUser(context),
               '_fl_meta_.lastModifiedDate': getTimestamp(context),
               '_fl_meta_.fl_id': entryId,
-              ...(status ? { '_fl_meta_,status': status } : {}),
-              id: entryId,
+              ...(status ? { '_fl_meta_.status': status } : {}),
+              id: get(existingEntry, 'id') || entryId,
             }
           : data
-
-      const snapshot = await api
-        .ref([schemaKey, entryId], { env, locale })
-        .get()
 
       if (snapshot.empty) {
         logWarning(

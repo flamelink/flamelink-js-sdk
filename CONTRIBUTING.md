@@ -210,7 +210,7 @@ This plugin is distributed via NPM and is available at: https://www.npmjs.com/pa
 
 > To publish to NPM, you need to have the relevant permissions. Speak to another maintainer to add you to the Flamelink organization on NPM if needed.
 
-After ensuring you are logged into NPM with the relevant permissions, you can publish the new version.
+After ensuring you are logged into NPM (`$ npm login`) with the relevant permissions, you can publish the new version.
 
 Make sure you are in the root directory of the plugin and then run:
 
