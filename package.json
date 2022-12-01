@@ -92,6 +92,7 @@
     "install-emulators": "npm-run-all --parallel install-cf-emulator install-rtdb-emulator",
     "publish:canary": "lerna run build && lerna publish --conventional-commits --canary --dist-tag dev",
     "publish:next": "lerna run build && lerna publish --dist-tag next",
+    "republish:next": "lerna run build && lerna publish from-package --dist-tag next",
     "publish:latest": "lerna run build && lerna publish --dist-tag",
     "lint": "eslint --cache --ext ts 'packages/**/*.ts' --ext ts 'integration/**/*.ts' --ext ts 'tools/**/*.ts' --ext ts 'fixtures/**/*.ts' --ignore-pattern '**/*.d.ts'",
     "lint:fix": "yarn run lint --fix",
