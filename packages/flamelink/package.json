@@ -1,6 +1,6 @@
 {
   "name": "flamelink",
-  "version": "1.0.0-rc.1",
+  "version": "1.0.0-rc.2",
   "description": "Universal Javascript SDK for integrating with your Flamelink CMS",
   "author": "Flamelink <feedback@flamelink.io> (https://flamelink.io)",
   "homepage": "https://flamelink.github.io/flamelink-js-sdk/",
@@ -46,8 +46,8 @@
   "dependencies": {
     "@flamelink/sdk-app": "^1.0.0-rc.1",
     "@flamelink/sdk-app-types": "^1.0.0-rc.1",
-    "@flamelink/sdk-content-cf": "^1.0.0-rc.1",
-    "@flamelink/sdk-content-rtdb": "^1.0.0-rc.1",
+    "@flamelink/sdk-content-cf": "^1.0.0-rc.2",
+    "@flamelink/sdk-content-rtdb": "^1.0.0-rc.2",
     "@flamelink/sdk-navigation-cf": "^1.0.0-rc.1",
     "@flamelink/sdk-navigation-rtdb": "^1.0.0-rc.1",
     "@flamelink/sdk-schemas-cf": "^1.0.0-rc.1",
