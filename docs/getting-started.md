@@ -30,20 +30,17 @@ or with a `<script>` tag hosted from any of these CDN's
 
 Add the following script tag to the `<body>` of your index.html file:
 
-
 ```html
 <script src="//cdn.jsdelivr.net/npm/flamelink@next/flamelink.js"></script>
 ```
 
-This will always load the latest version of this SDK for you. If you want to load a specific version, you can specify the version number as well (1.0.0-rc.1 in the example):
-
+This will always load the latest version of this SDK for you. If you want to load a specific version, you can specify the version number as well (1.0.0-rc.2 in the example):
 
 ```html
-<script src="//cdn.jsdelivr.net/npm/flamelink@1.0.0-rc.1/flamelink.js"></script>
+<script src="//cdn.jsdelivr.net/npm/flamelink@1.0.0-rc.2/flamelink.js"></script>
 ```
 
 > See the [jsDelivr website](https://www.jsdelivr.com/?query=flamelink) for more options
-
 
 ### unpkg
 
@@ -53,10 +50,10 @@ Add the following script tag to the `<body>` of your index.html file:
 <script src="//unpkg.com/flamelink@next/flamelink.js"></script>
 ```
 
-This will always load the latest version of this SDK for you. If you want to load a specific version, you can specify the version number as well (1.0.0-rc.1 in the example):
+This will always load the latest version of this SDK for you. If you want to load a specific version, you can specify the version number as well (1.0.0-rc.2 in the example):
 
 ```html
-<script src="//unpkg.com/flamelink@1.0.0-rc.1/flamelink.js"></script>
+<script src="//unpkg.com/flamelink@1.0.0-rc.2/flamelink.js"></script>
 ```
 
 > See the [unpkg website](https://unpkg.com/flamelink/) for more options
@@ -111,7 +108,7 @@ const firebaseConfig = {
   databaseURL: '<your-database-url>',
   projectId: '<your-project-id>',
   storageBucket: '<your-storage-bucket-code>',
-  messagingSenderId: '<your-messenger-id>'
+  messagingSenderId: '<your-messenger-id>',
 }
 
 const firebaseApp = firebase.initializeApp(firebaseConfig)
@@ -120,7 +117,7 @@ const app = flamelink({
   firebaseApp,
   env: 'production', // optional, defaults to `production`
   locale: 'en-US', // optional, defaults to `en-US`
-  dbType: 'rtdb' // optional, defaults to `rtdb` - can be 'rtdb' or 'cf' (Realtime DB vs Cloud Firestore)
+  dbType: 'rtdb', // optional, defaults to `rtdb` - can be 'rtdb' or 'cf' (Realtime DB vs Cloud Firestore)
 })
 ```
 
@@ -136,14 +133,14 @@ const serviceAccount = require('path/to/serviceAccountKey.json')
 const firebaseConfig = {
   credential: admin.credential.cert(serviceAccount), // required
   databaseURL: '<your-database-url>', // required
-  storageBucket: '<your-storage-bucket-code>' // required if you want to use any Storage functionality
+  storageBucket: '<your-storage-bucket-code>', // required if you want to use any Storage functionality
 }
 
 const firebaseApp = admin.initializeApp(config)
 
 const app = flamelink({
   firebaseApp,
-  dbType: 'cf'
+  dbType: 'cf',
 })
 ```
 
